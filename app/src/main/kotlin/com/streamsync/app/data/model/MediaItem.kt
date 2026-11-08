@@ -12,7 +12,11 @@ data class MediaItem(
     val year: String = "2024",
     val genres: List<String> = emptyList(),
     val durationMinutes: Int = 120,
-    val streamUrl: String = ""
+    val streamUrl: String = "",
+    val streamName: String = "",
+    val season: Int? = null,
+    val episode: Int? = null,
+    val seriesVideos: List<SeriesVideo> = emptyList()
 ) {
     val backgroundUrl: String get() = backdropUrl
     val imdbRating: String get() = rating
@@ -23,6 +27,15 @@ enum class MediaType {
     MOVIE,
     SERIES
 }
+
+data class SeriesVideo(
+    val id: String,
+    val title: String,
+    val season: Int,
+    val episode: Int,
+    val released: String = "",
+    val thumbnail: String = ""
+)
 
 data class CatalogRow(
     val id: String,
@@ -44,6 +57,10 @@ data class WatchProgress(
     val backdropUrl: String = "",
     val progressPercent: Float = 0.5f,
     val remainingMinutes: Int = 24,
+    val positionMs: Long = 0L,
+    val durationMs: Long = 0L,
+    val season: Int? = null,
+    val episode: Int? = null,
     val streamUrl: String = ""
 )
 

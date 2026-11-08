@@ -54,26 +54,60 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import com.streamsync.app.data.model.MediaItem
+import com.streamsync.app.data.model.WatchProgress
+import com.streamsync.app.data.repository.MediaRepository
 import kotlinx.coroutines.delay
 
 @OptIn(UnstableApi::class)
 @Composable
 fun PlayerScreen(
     mediaItem: MediaItem,
+    streamUrl: String = "",
+    titleOverride: String = "",
+    initialPositionMs: Long = 0L,
     onBackClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
     var isPlaying by remember { mutableStateOf(true) }
     var showControls by remember { mutableStateOf(true) }
-    var currentPosition by remember { mutableLongStateOf(0L) }
+    var currentPosition by remember { mutableLongStateOf(initialPositionMs) }
     var duration by remember { mutableLongStateOf(0L) }
+
+    val effectiveUrl = streamUrl.ifBlank { mediaItem.streamUrl.ifBlank { "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" } }
+    val effectiveTitle = titleOverride.ifBlank { mediaItem.title }
 
     val exoPlayer = remember {
         ExoPlayer.Builder(context).build().apply {
-            val sampleStream = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-            setMediaItem(ExoMediaItem.fromUri(mediaItem.streamUrl.ifEmpty { sampleStream }))
+            setMediaItem(ExoMediaItem.fromUri(effectiveUrl))
+            if (initialPositionMs > 0) {
+                seekTo(initialPositionMs)
+            }
             prepare()
             playWhenReady = true
+        }
+    }
+
+    // Save watch progress periodically and when leaving
+    fun saveProgress() {
+        val pos = exoPlayer.currentPosition.coerceAtLeast(0L)
+        val dur = exoPlayer.duration.coerceAtLeast(0L)
+        if (pos > 0) {
+            val progressPercent = if (dur > 0) pos.toFloat() / dur.toFloat() else 0.5f
+            val remainingMins = if (dur > pos) ((dur - pos) / 60000).toInt() else 0
+            MediaRepository.saveProgress(
+                WatchProgress(
+                    id = mediaItem.id,
+                    mediaId = mediaItem.id,
+                    title = effectiveTitle,
+                    posterUrl = mediaItem.posterUrl,
+                    backdropUrl = mediaItem.backdropUrl,
+                    progressPercent = progressPercent,
+                    remainingMinutes = remainingMins,
+                    positionMs = pos,
+                    durationMs = dur,
+                    streamUrl = effectiveUrl
+                )
+            )
         }
     }
 
@@ -88,12 +122,13 @@ fun PlayerScreen(
         }
         exoPlayer.addListener(listener)
         onDispose {
+            saveProgress()
             exoPlayer.removeListener(listener)
             exoPlayer.release()
         }
     }
 
-    // Auto-hide controls
+    // Auto-hide controls after 4 seconds
     LaunchedEffect(showControls) {
         if (showControls) {
             delay(4000)
@@ -101,7 +136,7 @@ fun PlayerScreen(
         }
     }
 
-    // Periodic time update
+    // Periodic time update and auto progress saving
     LaunchedEffect(isPlaying) {
         while (isPlaying) {
             currentPosition = exoPlayer.currentPosition.coerceAtLeast(0L)
@@ -141,9 +176,14 @@ fun PlayerScreen(
                     false
                 }
             }
-            .clickable { showControls = !showControls }
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) {
+                showControls = !showControls
+            }
     ) {
-        // Video Surface
+        // ExoPlayer Surface View
         AndroidView(
             factory = { ctx ->
                 PlayerView(ctx).apply {
@@ -159,10 +199,10 @@ fun PlayerScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.5f))
+                    .background(Color.Black.copy(alpha = 0.55f))
                     .padding(24.dp)
             ) {
-                // Top bar: Back and Title
+                // Top Header (Back + Title)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -173,12 +213,11 @@ fun PlayerScreen(
                         onClick = onBackClick,
                         modifier = Modifier
                             .size(44.dp)
-                            .clip(CircleShape)
-                            .background(Color.Black.copy(alpha = 0.5f))
+                            .background(Color.Black.copy(alpha = 0.4f), CircleShape)
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = "Trở về",
+                            contentDescription = "Quay lại",
                             tint = Color.White
                         )
                     }
@@ -186,7 +225,7 @@ fun PlayerScreen(
                     Spacer(modifier = Modifier.width(16.dp))
 
                     Text(
-                        text = mediaItem.title,
+                        text = effectiveTitle,
                         color = Color.White,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold

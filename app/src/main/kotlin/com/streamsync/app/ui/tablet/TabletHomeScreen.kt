@@ -12,10 +12,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Explore
+import androidx.compose.material.icons.rounded.Extension
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material.icons.rounded.VideoLibrary
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationRail
@@ -41,9 +40,9 @@ fun TabletHomeScreen(
     onMediaClick: (MediaItem) -> Unit = {}
 ) {
     var selectedNavIndex by remember { mutableIntStateOf(0) }
-    val catalogRows by remember { MediaRepository.getCatalogRows() }.collectAsState(initial = emptyList())
-    val heroItems = remember { MediaRepository.heroItems }
-    val continueWatching = remember { MediaRepository.continueWatchingList }
+    val catalogRows by MediaRepository.catalogRowsState.collectAsState(initial = emptyList())
+    val heroItems by MediaRepository.heroItemsState.collectAsState(initial = emptyList())
+    val continueWatching by MediaRepository.continueWatching.collectAsState(initial = emptyList())
 
     Row(
         modifier = Modifier
@@ -61,8 +60,7 @@ fun TabletHomeScreen(
                 "Trang chủ" to Icons.Rounded.Home,
                 "Khám phá" to Icons.Rounded.Explore,
                 "Tìm kiếm" to Icons.Rounded.Search,
-                "Thư viện" to Icons.Rounded.VideoLibrary,
-                "Cài đặt" to Icons.Rounded.Settings
+                "Addon" to Icons.Rounded.Extension
             )
             items.forEachIndexed { index, (label, icon) ->
                 NavigationRailItem(
@@ -95,20 +93,23 @@ fun TabletHomeScreen(
                 )
             }
 
-            item(key = "tablet_cw") {
-                Spacer(modifier = Modifier.height(12.dp))
-                ContinueWatchingShelf(
-                    items = continueWatching,
-                    onItemClick = { cw ->
-                        onMediaClick(
-                            MediaItem(
-                                id = cw.mediaId,
-                                title = cw.title,
-                                backdropUrl = cw.backdropUrl
+            if (continueWatching.isNotEmpty()) {
+                item(key = "tablet_cw") {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    ContinueWatchingShelf(
+                        items = continueWatching,
+                        onItemClick = { cw ->
+                            onMediaClick(
+                                MediaItem(
+                                    id = cw.mediaId,
+                                    title = cw.title,
+                                    backdropUrl = cw.backdropUrl,
+                                    streamUrl = cw.streamUrl
+                                )
                             )
-                        )
-                    }
-                )
+                        }
+                    )
+                }
             }
 
             items(

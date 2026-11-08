@@ -65,8 +65,9 @@ import com.streamsync.app.ui.theme.PrimaryRed
 fun TvHomeScreen(
     onMediaClick: (MediaItem) -> Unit = {}
 ) {
-    val catalogRows by remember { MediaRepository.getCatalogRows() }.collectAsState(initial = emptyList())
-    val heroItem = remember { MediaRepository.heroItems.first() }
+    val catalogRows by MediaRepository.catalogRowsState.collectAsState(initial = emptyList())
+    val heroItems by MediaRepository.heroItemsState.collectAsState(initial = emptyList())
+    val heroItem = heroItems.firstOrNull() ?: MediaItem(id = "default", title = "StreamSync")
     var selectedTopNav by remember { mutableIntStateOf(0) }
     val topNavCategories = remember { listOf("Trang chủ", "Phim lẻ", "Phim bộ", "Thịnh hành", "Cài đặt") }
 

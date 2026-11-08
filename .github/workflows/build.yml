@@ -10,17 +10,23 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: streamsync-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
-    name: Build Debug APKs (ABI Splits)
+    name: Build StreamSync APKs
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -34,17 +40,51 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
-      - name: Build Debug APKs
+      - name: Build Debug APKs (ABI Splits)
         run: ./gradlew assembleDebug --stacktrace
+
+      - name: Build arm64-v8a Repack for Original App
+        run: |
+          if [ -f base/StreamSync-base.apk ]; then
+            echo "=== Repacking Original Base APK with arm64-v8a Native Libs ==="
+            sudo apt-get update -y
+            sudo apt-get install -y zipalign apksigner wget
+
+            wget -q https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/linux/apktool -O /usr/local/bin/apktool
+            wget -q https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.9.3.jar -O /usr/local/bin/apktool.jar
+            chmod +x /usr/local/bin/apktool /usr/local/bin/apktool.jar
+
+            apktool d base/StreamSync-base.apk -o apk_unpack -f
+            mkdir -p apk_unpack/lib/arm64-v8a
+            cp -r app/src/main/jniLibs/arm64-v8a/* apk_unpack/lib/arm64-v8a/
+
+            # Ensure Leanback TV support in AndroidManifest if not present
+            if ! grep -q "LEANBACK_LAUNCHER" apk_unpack/AndroidManifest.xml; then
+              sed -i 's#<category android:name="android.intent.category.LAUNCHER"/>#<category android:name="android.intent.category.LAUNCHER"/>\n                <category android:name="android.intent.category.LEANBACK_LAUNCHER"/>#g' apk_unpack/AndroidManifest.xml
+            fi
+            if ! grep -q "android.software.leanback" apk_unpack/AndroidManifest.xml; then
+              sed -i 's#<manifest #<manifest xmlns:tools="http://schemas.android.com/tools" #' apk_unpack/AndroidManifest.xml
+              sed -i '/<uses-permission/i \    <uses-feature android:name="android.software.leanback" android:required="false"/>\n    <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>' apk_unpack/AndroidManifest.xml
+            fi
+
+            apktool b apk_unpack -o original-unsigned.apk
+            zipalign -v -p 4 original-unsigned.apk original-aligned.apk
+
+            keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+            apksigner sign --ks debug.keystore --ks-pass pass:android --key-pass pass:android --out StreamSync-original-arm64-v8a.apk original-aligned.apk
+          fi
 
       - name: Collect Output APKs
         run: |
           mkdir -p output-apks
           find app/build/outputs/apk/debug/ -name "*.apk" -exec cp {} output-apks/ \;
-          echo "=== Generated APKs ==="
+          if [ -f StreamSync-original-arm64-v8a.apk ]; then
+            cp StreamSync-original-arm64-v8a.apk output-apks/
+          fi
+          echo "=== All Produced APKs ==="
           ls -lh output-apks/
 
-      - name: Upload APKs as Artifact
+      - name: Upload APK Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: StreamSync-Debug-APKs

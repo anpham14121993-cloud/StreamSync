@@ -6,10 +6,13 @@ import coil.ImageLoaderFactory
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
 
+import com.streamsync.app.data.repository.MediaRepository
+
 class StreamSyncApp : Application(), ImageLoaderFactory {
 
     override fun onCreate() {
         super.onCreate()
+        MediaRepository.init(this)
     }
 
     override fun newImageLoader(): ImageLoader {
