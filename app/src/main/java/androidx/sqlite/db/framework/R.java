@@ -1,7 +1,0 @@
-package androidx.sqlite.db.framework;
-
-/* loaded from: classes13.dex */
-public final class R {
-    private R() {
-    }
-}
