@@ -93,8 +93,9 @@ private const val POSTER_ASPECT_RATIO = 0.675f // 2:3 cinematic poster ratio
 @Composable
 fun HeroSlider(
     items: List<MediaItem>,
-    onOpenDetail: (MediaItem) -> Unit,
     modifier: Modifier = Modifier,
+    onItemClick: (MediaItem) -> Unit = {},
+    onOpenDetail: (MediaItem) -> Unit = onItemClick,
     autoSlide: Boolean = true,
     slideIntervalMs: Int = 8000,
     viewportHeight: Dp? = null,
@@ -432,7 +433,7 @@ private fun HeroContentInfo(
             }
 
             // Rating Badge
-            val rating = item.imdbRating?.takeIf { it.isNotBlank() }
+            val rating = item.rating.takeIf { it.isNotBlank() }
             if (rating != null) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -458,10 +459,11 @@ private fun HeroContentInfo(
             }
 
             // First Genre
-            item.genres.firstOrNull()?.let { genre ->
+            val firstGenre = item.genres.firstOrNull()?.takeIf { it.isNotBlank() }
+            if (firstGenre != null) {
                 HeroDot()
                 Text(
-                    text = genre,
+                    text = firstGenre,
                     style = MaterialTheme.typography.labelMedium,
                     color = Color.White.copy(alpha = 0.85f),
                     fontWeight = FontWeight.Medium
@@ -469,10 +471,11 @@ private fun HeroContentInfo(
             }
 
             // Year / Release Info
-            item.releaseInfo?.takeIf { it.isNotBlank() }?.let { release ->
+            val releaseYear = item.year.takeIf { it.isNotBlank() }
+            if (releaseYear != null) {
                 HeroDot()
                 Text(
-                    text = release,
+                    text = releaseYear,
                     style = MaterialTheme.typography.labelMedium,
                     color = Color.White.copy(alpha = 0.85f),
                     fontWeight = FontWeight.Medium
@@ -611,7 +614,7 @@ fun PosterCard(
             )
 
             // Rating Pill overlay on poster
-            val rating = item.imdbRating?.takeIf { it.isNotBlank() }
+            val rating = item.rating.takeIf { it.isNotBlank() }
             if (rating != null) {
                 Surface(
                     modifier = Modifier
@@ -653,7 +656,7 @@ fun PosterCard(
                 overflow = TextOverflow.Ellipsis
             )
 
-            val meta = item.releaseInfo?.takeIf { it.isNotBlank() } ?: item.genres.firstOrNull()
+            val meta = item.year.takeIf { it.isNotBlank() } ?: item.genres.firstOrNull()
             if (meta != null) {
                 Text(
                     text = meta,
@@ -675,6 +678,7 @@ fun RowHeader(
     title: String,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
+    showMore: Boolean = false,
     onOpenAll: (() -> Unit)? = null,
 ) {
     Row(
@@ -704,13 +708,13 @@ fun RowHeader(
             }
         }
 
-        if (onOpenAll != null) {
+        if (showMore || onOpenAll != null) {
             Box(
                 modifier = Modifier
                     .size(32.dp)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f))
-                    .clickable(onClick = onOpenAll),
+                    .clickable(enabled = onOpenAll != null, onClick = { onOpenAll?.invoke() }),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -736,15 +740,15 @@ fun CatalogRowSection(
     postersPerRow: Int = 8,
     titleSp: Int = 18,
 ) {
-    if (!row.hasItems) return
+    if (row.items.isEmpty()) return
 
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         RowHeader(
-            title = row.name,
-            subtitle = row.addonName.takeIf { it.isNotBlank() && it != row.name },
+            title = row.title,
+            subtitle = row.addonName.takeIf { it.isNotBlank() && it != row.title },
             onOpenAll = onOpenAll
         )
 
@@ -755,7 +759,7 @@ fun CatalogRowSection(
         ) {
             items(
                 items = row.items,
-                key = { item -> "${row.key}_${item.id}" }
+                key = { item -> "${row.id}_${item.id}" }
             ) { item ->
                 PosterCard(
                     item = item,
