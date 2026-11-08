@@ -17,8 +17,10 @@ object DeviceDetection {
      * Tự nhận biết Android TV bằng UiModeManager (UI_MODE_TYPE_TELEVISION)
      */
     fun isTelevision(context: Context): Boolean {
-        val uiModeManager = context.getSystemService(Context.UI_MODE_SERVICE) as? UiModeManager
-        return uiModeManager?.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
+        return runCatching {
+            val uiModeManager = context.getSystemService(Context.UI_MODE_SERVICE) as? UiModeManager
+            uiModeManager?.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
+        }.getOrDefault(false)
     }
 
     /**
