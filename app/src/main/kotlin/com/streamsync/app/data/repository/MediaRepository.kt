@@ -13,7 +13,7 @@ import com.streamsync.app.data.model.MediaType
 import com.streamsync.app.data.model.WatchProgress
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorKt
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 
 object MediaRepository {
 
-    private val scope = CoroutineScope(SupervisorKt() + Dispatchers.IO)
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val gson = Gson()
     private var prefs: SharedPreferences? = null
 
