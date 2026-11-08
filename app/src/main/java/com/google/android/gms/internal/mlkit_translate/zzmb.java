@@ -1,0 +1,43 @@
+package com.google.android.gms.internal.mlkit_translate;
+
+import com.google.firebase.encoders.FieldDescriptor;
+import com.google.firebase.encoders.ObjectEncoder;
+import com.google.firebase.encoders.ObjectEncoderContext;
+import java.io.IOException;
+
+/* compiled from: com.google.mlkit:translate@@17.0.3 */
+/* loaded from: classes24.dex */
+final class zzmb implements ObjectEncoder {
+    static final zzmb zza = new zzmb();
+
+    static {
+        FieldDescriptor.Builder builder = FieldDescriptor.builder("isForegroundConfidenceMaskEnabled");
+        zzbo zzboVar = new zzbo();
+        zzboVar.zza(1);
+        builder.withProperty(zzboVar.zzb()).build();
+        FieldDescriptor.Builder builder2 = FieldDescriptor.builder("isForegroundBitmapEnabled");
+        zzbo zzboVar2 = new zzbo();
+        zzboVar2.zza(2);
+        builder2.withProperty(zzboVar2.zzb()).build();
+        FieldDescriptor.Builder builder3 = FieldDescriptor.builder("isMultipleSubjectsEnabled");
+        zzbo zzboVar3 = new zzbo();
+        zzboVar3.zza(3);
+        builder3.withProperty(zzboVar3.zzb()).build();
+        FieldDescriptor.Builder builder4 = FieldDescriptor.builder("isSubjectConfidenceMaskEnabled");
+        zzbo zzboVar4 = new zzbo();
+        zzboVar4.zza(4);
+        builder4.withProperty(zzboVar4.zzb()).build();
+        FieldDescriptor.Builder builder5 = FieldDescriptor.builder("isSubjectBitmapEnabled");
+        zzbo zzboVar5 = new zzbo();
+        zzboVar5.zza(5);
+        builder5.withProperty(zzboVar5.zzb()).build();
+    }
+
+    private zzmb() {
+    }
+
+    @Override // com.google.firebase.encoders.Encoder
+    public final /* bridge */ /* synthetic */ void encode(Object obj, ObjectEncoderContext objectEncoderContext) throws IOException {
+        throw null;
+    }
+}
