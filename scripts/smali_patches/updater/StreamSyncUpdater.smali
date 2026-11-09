@@ -4,7 +4,7 @@
 
 
 # static fields
-.field private static final DEFAULT_VERSION:Ljava/lang/String; = "v1.9.4"
+.field private static final DEFAULT_VERSION:Ljava/lang/String; = "v1.9.5"
 
 .field private static final GITHUB_REPO_API:Ljava/lang/String; = "https://api.github.com/repos/anpham14121993-cloud/StreamSync/releases/latest"
 
@@ -230,7 +230,7 @@
     nop
 
     .line 42
-    const-string p0, "v1.9.4"
+    const-string p0, "v1.9.5"
 
     return-object p0
 .end method

@@ -125,21 +125,27 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG="v1.9.4"
+          TAG="v1.9.5"
           echo "=== Publishing Release $TAG ==="
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" output-apks/StreamSync-arm64-v8a.apk output-apks/StreamSync-armeabi-v7a.apk output-apks/StreamSync-universal.apk --clobber
           else
             gh release create "$TAG" output-apks/StreamSync-arm64-v8a.apk output-apks/StreamSync-armeabi-v7a.apk output-apks/StreamSync-universal.apk \
-              --title "AioStream v1.9.4 (Fix ART VerifyError in Lambdas & SQLite Lock Contention)" \
-              --notes "Bản phát hành chính thức AioStream v1.9.4:
+              --title "AioStream v1.9.5 (Fix Native SIGSEGV/SIGABRT on Large Video Playback)" \
+              --notes "Bản phát hành chính thức AioStream v1.9.5:
               - Chuẩn 3 phiên bản duy nhất: arm64-v8a, armeabi-v7a và universal.
-              - Khắc phục triệt để lỗi crash trên Mobile và Android TV:
-                + Sửa lỗi Dalvik/ART bytecode verification failure (VerifyError) trong các lớp lambda (AccountClickLambda, UpdaterClickLambda, AddonToggleClickLambda, AddonConfigClickLambda) bằng cách bổ sung lệnh 'move-exception' chuẩn xác ở đầu khối catchall.
-                + Sửa lỗi SQLiteDatabaseLockedException khi đồng bộ tài khoản: tách toàn bộ tác vụ tải manifest qua mạng ra khỏi transaction, đồng thời kích hoạt Write-Ahead Logging (WAL) để Room và UI thread không bị nghẽn (starvation).
-                + Loại bỏ hoàn toàn AlertDialog.THEME_DEVICE_DEFAULT_DARK gây crash trên Android TV / Leanback ROMs.
-                + Bọc toàn bộ các lời gọi dialog.show() trong try-catch chống sập ứng dụng khi Activity chuyển trạng thái.
-              - Cập nhật OTA trực tiếp trong ứng dụng cho phiên bản v1.9.4.
+              - Khắc phục triệt để lỗi sập native (SIGSEGV/SIGABRT trong thư viện .so) khi mở phim dung lượng lớn:
+                + Khôi phục cơ chế tính toán BufferCeiling an toàn theo Java Heap và RAM thiết bị. Loại bỏ việc ép bộ đệm lên 2500MB vốn làm tràn heap của DefaultAllocator (do StreamSync cấp phát byte[] trong heap chứ không dùng off-heap C++ allocator như Nuvio).
+                + Đảm bảo các thư viện giải mã native (libffmpegJNI.so, MediaCodec) luôn có đủ vùng nhớ hoạt động cho các phim 4K/Remux bitrate cao.
+              - Bảo toàn đầy đủ tất cả các tính năng đã hoàn thiện:
+                + Sửa triệt để VerifyError trong các lambda (AccountClickLambda, UpdaterClickLambda, AddonToggle, AddonConfig).
+                + Tự động đồng bộ tài khoản ngầm mượt mà không khóa SQLite (WAL mode).
+                + Hỗ trợ quét mã QR đăng nhập trên TV và D-pad navigation.
+                + Nút bật/tắt và cấu hình riêng cho từng addon.
+                + Xem trailer phim bộ & phim lẻ in-app (TrailerPlayerActivity).
+                + Lấy đầy đủ danh sách tập phim bộ catalog.
+                + Căn giữa 1 hàng tên app 'AioStream v1.9.5' ở chân trang cài đặt.
+                + Cập nhật OTA trực tiếp trong ứng dụng cho phiên bản v1.9.5.
               - Keystore cố định hỗ trợ cài đè trực tiếp lên phiên bản cũ không mất dữ liệu." \
               --latest
           fi
