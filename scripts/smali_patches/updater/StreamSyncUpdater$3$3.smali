@@ -56,7 +56,7 @@
 
 # virtual methods
 .method public run()V
-    .registers 5
+    .registers 4
 
     .line 290
     iget-object v0, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$3$3;->this$0:Lcom/streamsync/app/updater/StreamSyncUpdater$3;
@@ -70,23 +70,23 @@
 
     iget-object v0, v0, Lcom/streamsync/app/updater/StreamSyncUpdater$3;->val$activity:Landroid/app/Activity;
 
-    iget-object v1, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$3$3;->val$e:Ljava/lang/Throwable;
+    new-instance v1, Ljava/lang/StringBuilder;
 
-    invoke-virtual {v1}, Ljava/lang/Throwable;->getMessage()Ljava/lang/String;
+    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
+
+    const-string v2, "L\u1ed7i t\u1ea3i b\u1ea3n c\u1eadp nh\u1eadt: "
+
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v1
 
-    new-instance v2, Ljava/lang/StringBuilder;
+    iget-object v2, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$3$3;->val$e:Ljava/lang/Throwable;
 
-    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
-
-    const-string v3, "L\u1ed7i t\u1ea3i b\u1ea3n c\u1eadp nh\u1eadt: "
-
-    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v2}, Ljava/lang/Throwable;->getMessage()Ljava/lang/String;
 
     move-result-object v2
 
-    invoke-virtual {v2, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v1
 

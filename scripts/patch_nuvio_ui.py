@@ -491,9 +491,9 @@ def patch_settings_integrations_and_account_and_updater(unpack_dir, script_dir):
                 s2_content
             )
 
-        # Replace bottom disclaimer note with centered AioStream v1.9.1
+        # Replace bottom disclaimer note with centered AioStream v1.9.2 (strictly 1 line, centered)
         pattern_disclaimer = re.compile(
-            r'(const-string\s+v52,\s*"StreamSync[^\n]+")([\s\S]*?)(const/16\s+v64,\s*0x0)([\s\S]*?Text--4IGK_g)'
+            r'(const-string\s+v52,\s*"StreamSync[^\n]+")([\s\S]*?)(const/16\s+v64,\s*0x0)([\s\S]*?)(const\s+v76,\s*0x[0-9a-fA-F]+)([\s\S]*?Text--4IGK_g)'
         )
         if pattern_disclaimer.search(s2_content):
             def repl_disclaimer(m):
@@ -505,15 +505,16 @@ def patch_settings_integrations_and_account_and_updater(unpack_dir, script_dir):
                     "    const/high16 v8, 0x3f800000    # 1.0f\n"
                     "    invoke-static {v0, v8, v1, v6}, Landroidx/compose/foundation/layout/SizeKt;->fillMaxWidth$default(Landroidx/compose/ui/Modifier;FILjava/lang/Object;)Landroidx/compose/ui/Modifier;\n"
                     "    move-result-object v53\n"
-                    "    const-string v52, \"AioStream\\nv1.9.1\"" + m.group(2) +
+                    "    const-string v52, \"AioStream v1.9.2\"" + m.group(2) +
                     "sget-object v0, Landroidx/compose/ui/text/style/TextAlign;->Companion:Landroidx/compose/ui/text/style/TextAlign$Companion;\n"
                     "    invoke-virtual {v0}, Landroidx/compose/ui/text/style/TextAlign$Companion;->getCenter-e0LSkKk()I\n"
                     "    move-result v0\n"
                     "    invoke-static {v0}, Landroidx/compose/ui/text/style/TextAlign;->box-impl(I)Landroidx/compose/ui/text/style/TextAlign;\n"
-                    "    move-result-object v64" + m.group(4)
+                    "    move-result-object v64" + m.group(4) +
+                    "const v76, 0xfef8" + m.group(6) + "Text--4IGK_g"
                 )
             s2_content = pattern_disclaimer.sub(repl_disclaimer, s2_content, count=1)
-            log("Replaced settings disclaimer note with centered AioStream v1.9.1.")
+            log("Replaced settings disclaimer note with centered single-line AioStream v1.9.2.")
 
         with open(s2_path, 'w', encoding='utf-8') as f:
             f.write(s2_content)
@@ -555,7 +556,7 @@ def patch_settings_integrations_and_account_and_updater(unpack_dir, script_dir):
     invoke-static {v0}, Landroidx/compose/material/icons/filled/SystemUpdateKt;->getSystemUpdate(Landroidx/compose/material/icons/Icons$Filled;)Landroidx/compose/ui/graphics/vector/ImageVector;
     move-result-object v1
     const-string v2, "C\\u1eadp nh\\u1eadt \\u1ee9ng d\\u1ee5ng"
-    const-string v3, "B\\u1ea3n v1.9.1 \\u2022 Ki\\u1ec3m tra & c\\u1eadp nh\\u1eadt tr\\u1ef1c ti\\u1ebfp (OTA)"
+    const-string v3, "B\\u1ea3n v1.9.2 \\u2022 Ki\\u1ec3m tra & c\\u1eadp nh\\u1eadt tr\\u1ef1c ti\\u1ebfp (OTA)"
     new-instance v4, Lcom/streamsync/app/updater/UpdaterClickLambda;
     invoke-direct {v4}, Lcom/streamsync/app/updater/UpdaterClickLambda;-><init>()V
     const/16 v6, 0x1b0
@@ -569,37 +570,29 @@ def patch_settings_integrations_and_account_and_updater(unpack_dir, script_dir):
         with open(s4_path, 'w', encoding='utf-8') as f:
             f.write(s4_content)
 
-    # 4. Copy precompiled Updater and Auth smali classes
+    # 4. Copy all precompiled smali classes (updater, auth, addon, detail, settings)
     main_activity_targets = find_files(unpack_dir, r"^MainActivity\.smali$")
     if main_activity_targets:
         app_dir = os.path.dirname(main_activity_targets[0])
     else:
         app_dir = os.path.join(unpack_dir, "smali_classes21", "com", "streamsync", "app")
 
-    updater_dir = os.path.join(app_dir, "updater")
-    auth_dir = os.path.join(app_dir, "auth")
-    os.makedirs(updater_dir, exist_ok=True)
-    os.makedirs(auth_dir, exist_ok=True)
+    packages_to_copy = {
+        "updater": os.path.join(app_dir, "updater"),
+        "auth": os.path.join(app_dir, "auth"),
+        "addon": os.path.join(app_dir, "data", "addon"),
+        "detail": os.path.join(app_dir, "ui", "detail"),
+        "settings": os.path.join(app_dir, "settings"),
+    }
 
-    # Clean old classes
-    for existing in os.listdir(updater_dir):
-        if existing.endswith(".smali"):
-            os.remove(os.path.join(updater_dir, existing))
-    for existing in os.listdir(auth_dir):
-        if existing.endswith(".smali"):
-            os.remove(os.path.join(auth_dir, existing))
-
-    src_updater = os.path.join(smali_patches_dir, "updater")
-    for f in os.listdir(src_updater):
-        if f.endswith(".smali"):
-            shutil.copy2(os.path.join(src_updater, f), os.path.join(updater_dir, f))
-    log("Copied precompiled Updater smali classes.")
-
-    src_auth = os.path.join(smali_patches_dir, "auth")
-    for f in os.listdir(src_auth):
-        if f.endswith(".smali"):
-            shutil.copy2(os.path.join(src_auth, f), os.path.join(auth_dir, f))
-    log("Copied precompiled Auth smali classes.")
+    for sub_name, dst_dir in packages_to_copy.items():
+        src_dir = os.path.join(smali_patches_dir, sub_name)
+        if os.path.isdir(src_dir):
+            os.makedirs(dst_dir, exist_ok=True)
+            for f in os.listdir(src_dir):
+                if f.endswith(".smali"):
+                    shutil.copy2(os.path.join(src_dir, f), os.path.join(dst_dir, f))
+            log(f"Copied precompiled smali patches from {sub_name} to {dst_dir}.")
 
     return True
 
@@ -678,6 +671,304 @@ def patch_meta_screen(unpack_dir, script_dir):
             with open(sr_targets[0], 'w', encoding='utf-8') as f:
                 f.write(sr_content_patched)
             log(f"Patched {count} stream Text elements to support up to 5 lines.")
+
+    # 3. Patch AddonRepository.smali (withVideosIfSeries) to enrich catalog series episodes from Cinemeta
+    addon_repo_targets = find_file_exact(unpack_dir, "AddonRepository.smali")
+    if addon_repo_targets:
+        with open(addon_repo_targets[0], 'r', encoding='utf-8', errors='ignore') as f:
+            ar_content = f.read()
+
+        p_with_videos = re.compile(
+            r'(if-nez\s+p4,\s*:cond_\w+[\s\S]*?return-object\s+p1[\s\S]*?invoke-static\s*\{p1,\s*p2\},\s*Lcom/streamsync/app/data/repository/AddonRepositoryKt;->mergeSeriesEpisodesFrom[^\n]+[\s\S]*?move-result-object\s+p4[\s\S]*?return-object\s+p4)',
+            re.MULTILINE
+        )
+        if p_with_videos.search(ar_content):
+            def repl_with_videos(m):
+                block = m.group(1)
+                # Hook null return when catalog addon returned null
+                block = re.sub(
+                    r'(if-nez\s+p4,\s*:cond_\w+[\s\S]*?)(return-object\s+p1)',
+                    r'\g<1>invoke-static {p1, p4}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->enrichSeriesIfEmpty(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;\n    move-result-object p1\n    check-cast p1, Lcom/streamsync/app/data/addon/AddonMeta;\n    return-object p1',
+                    block,
+                    count=1
+                )
+                # Hook after mergeSeriesEpisodesFrom in case fullMeta was also missing videos
+                block = re.sub(
+                    r'(invoke-static\s*\{p1,\s*p2\},\s*Lcom/streamsync/app/data/repository/AddonRepositoryKt;->mergeSeriesEpisodesFrom[^\n]+[\s\S]*?move-result-object\s+p4[\s\S]*?)(return-object\s+p4)',
+                    r'\g<1>invoke-static {p4, p1}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->enrichSeriesIfEmpty(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;\n    move-result-object p4\n    check-cast p4, Lcom/streamsync/app/data/addon/AddonMeta;\n    return-object p4',
+                    block,
+                    count=1
+                )
+                return block
+            ar_content = p_with_videos.sub(repl_with_videos, ar_content, count=1)
+            with open(addon_repo_targets[0], 'w', encoding='utf-8') as f:
+                f.write(ar_content)
+            log("Patched AddonRepository.withVideosIfSeries to enrich series episodes via SeriesEpisodeHelper.")
+
+    # 4. Patch MovieDetailScreen to resolve series trailer if missing
+    mds_targets = find_files(unpack_dir, r"^MovieDetailScreenKt\$MovieDetailScreen\$3\$4\$1\$2\.smali$")
+    if mds_targets:
+        with open(mds_targets[0], 'r', encoding='utf-8', errors='ignore') as f:
+            mds_content = f.read()
+
+        p_trailer_resolve = re.compile(
+            r'(invoke-virtual\s*\{[^\}]+\},\s*Lcom/streamsync/app/data/model/MediaItem;->getTrailerId\(\)Ljava/lang/String;[\s\S]*?move-object\s+v9,\s*v1)',
+            re.MULTILINE
+        )
+        if p_trailer_resolve.search(mds_content) and "SeriesEpisodeHelper" not in mds_content:
+            resolve_trailer_hook = """
+    if-nez v9, :cond_trailer_set
+    invoke-virtual {v5}, Lcom/streamsync/app/data/model/MediaItem;->getId()Ljava/lang/String;
+    move-result-object v1
+    const-string v2, "series"
+    invoke-static {v9, v1, v2}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->resolveTrailerId(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v9
+    :cond_trailer_set"""
+            mds_content = p_trailer_resolve.sub(lambda m: m.group(1) + resolve_trailer_hook, mds_content, count=1)
+            with open(mds_targets[0], 'w', encoding='utf-8') as f:
+                f.write(mds_content)
+            log("Patched MovieDetailScreen to resolve series trailer via SeriesEpisodeHelper.")
+
+    # 5. Patch DetailSectionsKt$DetailActionRow$1$1$1.smali to launch TrailerPlayerActivity in-app
+    action_row_targets = find_files(unpack_dir, r"^DetailSectionsKt\$DetailActionRow\$1\$1\$1\.smali$")
+    if action_row_targets:
+        with open(action_row_targets[0], 'r', encoding='utf-8', errors='ignore') as f:
+            ar1_content = f.read()
+
+        p_intent = re.compile(
+            r'(\.method public final invoke\(\)V[\s\S]*?\.locals 4[\s\S]*?)(new-instance v0, Landroid/content/Intent;[\s\S]*?invoke-virtual\s*\{v2,\s*v0\},\s*Landroid/content/Context;->startActivity\(Landroid/content/Intent;\)V)',
+            re.MULTILINE
+        )
+        if p_intent.search(ar1_content):
+            inapp_trailer_smali = """    iget-object v2, p0, Lcom/streamsync/app/ui/detail/DetailSectionsKt$DetailActionRow$1$1$1;->$context:Landroid/content/Context;
+
+    new-instance v0, Landroid/content/Intent;
+    const-class v1, Lcom/streamsync/app/ui/detail/TrailerPlayerActivity;
+    invoke-direct {v0, v2, v1}, Landroid/content/Intent;-><init>(Landroid/content/Context;Ljava/lang/Class;)V
+
+    const-string v3, "trailer_key"
+    iget-object v1, p0, Lcom/streamsync/app/ui/detail/DetailSectionsKt$DetailActionRow$1$1$1;->$trailerKey:Ljava/lang/String;
+    invoke-virtual {v0, v3, v1}, Landroid/content/Intent;->putExtra(Ljava/lang/String;Ljava/lang/String;)Landroid/content/Intent;
+
+    const/high16 v1, 0x10000000
+    invoke-virtual {v0, v1}, Landroid/content/Intent;->addFlags(I)Landroid/content/Intent;
+
+    :try_start_0
+    invoke-virtual {v2, v0}, Landroid/content/Context;->startActivity(Landroid/content/Intent;)V"""
+            ar1_content = p_intent.sub(lambda m: m.group(1) + inapp_trailer_smali, ar1_content, count=1)
+            with open(action_row_targets[0], 'w', encoding='utf-8') as f:
+                f.write(ar1_content)
+            log("Patched DetailActionRow to launch TrailerPlayerActivity in-app.")
+
+    return True
+
+def patch_addons_screen(unpack_dir):
+    """
+    1. Patches AddonRepository.toManifest to check AddonToggleHelper.isAddonEnabled(context, id).
+       If false, catalogs and resources are cleared.
+    2. Patches AddonsScreenKt items default 4 to insert Config and Toggle IconButtons.
+    """
+    log("Patching Addons screen (per-addon toggle & config)...")
+
+    # 1. Patch AddonRepository.toManifest
+    addon_repo_targets = find_file_exact(unpack_dir, "AddonRepository.smali")
+    if addon_repo_targets:
+        with open(addon_repo_targets[0], 'r', encoding='utf-8', errors='ignore') as f:
+            repo_content = f.read()
+
+        p_manifest_init = re.compile(
+            r'(\.method private final toManifest\(Lcom/streamsync/app/data/addon/InstalledAddonEntity;\)Lcom/streamsync/app/data/addon/AddonManifest;[\s\S]*?)(invoke-direct/range\s*\{v1 \.\. v12\},\s*Lcom/streamsync/app/data/addon/AddonManifest;-><init>)',
+            re.MULTILINE
+        )
+        if p_manifest_init.search(repo_content) and "AddonToggleHelper" not in repo_content:
+            toggle_hook = """    # [NUVIO PATCH] Disable catalogs and resources if addon is disabled
+    sget-object v0, Lcom/streamsync/app/MainActivity;->sInstance:Lcom/streamsync/app/MainActivity;
+    if-eqz v0, :cond_addon_enabled
+    invoke-virtual/range {p1 .. p1}, Lcom/streamsync/app/data/addon/InstalledAddonEntity;->getId()Ljava/lang/String;
+    move-result-object v13
+    invoke-static {v0, v13}, Lcom/streamsync/app/data/addon/AddonToggleHelper;->isAddonEnabled(Landroid/content/Context;Ljava/lang/String;)Z
+    move-result v0
+    if-nez v0, :cond_addon_enabled
+    invoke-static {}, Ljava/util/Collections;->emptyList()Ljava/util/List;
+    move-result-object v6
+    invoke-static {}, Ljava/util/Collections;->emptyList()Ljava/util/List;
+    move-result-object v7
+    :cond_addon_enabled
+    """
+            repo_content = p_manifest_init.sub(lambda m: m.group(1) + toggle_hook + m.group(2), repo_content, count=1)
+            with open(addon_repo_targets[0], 'w', encoding='utf-8') as f:
+                f.write(repo_content)
+            log("Patched AddonRepository.toManifest to respect AddonToggleHelper enabled state.")
+
+    # 2. Patch AddonsScreen items to insert Config and Toggle IconButtons
+    items_targets = find_files(unpack_dir, r"^AddonsScreenKt\$AddonsScreen\$1\$1\$2\$1\$invoke\$\$inlined\$items\$default\$4\.smali$")
+    if items_targets:
+        with open(items_targets[0], 'r', encoding='utf-8', errors='ignore') as f:
+            items_content = f.read()
+
+        p_delete_btn = re.compile(
+            r'(sget-object v1, Lcom/streamsync/app/ui/addons/ComposableSingletons\$AddonsScreenKt;->INSTANCE:[\s\S]*?getLambda-4\$app_mobileDebug\(\)Lkotlin/jvm/functions/Function2;)',
+            re.MULTILINE
+        )
+        if p_delete_btn.search(items_content) and "AddonToggleClickLambda" not in items_content:
+            addon_buttons_smali = """
+    # [NUVIO PATCH] Config IconButton
+    new-instance v2, Lcom/streamsync/app/data/addon/AddonConfigClickLambda;
+    invoke-direct {v2, v5}, Lcom/streamsync/app/data/addon/AddonConfigClickLambda;-><init>(Lcom/streamsync/app/data/addon/AddonManifest;)V
+    move-object/from16 v76, v2
+    new-instance v2, Lcom/streamsync/app/data/addon/AddonConfigIconLambda;
+    invoke-direct {v2}, Lcom/streamsync/app/data/addon/AddonConfigIconLambda;-><init>()V
+    const v4, 0x51484a5e
+    const/4 v11, 0x1
+    invoke-static {v3, v4, v11, v2}, Landroidx/compose/runtime/internal/ComposableLambdaKt;->composableLambda(Landroidx/compose/runtime/Composer;IZLjava/lang/Object;)Landroidx/compose/runtime/internal/ComposableLambda;
+    move-result-object v81
+    check-cast v81, Lkotlin/jvm/functions/Function2;
+    const/high16 v83, 0x30000
+    const/16 v84, 0x1e
+    const/16 v77, 0x0
+    const/16 v78, 0x0
+    const/16 v79, 0x0
+    const/16 v80, 0x0
+    move-object/from16 v82, v3
+    invoke-static/range {v76 .. v84}, Landroidx/compose/material3/IconButtonKt;->IconButton(Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;ZLandroidx/compose/material3/IconButtonColors;Landroidx/compose/foundation/interaction/MutableInteractionSource;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
+
+    # [NUVIO PATCH] Toggle IconButton
+    new-instance v2, Lcom/streamsync/app/data/addon/AddonToggleClickLambda;
+    invoke-direct {v2, v5}, Lcom/streamsync/app/data/addon/AddonToggleClickLambda;-><init>(Lcom/streamsync/app/data/addon/AddonManifest;)V
+    move-object/from16 v76, v2
+    new-instance v2, Lcom/streamsync/app/data/addon/AddonToggleIconLambda;
+    invoke-direct {v2, v5}, Lcom/streamsync/app/data/addon/AddonToggleIconLambda;-><init>(Lcom/streamsync/app/data/addon/AddonManifest;)V
+    const v4, 0x51484a5f
+    const/4 v11, 0x1
+    invoke-static {v3, v4, v11, v2}, Landroidx/compose/runtime/internal/ComposableLambdaKt;->composableLambda(Landroidx/compose/runtime/Composer;IZLjava/lang/Object;)Landroidx/compose/runtime/internal/ComposableLambda;
+    move-result-object v81
+    check-cast v81, Lkotlin/jvm/functions/Function2;
+    invoke-static/range {v76 .. v84}, Landroidx/compose/material3/IconButtonKt;->IconButton(Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;ZLandroidx/compose/material3/IconButtonColors;Landroidx/compose/foundation/interaction/MutableInteractionSource;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
+    """
+            items_content = p_delete_btn.sub(lambda m: addon_buttons_smali + "\n    " + m.group(1), items_content, count=1)
+            with open(items_targets[0], 'w', encoding='utf-8') as f:
+                f.write(items_content)
+            log("Patched AddonsScreen to add Config and Toggle IconButtons.")
+
+    return True
+
+def patch_exo_native_buffers(unpack_dir):
+    """
+    1. Patches BufferCeiling.smali (forDevice and compute) to uncap buffers and return
+       NuvioNativeBufferHelper.getWarningNativeMemoryLimitMb(context) scaled up to 2500MB based on RAM.
+    2. Patches RamTier.smali RAM_1 through RAM_8 safetyLimitMb and warningMb constants
+       to match Nuvio native RAM tiers.
+    """
+    log("Patching ExoPlayer native buffer limits (uncapping 256MB limit)...")
+
+    # 1. Patch BufferCeiling.smali
+    bc_targets = find_file_exact(unpack_dir, "BufferCeiling.smali")
+    if bc_targets:
+        with open(bc_targets[0], 'r', encoding='utf-8', errors='ignore') as f:
+            bc_content = f.read()
+
+        new_compute = """.method public final compute(Lcom/streamsync/app/settings/RamTier;IIZI)I
+    .locals 7
+    .param p1, "tier"    # Lcom/streamsync/app/settings/RamTier;
+    .param p2, "heapLimitMb"    # I
+    .param p3, "availableMb"    # I
+    .param p4, "lowMemory"    # Z
+    .param p5, "imageCacheMb"    # I
+
+    sget-object v0, Lcom/streamsync/app/MainActivity;->sInstance:Lcom/streamsync/app/MainActivity;
+    if-eqz v0, :cond_0
+
+    invoke-static {v0}, Lcom/streamsync/app/settings/NuvioNativeBufferHelper;->getWarningNativeMemoryLimitMb(Landroid/content/Context;)I
+    move-result v0
+    return v0
+
+    :cond_0
+    invoke-virtual {p1}, Lcom/streamsync/app/settings/RamTier;->getWarningMb()I
+    move-result v0
+    return v0
+.end method"""
+
+        new_for_device = """.method public final forDevice(Landroid/content/Context;Lcom/streamsync/app/settings/RamTier;)I
+    .locals 1
+    .param p1, "context"    # Landroid/content/Context;
+    .param p2, "tier"    # Lcom/streamsync/app/settings/RamTier;
+
+    if-eqz p1, :cond_0
+
+    invoke-static {p1}, Lcom/streamsync/app/settings/NuvioNativeBufferHelper;->getWarningNativeMemoryLimitMb(Landroid/content/Context;)I
+    move-result v0
+    return v0
+
+    :cond_0
+    invoke-virtual {p2}, Lcom/streamsync/app/settings/RamTier;->getWarningMb()I
+    move-result v0
+    return v0
+.end method"""
+
+        p_compute = re.compile(r'\.method public final compute\(Lcom/streamsync/app/settings/RamTier;IIZI\)I[\s\S]*?\.end method')
+        p_for_device = re.compile(r'\.method public final forDevice\(Landroid/content/Context;Lcom/streamsync/app/settings/RamTier;\)I[\s\S]*?\.end method')
+
+        if p_compute.search(bc_content):
+            bc_content = p_compute.sub(new_compute, bc_content)
+        if p_for_device.search(bc_content):
+            bc_content = p_for_device.sub(new_for_device, bc_content)
+
+        with open(bc_targets[0], 'w', encoding='utf-8') as f:
+            f.write(bc_content)
+        log("Patched BufferCeiling.compute and BufferCeiling.forDevice with Nuvio native limits.")
+
+    # 2. Patch RamTier.smali
+    rt_targets = find_file_exact(unpack_dir, "RamTier.smali")
+    if rt_targets:
+        with open(rt_targets[0], 'r', encoding='utf-8', errors='ignore') as f:
+            rt_content = f.read()
+
+        # Update RAM_1: safetyLimit 150 (0x96), warning 180 (0xb4)
+        rt_content = re.sub(
+            r'(const-string\s+v1,\s*"RAM_1"[\s\S]*?const/16\s+v9,\s*)0x60(\s*\n\s*const/16\s+v10,\s*)0x78',
+            r'\g<1>0x96\g<2>0xb4',
+            rt_content
+        )
+        # Update RAM_15: safetyLimit 200 (0xc8), warning 250 (0xfa)
+        rt_content = re.sub(
+            r'(const-string\s+v13,\s*"RAM_15"[\s\S]*?const/16\s+v21,\s*)0x70(\s*\n\s*const/16\s+v22,\s*)0x8c',
+            r'\g<1>0xc8\g<2>0xfa',
+            rt_content
+        )
+        # Update RAM_2: safetyLimit 250 (0xfa), warning 325 (0x145)
+        rt_content = re.sub(
+            r'(const-string\s+v2,\s*"RAM_2"[\s\S]*?const/16\s+v10,\s*)0x80(\s*\n\s*const/16\s+v11,\s*)0xa0',
+            r'\g<1>0xfa\g<2>0x145',
+            rt_content
+        )
+        # Update RAM_3: safetyLimit 500 (0x1f4), warning 650 (0x28a)
+        rt_content = re.sub(
+            r'(const-string\s+v13,\s*"RAM_3"[\s\S]*?const/16\s+v21,\s*)0xa0(\s*\n\s*const/16\s+v22,\s*)0xc8',
+            r'\g<1>0x1f4\g<2>0x28a',
+            rt_content
+        )
+        # Update RAM_4: safetyLimit 1000 (0x3e8), warning 1200 (0x4b0)
+        rt_content = re.sub(
+            r'(const-string\s+v2,\s*"RAM_4"[\s\S]*?const/16\s+v10,\s*)0xc8(\s*\n\s*const/16\s+v11,\s*)0xfa',
+            r'\g<1>0x3e8\g<2>0x4b0',
+            rt_content
+        )
+        # Update RAM_6: safetyLimit 1600 (0x640), warning 2000 (0x7d0)
+        rt_content = re.sub(
+            r'(const-string\s+v13,\s*"RAM_6"[\s\S]*?const/16\s+v21,\s*)0x100(\s*\n\s*const/16\s+v22,\s*)0x140',
+            r'\g<1>0x640\g<2>0x7d0',
+            rt_content
+        )
+        # Update RAM_8: safetyLimit 2000 (0x7d0), warning 2500 (0x9c4)
+        rt_content = re.sub(
+            r'(const-string\s+v2,\s*"RAM_8"[\s\S]*?const/16\s+v10,\s*)0x140(\s*\n\s*const/16\s+v11,\s*)0x190',
+            r'\g<1>0x7d0\g<2>0x9c4',
+            rt_content
+        )
+
+        with open(rt_targets[0], 'w', encoding='utf-8') as f:
+            f.write(rt_content)
+        log("Patched RamTier constants to Nuvio native RAM limits (up to 2500MB).")
 
     return True
 
@@ -814,11 +1105,23 @@ def patch_manifest_and_resources(unpack_dir):
         log("Added FileProvider to AndroidManifest.")
         changed = True
 
-    # 4. Bump versionCode to 191 and versionName to 1.9.1 for overwrite/update support
+    # 3c. Register TrailerPlayerActivity for in-app YouTube trailer playback
+    if "com.streamsync.app.ui.detail.TrailerPlayerActivity" not in manifest:
+        activity_xml = """        <activity
+            android:name="com.streamsync.app.ui.detail.TrailerPlayerActivity"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:exported="false" />
+    </application>"""
+        manifest = manifest.replace("</application>", activity_xml, 1)
+        log("Registered TrailerPlayerActivity in AndroidManifest.")
+        changed = True
+
+    # 4. Bump versionCode to 192 and versionName to 1.9.2 for overwrite/update support
     if 'android:versionCode=' in manifest:
-        manifest = re.sub(r'android:versionCode="[^"]*"', 'android:versionCode="191"', manifest)
-        manifest = re.sub(r'android:versionName="[^"]*"', 'android:versionName="1.9.1"', manifest)
-        log("Updated AndroidManifest versionCode to 191 and versionName to 1.9.1.")
+        manifest = re.sub(r'android:versionCode="[^"]*"', 'android:versionCode="192"', manifest)
+        manifest = re.sub(r'android:versionName="[^"]*"', 'android:versionName="1.9.2"', manifest)
+        log("Updated AndroidManifest versionCode to 192 and versionName to 1.9.2.")
         changed = True
 
     # 4b. Create res/xml/file_paths.xml for FileProvider
@@ -858,8 +1161,8 @@ def patch_manifest_and_resources(unpack_dir):
         with open(apktool_yml_path, 'r', encoding='utf-8') as yf:
             yml_content = yf.read()
         
-        yml_content = re.sub(r"versionCode:\s*'[0-9]+'", "versionCode: '191'", yml_content)
-        yml_content = re.sub(r"versionName:\s*'[^']*'", "versionName: '1.9.1'", yml_content)
+        yml_content = re.sub(r"versionCode:\s*'[0-9]+'", "versionCode: '192'", yml_content)
+        yml_content = re.sub(r"versionName:\s*'[^']*'", "versionName: '1.9.2'", yml_content)
 
         if "doNotCompress:" in yml_content and "- so" not in yml_content:
             yml_content = yml_content.replace(
@@ -868,7 +1171,7 @@ def patch_manifest_and_resources(unpack_dir):
             )
         with open(apktool_yml_path, 'w', encoding='utf-8') as yf:
             yf.write(yml_content)
-        log("Updated apktool.yml with version 191 (1.9.1) and uncompressed shared libraries.")
+        log("Updated apktool.yml with version 192 (1.9.2) and uncompressed shared libraries.")
 
     # 8. Generate tv_banner.png and copy tv_banner.xml into res/drawable
     drawable_dir = os.path.join(unpack_dir, "res", "drawable")
@@ -930,6 +1233,8 @@ def main():
     patch_default_decoder(unpack_dir)
     patch_settings_integrations_and_account_and_updater(unpack_dir, script_dir)
     patch_meta_screen(unpack_dir, script_dir)
+    patch_addons_screen(unpack_dir)
+    patch_exo_native_buffers(unpack_dir)
     patch_disable_logging(unpack_dir)
     patch_manifest_and_resources(unpack_dir)
     inject_native_libraries(unpack_dir, repo_root)

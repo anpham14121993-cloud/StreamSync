@@ -125,22 +125,21 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG="v1.9.1"
+          TAG="v1.9.2"
           echo "=== Publishing Release $TAG ==="
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" output-apks/StreamSync-arm64-v8a.apk output-apks/StreamSync-armeabi-v7a.apk output-apks/StreamSync-universal.apk --clobber
           else
             gh release create "$TAG" output-apks/StreamSync-arm64-v8a.apk output-apks/StreamSync-armeabi-v7a.apk output-apks/StreamSync-universal.apk \
-              --title "AioStream v1.9.1 (Meta Fix, Auto Sync, Continue Watching & OTA)" \
-              --notes "Bản phát hành chính thức AioStream v1.9.1:
+              --title "AioStream v1.9.2 (Addon Toggle & Config, In-App Trailer, Catalog Series Episodes, Uncapped Native Memory)" \
+              --notes "Bản phát hành chính thức AioStream v1.9.2:
               - Chuẩn 3 phiên bản duy nhất: arm64-v8a, armeabi-v7a và universal.
-              - Sửa lỗi không load được trang chi tiết (Meta detail).
-              - Sửa lỗi mục Tiếp tục xem (Continue Watching) không hiện sau khi đồng bộ tài khoản.
-              - Tự động đồng bộ hoàn toàn khi đăng nhập tài khoản Supabase (bỏ nút thủ công, bỏ tự khôi phục 4 addon mặc định, bỏ thông báo số tiện ích/mục xem).
-              - Tự động làm mới màn hình Home ngay khi đồng bộ hoàn tất để nhận dữ liệu mới.
-              - Cập nhật ứng dụng OTA trực tiếp trong app chuẩn xác cho phiên bản v1.9.1.
-              - Tắt hoàn toàn việc ghi log ra ứng dụng và thiết bị.
-              - Chân trang Cài đặt hiển thị căn giữa tên ứng dụng AioStream và phiên bản v1.9.1.
+              - Sửa lỗi addon catalog phim bộ (Cyberflix...) không lấy được meta tập (tự động làm giàu danh sách tập và thông tin từ Cinemeta).
+              - Sửa chân trang Cài đặt căn chính giữa đúng chuẩn 1 hàng duy nhất: AioStream v1.9.2.
+              - Hỗ trợ nút Xem trailer cho cả phim lẻ và phim bộ, phát trailer trực tiếp trong ứng dụng (in-app fullscreen WebView) không còn mở web bên ngoài.
+              - Mục Cài đặt - Tiện ích (Addon): Thêm nút bật/tắt (Toggle) riêng cho từng addon và nút mở Cấu hình (Configure) addon giống Nuvio. Khi tắt addon, các catalog và tài nguyên của addon đó sẽ được vô hiệu hóa hoàn toàn.
+              - Mở khóa giới hạn bộ nhớ đệm ExoPlayer native theo kiến trúc Nuvio (thang RAM vật lý lên đến 2000MB/2500MB, không bị khóa ở 256MB).
+              - Cập nhật OTA trực tiếp trong ứng dụng cho phiên bản v1.9.2.
               - Keystore cố định hỗ trợ cài đè trực tiếp lên phiên bản cũ." \
               --latest
           fi

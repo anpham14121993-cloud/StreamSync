@@ -53,7 +53,8 @@
     :try_start_6
     iget-object v3, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$1;->val$context:Landroid/content/Context;
 
-    invoke-static {v3}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$smgetAppVersion(Landroid/content/Context;)Ljava/lang/String;
+    # invokes: Lcom/streamsync/app/updater/StreamSyncUpdater;->getAppVersion(Landroid/content/Context;)Ljava/lang/String;
+    invoke-static {v3}, Lcom/streamsync/app/updater/StreamSyncUpdater;->access$000(Landroid/content/Context;)Ljava/lang/String;
 
     move-result-object v7
 
@@ -113,7 +114,8 @@
 
     move-result-object v3
 
-    invoke-static {v3}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$smreadStream(Ljava/io/InputStream;)Ljava/lang/String;
+    # invokes: Lcom/streamsync/app/updater/StreamSyncUpdater;->readStream(Ljava/io/InputStream;)Ljava/lang/String;
+    invoke-static {v3}, Lcom/streamsync/app/updater/StreamSyncUpdater;->access$100(Ljava/io/InputStream;)Ljava/lang/String;
 
     move-result-object v3
 
@@ -445,14 +447,16 @@
 
     .line 130
     :goto_11f
-    invoke-static {v6, v7}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$smisNewerVersion(Ljava/lang/String;Ljava/lang/String;)Z
+    # invokes: Lcom/streamsync/app/updater/StreamSyncUpdater;->isNewerVersion(Ljava/lang/String;Ljava/lang/String;)Z
+    invoke-static {v6, v7}, Lcom/streamsync/app/updater/StreamSyncUpdater;->access$200(Ljava/lang/String;Ljava/lang/String;)Z
 
     move-result v0
 
     if-eqz v0, :cond_132
 
     .line 131
-    invoke-static {}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$sfgetsMainHandler()Landroid/os/Handler;
+    # getter for: Lcom/streamsync/app/updater/StreamSyncUpdater;->sMainHandler:Landroid/os/Handler;
+    invoke-static {}, Lcom/streamsync/app/updater/StreamSyncUpdater;->access$400()Landroid/os/Handler;
 
     move-result-object v0
 
@@ -466,7 +470,8 @@
 
     .line 138
     :cond_132
-    invoke-static {}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$sfgetsMainHandler()Landroid/os/Handler;
+    # getter for: Lcom/streamsync/app/updater/StreamSyncUpdater;->sMainHandler:Landroid/os/Handler;
+    invoke-static {}, Lcom/streamsync/app/updater/StreamSyncUpdater;->access$400()Landroid/os/Handler;
 
     move-result-object v0
 
@@ -486,7 +491,8 @@
 
     .line 146
     :cond_141
-    invoke-static {}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$sfgetsMainHandler()Landroid/os/Handler;
+    # getter for: Lcom/streamsync/app/updater/StreamSyncUpdater;->sMainHandler:Landroid/os/Handler;
+    invoke-static {}, Lcom/streamsync/app/updater/StreamSyncUpdater;->access$400()Landroid/os/Handler;
 
     move-result-object v0
 
@@ -507,7 +513,8 @@
     move-exception v0
 
     .line 154
-    invoke-static {}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$sfgetsMainHandler()Landroid/os/Handler;
+    # getter for: Lcom/streamsync/app/updater/StreamSyncUpdater;->sMainHandler:Landroid/os/Handler;
+    invoke-static {}, Lcom/streamsync/app/updater/StreamSyncUpdater;->access$400()Landroid/os/Handler;
 
     move-result-object v0
 

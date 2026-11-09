@@ -4,7 +4,7 @@
 
 
 # static fields
-.field private static final DEFAULT_VERSION:Ljava/lang/String; = "v1.9.1"
+.field private static final DEFAULT_VERSION:Ljava/lang/String; = "v1.9.2"
 
 .field private static final GITHUB_REPO_API:Ljava/lang/String; = "https://api.github.com/repos/anpham14121993-cloud/StreamSync/releases/latest"
 
@@ -12,76 +12,6 @@
 
 
 # direct methods
-.method static bridge synthetic -$$Nest$sfgetsMainHandler()Landroid/os/Handler;
-    .registers 1
-
-    sget-object v0, Lcom/streamsync/app/updater/StreamSyncUpdater;->sMainHandler:Landroid/os/Handler;
-
-    return-object v0
-.end method
-
-.method static bridge synthetic -$$Nest$smgetAppVersion(Landroid/content/Context;)Ljava/lang/String;
-    .registers 1
-
-    invoke-static {p0}, Lcom/streamsync/app/updater/StreamSyncUpdater;->getAppVersion(Landroid/content/Context;)Ljava/lang/String;
-
-    move-result-object p0
-
-    return-object p0
-.end method
-
-.method static bridge synthetic -$$Nest$smisNewerVersion(Ljava/lang/String;Ljava/lang/String;)Z
-    .registers 2
-
-    invoke-static {p0, p1}, Lcom/streamsync/app/updater/StreamSyncUpdater;->isNewerVersion(Ljava/lang/String;Ljava/lang/String;)Z
-
-    move-result p0
-
-    return p0
-.end method
-
-.method static bridge synthetic -$$Nest$smlaunchPackageInstaller(Landroid/app/Activity;Ljava/io/File;)V
-    .registers 2
-
-    invoke-static {p0, p1}, Lcom/streamsync/app/updater/StreamSyncUpdater;->launchPackageInstaller(Landroid/app/Activity;Ljava/io/File;)V
-
-    return-void
-.end method
-
-.method static bridge synthetic -$$Nest$smreadStream(Ljava/io/InputStream;)Ljava/lang/String;
-    .registers 1
-
-    invoke-static {p0}, Lcom/streamsync/app/updater/StreamSyncUpdater;->readStream(Ljava/io/InputStream;)Ljava/lang/String;
-
-    move-result-object p0
-
-    return-object p0
-.end method
-
-.method static bridge synthetic -$$Nest$smshowErrorDialog(Landroid/content/Context;)V
-    .registers 1
-
-    invoke-static {p0}, Lcom/streamsync/app/updater/StreamSyncUpdater;->showErrorDialog(Landroid/content/Context;)V
-
-    return-void
-.end method
-
-.method static bridge synthetic -$$Nest$smshowUpdatePrompt(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V
-    .registers 5
-
-    invoke-static {p0, p1, p2, p3, p4}, Lcom/streamsync/app/updater/StreamSyncUpdater;->showUpdatePrompt(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V
-
-    return-void
-.end method
-
-.method static bridge synthetic -$$Nest$smstartInAppDownloadAndInstall(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;)V
-    .registers 3
-
-    invoke-static {p0, p1, p2}, Lcom/streamsync/app/updater/StreamSyncUpdater;->startInAppDownloadAndInstall(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;)V
-
-    return-void
-.end method
-
 .method static constructor <clinit>()V
     .registers 2
 
@@ -104,6 +34,89 @@
 
     .line 28
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    return-void
+.end method
+
+.method static synthetic access$000(Landroid/content/Context;)Ljava/lang/String;
+    .registers 1
+
+    .line 28
+    invoke-static {p0}, Lcom/streamsync/app/updater/StreamSyncUpdater;->getAppVersion(Landroid/content/Context;)Ljava/lang/String;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method static synthetic access$100(Ljava/io/InputStream;)Ljava/lang/String;
+    .registers 1
+    .annotation system Ldalvik/annotation/Throws;
+        value = {
+            Ljava/lang/Exception;
+        }
+    .end annotation
+
+    .line 28
+    invoke-static {p0}, Lcom/streamsync/app/updater/StreamSyncUpdater;->readStream(Ljava/io/InputStream;)Ljava/lang/String;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method static synthetic access$200(Ljava/lang/String;Ljava/lang/String;)Z
+    .registers 2
+
+    .line 28
+    invoke-static {p0, p1}, Lcom/streamsync/app/updater/StreamSyncUpdater;->isNewerVersion(Ljava/lang/String;Ljava/lang/String;)Z
+
+    move-result p0
+
+    return p0
+.end method
+
+.method static synthetic access$300(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V
+    .registers 5
+
+    .line 28
+    invoke-static {p0, p1, p2, p3, p4}, Lcom/streamsync/app/updater/StreamSyncUpdater;->showUpdatePrompt(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V
+
+    return-void
+.end method
+
+.method static synthetic access$400()Landroid/os/Handler;
+    .registers 1
+
+    .line 28
+    sget-object v0, Lcom/streamsync/app/updater/StreamSyncUpdater;->sMainHandler:Landroid/os/Handler;
+
+    return-object v0
+.end method
+
+.method static synthetic access$500(Landroid/content/Context;)V
+    .registers 1
+
+    .line 28
+    invoke-static {p0}, Lcom/streamsync/app/updater/StreamSyncUpdater;->showErrorDialog(Landroid/content/Context;)V
+
+    return-void
+.end method
+
+.method static synthetic access$600(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;)V
+    .registers 3
+
+    .line 28
+    invoke-static {p0, p1, p2}, Lcom/streamsync/app/updater/StreamSyncUpdater;->startInAppDownloadAndInstall(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;)V
+
+    return-void
+.end method
+
+.method static synthetic access$700(Landroid/app/Activity;Ljava/io/File;)V
+    .registers 2
+
+    .line 28
+    invoke-static {p0, p1}, Lcom/streamsync/app/updater/StreamSyncUpdater;->launchPackageInstaller(Landroid/app/Activity;Ljava/io/File;)V
 
     return-void
 .end method
@@ -230,7 +243,7 @@
     nop
 
     .line 42
-    const-string p0, "v1.9.1"
+    const-string p0, "v1.9.2"
 
     return-object p0
 .end method
@@ -449,21 +462,21 @@
     invoke-direct {v1, v2}, Landroid/content/Intent;-><init>(Ljava/lang/String;)V
 
     .line 312
-    invoke-virtual {p0}, Landroid/app/Activity;->getPackageName()Ljava/lang/String;
+    new-instance v2, Ljava/lang/StringBuilder;
+
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+
+    const-string v4, "package:"
+
+    invoke-virtual {v2, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v2
 
-    new-instance v4, Ljava/lang/StringBuilder;
-
-    invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
-
-    const-string v5, "package:"
-
-    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {p0}, Landroid/app/Activity;->getPackageName()Ljava/lang/String;
 
     move-result-object v4
 
-    invoke-virtual {v4, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v2, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v2
 
@@ -532,15 +545,15 @@
     move-result-object v1
 
     .line 322
+    new-instance v2, Ljava/lang/StringBuilder;
+
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+
     invoke-virtual {p0}, Landroid/app/Activity;->getPackageName()Ljava/lang/String;
 
-    move-result-object v2
+    move-result-object v5
 
-    new-instance v5, Ljava/lang/StringBuilder;
-
-    invoke-direct {v5}, Ljava/lang/StringBuilder;-><init>()V
-
-    invoke-virtual {v5, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v2, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v2
 
@@ -601,10 +614,6 @@
     move-exception p1
 
     .line 331
-    invoke-virtual {p1}, Ljava/lang/Throwable;->getMessage()Ljava/lang/String;
-
-    move-result-object p1
-
     new-instance v1, Ljava/lang/StringBuilder;
 
     invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
@@ -614,6 +623,10 @@
     invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v1
+
+    invoke-virtual {p1}, Ljava/lang/Throwable;->getMessage()Ljava/lang/String;
+
+    move-result-object p1
 
     invoke-virtual {v1, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
@@ -840,21 +853,21 @@
     if-nez v0, :cond_25
 
     .line 185
-    if-eqz p4, :cond_9
+    new-instance p2, Ljava/lang/StringBuilder;
 
-    const-string p2, "B\u1ea1n \u0111ang d\u00f9ng b\u1ea3n: "
+    invoke-direct {p2}, Ljava/lang/StringBuilder;-><init>()V
 
-    goto :goto_b
+    if-eqz p4, :cond_e
 
-    :cond_9
-    const-string p2, "\u0110\u00e3 c\u00f3 b\u1ea3n m\u1edbi: "
+    const-string p3, "B\u1ea1n \u0111ang d\u00f9ng b\u1ea3n: "
 
-    :goto_b
-    new-instance p3, Ljava/lang/StringBuilder;
+    goto :goto_10
 
-    invoke-direct {p3}, Ljava/lang/StringBuilder;-><init>()V
+    :cond_e
+    const-string p3, "\u0110\u00e3 c\u00f3 b\u1ea3n m\u1edbi: "
 
-    invoke-virtual {p3, p2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    :goto_10
+    invoke-virtual {p2, p3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object p2
 
