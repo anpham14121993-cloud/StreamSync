@@ -20,21 +20,51 @@
 # instance fields
 .field final synthetic this$0:Lcom/streamsync/app/updater/StreamSyncUpdater$1;
 
+.field final synthetic val$currentVersion:Ljava/lang/String;
+
+.field final synthetic val$finalDownloadUrl:Ljava/lang/String;
+
+.field final synthetic val$finalFileName:Ljava/lang/String;
+
+.field final synthetic val$tag:Ljava/lang/String;
+
 
 # direct methods
-.method constructor <init>(Lcom/streamsync/app/updater/StreamSyncUpdater$1;)V
-    .registers 2
+.method constructor <init>(Lcom/streamsync/app/updater/StreamSyncUpdater$1;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+    .registers 6
     .annotation system Ldalvik/annotation/MethodParameters;
         accessFlags = {
-            0x8010
+            0x8010,
+            0x1010,
+            0x1010,
+            0x1010,
+            0x1010
         }
         names = {
+            null,
+            null,
+            null,
+            null,
             null
         }
     .end annotation
 
-    .line 127
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "()V"
+        }
+    .end annotation
+
+    .line 138
     iput-object p1, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$1$2;->this$0:Lcom/streamsync/app/updater/StreamSyncUpdater$1;
+
+    iput-object p2, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$1$2;->val$tag:Ljava/lang/String;
+
+    iput-object p3, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$1$2;->val$currentVersion:Ljava/lang/String;
+
+    iput-object p4, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$1$2;->val$finalDownloadUrl:Ljava/lang/String;
+
+    iput-object p5, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$1$2;->val$finalFileName:Ljava/lang/String;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
@@ -44,17 +74,37 @@
 
 # virtual methods
 .method public run()V
-    .registers 3
+    .registers 6
 
-    .line 130
+    .line 141
     iget-object v0, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$1$2;->this$0:Lcom/streamsync/app/updater/StreamSyncUpdater$1;
 
     iget-object v0, v0, Lcom/streamsync/app/updater/StreamSyncUpdater$1;->val$context:Landroid/content/Context;
 
-    const-string v1, "v1.9.0"
+    iget-object v1, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$1$2;->val$tag:Ljava/lang/String;
 
-    invoke-static {v0, v1}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$smshowLatestDialog(Landroid/content/Context;Ljava/lang/String;)V
+    invoke-virtual {v1}, Ljava/lang/String;->isEmpty()Z
 
-    .line 131
+    move-result v1
+
+    if-eqz v1, :cond_f
+
+    iget-object v1, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$1$2;->val$currentVersion:Ljava/lang/String;
+
+    goto :goto_11
+
+    :cond_f
+    iget-object v1, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$1$2;->val$tag:Ljava/lang/String;
+
+    :goto_11
+    iget-object v2, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$1$2;->val$finalDownloadUrl:Ljava/lang/String;
+
+    iget-object v3, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$1$2;->val$finalFileName:Ljava/lang/String;
+
+    const/4 v4, 0x1
+
+    invoke-static {v0, v1, v2, v3, v4}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$smshowUpdatePrompt(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V
+
+    .line 142
     return-void
 .end method

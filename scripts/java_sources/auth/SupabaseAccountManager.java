@@ -70,16 +70,11 @@ public class SupabaseAccountManager {
 
         TextView tvInfo = new TextView(context);
         String info = "\nTrạng thái: Đã đăng nhập\n" +
-                "Email: " + email + "\n" +
-                "Tự động đồng bộ: Đang bật\n" +
-                "Dữ liệu: " + syncedAddons + " tiện ích • " + syncedProgress + " mục xem\n";
+                "Email: " + email + "\n";
         tvInfo.setText(info);
         tvInfo.setTextSize(14);
         tvInfo.setTextColor(Color.WHITE);
         layout.addView(tvInfo);
-
-        Button btnSync = createStyledButton(context, "ĐỒNG BỘ LẠI NGAY", "#00897B");
-        layout.addView(btnSync);
 
         Button btnLogout = createStyledButton(context, "Đăng xuất", "#D32F2F");
         layout.addView(btnLogout);
@@ -90,25 +85,6 @@ public class SupabaseAccountManager {
         builder.setView(scrollView);
         builder.setNegativeButton("Đóng", null);
         final AlertDialog dialog = builder.create();
-
-        btnSync.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(context, "Đang đồng bộ...", Toast.LENGTH_SHORT).show();
-                SupabaseSyncService.syncLive(context, new SupabaseSyncService.SyncCallback() {
-                    @Override
-                    public void onSuccess(int addonsCount, int progressCount) {
-                        dialog.dismiss();
-                        showLoggedInDialog(context);
-                    }
-
-                    @Override
-                    public void onError(String message) {
-                        Toast.makeText(context, "Lỗi đồng bộ: " + message, Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        });
 
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override

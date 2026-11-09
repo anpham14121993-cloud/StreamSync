@@ -36,7 +36,7 @@
         }
     .end annotation
 
-    .line 208
+    .line 225
     iput-object p1, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$3;->val$activity:Landroid/app/Activity;
 
     iput-object p2, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$3;->val$fileName:Ljava/lang/String;
@@ -55,10 +55,10 @@
 .method public run()V
     .registers 12
 
-    .line 211
+    .line 228
     nop
 
-    .line 213
+    .line 230
     const/4 v0, 0x0
 
     :try_start_2
@@ -74,7 +74,7 @@
 
     invoke-direct {v1, v2, v3}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
 
-    .line 214
+    .line 231
     invoke-virtual {v1}, Ljava/io/File;->exists()Z
 
     move-result v2
@@ -83,7 +83,7 @@
 
     invoke-virtual {v1}, Ljava/io/File;->mkdirs()Z
 
-    .line 215
+    .line 232
     :cond_18
     new-instance v2, Ljava/io/File;
 
@@ -93,7 +93,7 @@
     :try_end_1f
     .catchall {:try_start_2 .. :try_end_1f} :catchall_b9
 
-    .line 216
+    .line 233
     :try_start_1f
     invoke-virtual {v2}, Ljava/io/File;->exists()Z
 
@@ -103,7 +103,7 @@
 
     invoke-virtual {v2}, Ljava/io/File;->delete()Z
 
-    .line 218
+    .line 235
     :cond_28
     new-instance v0, Ljava/net/URL;
 
@@ -111,32 +111,32 @@
 
     invoke-direct {v0, v1}, Ljava/net/URL;-><init>(Ljava/lang/String;)V
 
-    .line 219
+    .line 236
     invoke-virtual {v0}, Ljava/net/URL;->openConnection()Ljava/net/URLConnection;
 
     move-result-object v0
 
     check-cast v0, Ljava/net/HttpURLConnection;
 
-    .line 220
+    .line 237
     const/4 v1, 0x1
 
     invoke-virtual {v0, v1}, Ljava/net/HttpURLConnection;->setInstanceFollowRedirects(Z)V
 
-    .line 221
+    .line 238
     const/16 v3, 0x3a98
 
     invoke-virtual {v0, v3}, Ljava/net/HttpURLConnection;->setConnectTimeout(I)V
 
-    .line 222
+    .line 239
     invoke-virtual {v0, v3}, Ljava/net/HttpURLConnection;->setReadTimeout(I)V
 
-    .line 225
+    .line 242
     invoke-virtual {v0}, Ljava/net/HttpURLConnection;->getResponseCode()I
 
     move-result v3
 
-    .line 226
+    .line 243
     const/16 v4, 0x12e
 
     if-eq v3, v4, :cond_55
@@ -153,7 +153,7 @@
 
     if-ne v3, v4, :cond_69
 
-    .line 227
+    .line 244
     :cond_55
     const-string v3, "Location"
 
@@ -161,7 +161,7 @@
 
     move-result-object v0
 
-    .line 228
+    .line 245
     new-instance v3, Ljava/net/URL;
 
     invoke-direct {v3, v0}, Ljava/net/URL;-><init>(Ljava/lang/String;)V
@@ -172,34 +172,34 @@
 
     check-cast v0, Ljava/net/HttpURLConnection;
 
-    .line 229
+    .line 246
     invoke-virtual {v0, v1}, Ljava/net/HttpURLConnection;->setInstanceFollowRedirects(Z)V
 
-    .line 232
+    .line 249
     :cond_69
     invoke-virtual {v0}, Ljava/net/HttpURLConnection;->getContentLength()I
 
     move-result v1
 
-    .line 233
+    .line 250
     invoke-virtual {v0}, Ljava/net/HttpURLConnection;->getInputStream()Ljava/io/InputStream;
 
     move-result-object v0
 
-    .line 234
+    .line 251
     new-instance v3, Ljava/io/FileOutputStream;
 
     invoke-direct {v3, v2}, Ljava/io/FileOutputStream;-><init>(Ljava/io/File;)V
 
-    .line 236
+    .line 253
     const/16 v4, 0x2000
 
     new-array v4, v4, [B
 
-    .line 237
+    .line 254
     const-wide/16 v5, 0x0
 
-    .line 239
+    .line 256
     :cond_7c
     :goto_7c
     invoke-virtual {v0, v4}, Ljava/io/InputStream;->read([B)I
@@ -210,20 +210,20 @@
 
     if-eq v7, v8, :cond_9f
 
-    .line 240
+    .line 257
     int-to-long v8, v7
 
     add-long/2addr v5, v8
 
-    .line 241
+    .line 258
     const/4 v8, 0x0
 
     invoke-virtual {v3, v4, v8, v7}, Ljava/io/FileOutputStream;->write([BII)V
 
-    .line 242
+    .line 259
     if-lez v1, :cond_7c
 
-    .line 243
+    .line 260
     const-wide/16 v7, 0x64
 
     mul-long v7, v7, v5
@@ -234,7 +234,7 @@
 
     long-to-int v8, v7
 
-    .line 244
+    .line 261
     invoke-static {}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$sfgetsMainHandler()Landroid/os/Handler;
 
     move-result-object v7
@@ -245,23 +245,23 @@
 
     invoke-virtual {v7, v9}, Landroid/os/Handler;->post(Ljava/lang/Runnable;)Z
 
-    .line 250
+    .line 267
     goto :goto_7c
 
-    .line 253
+    .line 270
     :cond_9f
     invoke-virtual {v3}, Ljava/io/FileOutputStream;->flush()V
 
-    .line 254
+    .line 271
     invoke-virtual {v3}, Ljava/io/FileOutputStream;->close()V
 
-    .line 255
+    .line 272
     invoke-virtual {v0}, Ljava/io/InputStream;->close()V
 
-    .line 257
+    .line 274
     nop
 
-    .line 258
+    .line 275
     invoke-static {}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$sfgetsMainHandler()Landroid/os/Handler;
 
     move-result-object v0
@@ -274,10 +274,10 @@
     :try_end_b5
     .catchall {:try_start_1f .. :try_end_b5} :catchall_b6
 
-    .line 277
+    .line 294
     goto :goto_d1
 
-    .line 266
+    .line 283
     :catchall_b6
     move-exception v1
 
@@ -288,7 +288,7 @@
     :catchall_b9
     move-exception v1
 
-    .line 267
+    .line 284
     :goto_ba
     if-eqz v0, :cond_c5
 
@@ -298,10 +298,10 @@
 
     if-eqz v2, :cond_c5
 
-    .line 268
+    .line 285
     invoke-virtual {v0}, Ljava/io/File;->delete()Z
 
-    .line 270
+    .line 287
     :cond_c5
     invoke-static {}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$sfgetsMainHandler()Landroid/os/Handler;
 
@@ -313,7 +313,7 @@
 
     invoke-virtual {v0, v2}, Landroid/os/Handler;->post(Ljava/lang/Runnable;)Z
 
-    .line 278
+    .line 295
     :goto_d1
     return-void
 .end method

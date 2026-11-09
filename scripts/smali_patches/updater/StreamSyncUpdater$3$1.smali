@@ -43,7 +43,7 @@
         }
     .end annotation
 
-    .line 244
+    .line 261
     iput-object p1, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$3$1;->this$0:Lcom/streamsync/app/updater/StreamSyncUpdater$3;
 
     iput p2, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$3$1;->val$progressPercent:I
@@ -58,7 +58,7 @@
 .method public run()V
     .registers 3
 
-    .line 247
+    .line 264
     iget-object v0, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$3$1;->this$0:Lcom/streamsync/app/updater/StreamSyncUpdater$3;
 
     iget-object v0, v0, Lcom/streamsync/app/updater/StreamSyncUpdater$3;->val$progressDialog:Landroid/app/ProgressDialog;
@@ -67,6 +67,6 @@
 
     invoke-virtual {v0, v1}, Landroid/app/ProgressDialog;->setProgress(I)V
 
-    .line 248
+    .line 265
     return-void
 .end method

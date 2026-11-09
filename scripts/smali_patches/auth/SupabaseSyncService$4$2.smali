@@ -47,7 +47,7 @@
         }
     .end annotation
 
-    .line 406
+    .line 411
     iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseSyncService$4$2;->this$0:Lcom/streamsync/app/auth/SupabaseSyncService$4;
 
     iput p2, p0, Lcom/streamsync/app/auth/SupabaseSyncService$4$2;->val$finalAddons:I
@@ -62,16 +62,16 @@
 
 # virtual methods
 .method public run()V
-    .registers 6
+    .registers 4
 
-    .line 409
+    .line 414
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseSyncService$4$2;->this$0:Lcom/streamsync/app/auth/SupabaseSyncService$4;
 
     iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseSyncService$4;->val$callback:Lcom/streamsync/app/auth/SupabaseSyncService$SyncCallback;
 
     if-eqz v0, :cond_11
 
-    .line 410
+    .line 415
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseSyncService$4$2;->this$0:Lcom/streamsync/app/auth/SupabaseSyncService$4;
 
     iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseSyncService$4;->val$callback:Lcom/streamsync/app/auth/SupabaseSyncService$SyncCallback;
@@ -82,58 +82,56 @@
 
     invoke-interface {v0, v1, v2}, Lcom/streamsync/app/auth/SupabaseSyncService$SyncCallback;->onSuccess(II)V
 
-    .line 412
+    .line 418
     :cond_11
+    :try_start_11
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseSyncService$4$2;->this$0:Lcom/streamsync/app/auth/SupabaseSyncService$4;
 
     iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseSyncService$4;->val$context:Landroid/content/Context;
 
-    iget v1, p0, Lcom/streamsync/app/auth/SupabaseSyncService$4$2;->val$finalAddons:I
-
-    iget v2, p0, Lcom/streamsync/app/auth/SupabaseSyncService$4$2;->val$finalProgress:I
-
-    new-instance v3, Ljava/lang/StringBuilder;
-
-    invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
-
-    const-string v4, "\u0110\u1ed3ng b\u1ed9 ho\u00e0n t\u1ea5t: "
-
-    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v3
-
-    invoke-virtual {v3, v1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
-
-    move-result-object v1
-
-    const-string v3, " ti\u1ec7n \u00edch, "
-
-    invoke-virtual {v1, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v1
-
-    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
-
-    move-result-object v1
-
-    const-string v2, " m\u1ee5c xem!"
-
-    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v1
-
-    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    move-result-object v1
-
-    const/4 v2, 0x1
-
-    invoke-static {v0, v1, v2}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
+    invoke-virtual {v0}, Landroid/content/Context;->getPackageManager()Landroid/content/pm/PackageManager;
 
     move-result-object v0
 
-    invoke-virtual {v0}, Landroid/widget/Toast;->show()V
+    iget-object v1, p0, Lcom/streamsync/app/auth/SupabaseSyncService$4$2;->this$0:Lcom/streamsync/app/auth/SupabaseSyncService$4;
 
-    .line 413
+    iget-object v1, v1, Lcom/streamsync/app/auth/SupabaseSyncService$4;->val$context:Landroid/content/Context;
+
+    invoke-virtual {v1}, Landroid/content/Context;->getPackageName()Ljava/lang/String;
+
+    move-result-object v1
+
+    invoke-virtual {v0, v1}, Landroid/content/pm/PackageManager;->getLaunchIntentForPackage(Ljava/lang/String;)Landroid/content/Intent;
+
+    move-result-object v0
+
+    .line 419
+    if-eqz v0, :cond_35
+
+    .line 420
+    const/high16 v1, 0x14000000
+
+    invoke-virtual {v0, v1}, Landroid/content/Intent;->addFlags(I)Landroid/content/Intent;
+
+    .line 421
+    iget-object v1, p0, Lcom/streamsync/app/auth/SupabaseSyncService$4$2;->this$0:Lcom/streamsync/app/auth/SupabaseSyncService$4;
+
+    iget-object v1, v1, Lcom/streamsync/app/auth/SupabaseSyncService$4;->val$context:Landroid/content/Context;
+
+    invoke-virtual {v1, v0}, Landroid/content/Context;->startActivity(Landroid/content/Intent;)V
+    :try_end_33
+    .catchall {:try_start_11 .. :try_end_33} :catchall_34
+
+    goto :goto_35
+
+    .line 423
+    :catchall_34
+    move-exception v0
+
+    :cond_35
+    :goto_35
+    nop
+
+    .line 424
     return-void
 .end method

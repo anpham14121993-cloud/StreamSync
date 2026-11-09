@@ -51,7 +51,7 @@
         }
     .end annotation
 
-    .line 120
+    .line 131
     iput-object p1, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$1$1;->this$0:Lcom/streamsync/app/updater/StreamSyncUpdater$1;
 
     iput-object p2, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$1$1;->val$tag:Ljava/lang/String;
@@ -68,9 +68,9 @@
 
 # virtual methods
 .method public run()V
-    .registers 5
+    .registers 6
 
-    .line 123
+    .line 134
     iget-object v0, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$1$1;->this$0:Lcom/streamsync/app/updater/StreamSyncUpdater$1;
 
     iget-object v0, v0, Lcom/streamsync/app/updater/StreamSyncUpdater$1;->val$context:Landroid/content/Context;
@@ -81,8 +81,10 @@
 
     iget-object v3, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$1$1;->val$finalFileName:Ljava/lang/String;
 
-    invoke-static {v0, v1, v2, v3}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$smshowUpdatePrompt(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+    const/4 v4, 0x0
 
-    .line 124
+    invoke-static {v0, v1, v2, v3, v4}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$smshowUpdatePrompt(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V
+
+    .line 135
     return-void
 .end method

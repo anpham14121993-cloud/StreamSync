@@ -43,7 +43,7 @@
         }
     .end annotation
 
-    .line 258
+    .line 275
     iput-object p1, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$3$2;->this$0:Lcom/streamsync/app/updater/StreamSyncUpdater$3;
 
     iput-object p2, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$3$2;->val$finalFile:Ljava/io/File;
@@ -58,14 +58,14 @@
 .method public run()V
     .registers 3
 
-    .line 261
+    .line 278
     iget-object v0, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$3$2;->this$0:Lcom/streamsync/app/updater/StreamSyncUpdater$3;
 
     iget-object v0, v0, Lcom/streamsync/app/updater/StreamSyncUpdater$3;->val$progressDialog:Landroid/app/ProgressDialog;
 
     invoke-virtual {v0}, Landroid/app/ProgressDialog;->dismiss()V
 
-    .line 262
+    .line 279
     iget-object v0, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$3$2;->this$0:Lcom/streamsync/app/updater/StreamSyncUpdater$3;
 
     iget-object v0, v0, Lcom/streamsync/app/updater/StreamSyncUpdater$3;->val$activity:Landroid/app/Activity;
@@ -74,6 +74,6 @@
 
     invoke-static {v0, v1}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$smlaunchPackageInstaller(Landroid/app/Activity;Ljava/io/File;)V
 
-    .line 263
+    .line 280
     return-void
 .end method

@@ -2,7 +2,9 @@ package com.streamsync.app.auth;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
 import android.os.Looper;
@@ -13,6 +15,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -20,8 +23,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -409,7 +414,13 @@ public class SupabaseSyncService {
                             if (callback != null) {
                                 callback.onSuccess(finalAddons, finalProgress);
                             }
-                            Toast.makeText(context, "Đồng bộ hoàn tất: " + finalAddons + " tiện ích, " + finalProgress + " mục xem!", Toast.LENGTH_LONG).show();
+                            try {
+                                Intent restartIntent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+                                if (restartIntent != null) {
+                                    restartIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    context.startActivity(restartIntent);
+                                }
+                            } catch (Throwable ignored) {}
                         }
                     });
                 } catch (final Exception e) {
@@ -480,19 +491,8 @@ public class SupabaseSyncService {
                 }
             } catch (Throwable ignored) {}
 
-            // 3. Fallback to 4 default addons if cloud account returned 0 addons
-            if (urlsToInstall.isEmpty()) {
-                urlsToInstall.add("https://v3-cinemeta.strem.io/manifest.json");
-                urlsToInstall.add("https://opensubtitles-v3.strem.io/manifest.json");
-                urlsToInstall.add("https://catalog.cyberflix.tv/manifest.json");
-                urlsToInstall.add("https://torrentio.strem.fun/manifest.json");
-            }
-
-            count = installAddonsDirectly(context, urlsToInstall);
-
-            // If installAddonsDirectly failed due to network, guarantee default fallback
-            if (count == 0) {
-                count = installDefaultAddonsFallback(context);
+            if (!urlsToInstall.isEmpty()) {
+                count = installAddonsDirectly(context, urlsToInstall);
             }
         } catch (Throwable ignored) {}
         return count;
@@ -636,11 +636,15 @@ public class SupabaseSyncService {
 
                     long pos = obj.optLong("position", 0);
                     if (pos == 0) pos = obj.optLong("positionMs", 0);
+                    if (pos > 0 && pos < 10000) pos = pos * 1000L;
+                    if (pos <= 0) pos = 60000L;
 
                     long dur = obj.optLong("duration", 0);
                     if (dur == 0) dur = obj.optLong("durationMs", 0);
-                    if (dur <= 0 && pos > 0) dur = Math.max(pos, 1000L);
-                    if (dur <= 0) dur = 1000L;
+                    if (dur > 0 && dur < 10000) dur = dur * 1000L;
+                    if (dur <= pos || pos >= (long)(dur * 0.97)) {
+                        dur = Math.max(pos * 2L, pos + 300000L);
+                    }
 
                     long lastWatched = obj.optLong("last_watched", 0);
                     if (lastWatched == 0) lastWatched = obj.optLong("lastWatched", 0);
@@ -666,8 +670,133 @@ public class SupabaseSyncService {
                 db.endTransaction();
                 db.close();
             }
+
+            populateContinueWatchingCache(context, progressList);
         } catch (Throwable ignored) {}
         return count;
+    }
+
+    private static void populateContinueWatchingCache(Context context, List<JSONObject> progressList) {
+        if (context == null || progressList == null || progressList.isEmpty()) return;
+        try {
+            File dbFile = context.getDatabasePath("streamsync.db");
+            if (!dbFile.exists()) return;
+
+            Map<String, JSONObject> libraryMap = new HashMap<>();
+            SQLiteDatabase db = SQLiteDatabase.openDatabase(dbFile.getAbsolutePath(), null, SQLiteDatabase.OPEN_READONLY);
+            try {
+                Cursor c = db.rawQuery("SELECT mediaId, title, posterUrl, backgroundUrl, description, type, releaseInfo, imdbRating FROM library_items", null);
+                if (c != null) {
+                    while (c.moveToNext()) {
+                        String mid = c.getString(0);
+                        JSONObject lib = new JSONObject();
+                        lib.put("title", c.getString(1));
+                        lib.put("posterUrl", c.getString(2));
+                        lib.put("backgroundUrl", c.getString(3));
+                        lib.put("description", c.getString(4));
+                        lib.put("type", c.getString(5));
+                        lib.put("releaseInfo", c.getString(6));
+                        lib.put("imdbRating", c.getString(7));
+                        libraryMap.put(mid, lib);
+                    }
+                    c.close();
+                }
+            } finally {
+                db.close();
+            }
+
+            JSONArray cacheArr = new JSONArray();
+            Set<String> addedIds = new HashSet<>();
+
+            for (JSONObject p : progressList) {
+                String contentId = p.optString("content_id", "");
+                if (contentId.isEmpty()) contentId = p.optString("contentId", "");
+                String videoId = p.optString("video_id", "");
+                if (videoId.isEmpty()) videoId = p.optString("videoId", "");
+                int season = p.optInt("season", 0);
+                int episode = p.optInt("episode", 0);
+
+                String mediaId = videoId;
+                if (mediaId.isEmpty()) mediaId = p.optString("progress_key", "");
+                if (mediaId.isEmpty()) mediaId = contentId;
+                if (mediaId.isEmpty()) mediaId = p.optString("mediaId", "");
+                if (season > 0 && episode > 0 && !mediaId.contains(":")) {
+                    mediaId = contentId + ":" + season + ":" + episode;
+                }
+                if (mediaId.isEmpty() || addedIds.contains(mediaId)) continue;
+                addedIds.add(mediaId);
+
+                // Look up library item by mediaId or base contentId
+                JSONObject lib = libraryMap.get(mediaId);
+                if (lib == null && !contentId.isEmpty()) {
+                    lib = libraryMap.get(contentId);
+                }
+
+                String title = (lib != null) ? lib.optString("title", "") : p.optString("name", p.optString("title", mediaId));
+                String posterUrl = (lib != null) ? lib.optString("posterUrl", null) : p.optString("poster", null);
+                String backgroundUrl = (lib != null) ? lib.optString("backgroundUrl", null) : p.optString("background", null);
+                String description = (lib != null) ? lib.optString("description", "") : "";
+                String rawType = (lib != null) ? lib.optString("type", "") : p.optString("content_type", "");
+                String releaseInfo = (lib != null) ? lib.optString("releaseInfo", "") : "";
+                String imdbRating = (lib != null) ? lib.optString("imdbRating", "") : "";
+
+                boolean isSeries = season > 0 || "series".equalsIgnoreCase(rawType) || mediaId.contains(":");
+                String typeStr = isSeries ? "SERIES" : "MOVIE";
+
+                long dur = p.optLong("duration", 0);
+                if (dur == 0) dur = p.optLong("durationMs", 0);
+                if (dur > 0 && dur < 10000) dur = dur * 1000L;
+                if (dur <= 0) dur = 1800000L;
+
+                JSONObject item = new JSONObject();
+                item.put("id", mediaId);
+                item.put("title", title);
+                item.put("type", typeStr);
+                if (posterUrl != null && !posterUrl.isEmpty() && !"null".equals(posterUrl)) {
+                    item.put("posterUrl", posterUrl);
+                }
+                if (backgroundUrl != null && !backgroundUrl.isEmpty() && !"null".equals(backgroundUrl)) {
+                    item.put("backgroundUrl", backgroundUrl);
+                }
+                if (!description.isEmpty()) {
+                    item.put("description", description);
+                }
+                if (!releaseInfo.isEmpty()) {
+                    item.put("releaseInfo", releaseInfo);
+                }
+                if (!imdbRating.isEmpty()) {
+                    item.put("imdbRating", imdbRating);
+                }
+                item.put("durationSeconds", dur / 1000L);
+                if (season > 0) item.put("season", season);
+                if (episode > 0) item.put("episode", episode);
+                item.put("genres", new JSONArray());
+                item.put("genresResolved", true);
+
+                cacheArr.put(item);
+            }
+
+            if (cacheArr.length() > 0) {
+                File cacheFile = new File(context.getFilesDir(), "continue_watching_cache.json");
+                try (FileOutputStream fos = new FileOutputStream(cacheFile)) {
+                    fos.write(cacheArr.toString().getBytes(StandardCharsets.UTF_8));
+                }
+
+                // Populate in-memory MediaItemCache via reflection
+                try {
+                    Class<?> cwCacheClass = Class.forName("com.streamsync.app.data.local.ContinueWatchingDiskCache");
+                    Object cwInstance = cwCacheClass.getField("INSTANCE").get(null);
+                    java.lang.reflect.Method loadMethod = cwCacheClass.getMethod("load", Context.class);
+                    Object loadedList = loadMethod.invoke(cwInstance, context);
+                    if (loadedList instanceof List && !((List<?>) loadedList).isEmpty()) {
+                        Class<?> micClass = Class.forName("com.streamsync.app.data.local.MediaItemCache");
+                        Object micInstance = micClass.getField("INSTANCE").get(null);
+                        java.lang.reflect.Method putMethod = micClass.getMethod("put", List.class);
+                        putMethod.invoke(micInstance, loadedList);
+                    }
+                } catch (Throwable ignored) {}
+            }
+        } catch (Throwable ignored) {}
     }
 
     private static void pullLibraryFromSupabase(Context context, String base, String token, String anonKey) {
@@ -917,28 +1046,6 @@ public class SupabaseSyncService {
     }
 
     public static void refreshRoom(Context context) {
-        try {
-            // Delete cache files to force UI reload
-            File cwFile = new File(context.getFilesDir(), "continue_watching_cache.json");
-            if (cwFile.exists()) cwFile.delete();
-
-            File[] cacheFiles = context.getFilesDir().listFiles();
-            if (cacheFiles != null) {
-                for (File f : cacheFiles) {
-                    if (f.getName().contains("cache") && f.getName().endsWith(".json")) {
-                        f.delete();
-                    }
-                }
-            }
-        } catch (Throwable ignored) {}
-
-        try {
-            Class<?> cacheClass = Class.forName("com.streamsync.app.data.local.ContinueWatchingDiskCache");
-            Object instance = cacheClass.getField("INSTANCE").get(null);
-            java.lang.reflect.Method clearMethod = cacheClass.getMethod("clear", Context.class);
-            clearMethod.invoke(instance, context);
-        } catch (Throwable ignored) {}
-
         try {
             Class<?> appDbClass = Class.forName("com.streamsync.app.data.local.AppDatabase");
             Object companion = appDbClass.getField("Companion").get(null);

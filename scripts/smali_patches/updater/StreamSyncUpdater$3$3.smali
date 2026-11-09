@@ -43,7 +43,7 @@
         }
     .end annotation
 
-    .line 270
+    .line 287
     iput-object p1, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$3$3;->this$0:Lcom/streamsync/app/updater/StreamSyncUpdater$3;
 
     iput-object p2, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$3$3;->val$e:Ljava/lang/Throwable;
@@ -58,14 +58,14 @@
 .method public run()V
     .registers 5
 
-    .line 273
+    .line 290
     iget-object v0, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$3$3;->this$0:Lcom/streamsync/app/updater/StreamSyncUpdater$3;
 
     iget-object v0, v0, Lcom/streamsync/app/updater/StreamSyncUpdater$3;->val$progressDialog:Landroid/app/ProgressDialog;
 
     invoke-virtual {v0}, Landroid/app/ProgressDialog;->dismiss()V
 
-    .line 274
+    .line 291
     iget-object v0, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$3$3;->this$0:Lcom/streamsync/app/updater/StreamSyncUpdater$3;
 
     iget-object v0, v0, Lcom/streamsync/app/updater/StreamSyncUpdater$3;->val$activity:Landroid/app/Activity;
@@ -102,6 +102,6 @@
 
     invoke-virtual {v0}, Landroid/widget/Toast;->show()V
 
-    .line 275
+    .line 292
     return-void
 .end method

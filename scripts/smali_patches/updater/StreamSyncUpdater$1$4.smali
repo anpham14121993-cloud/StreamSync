@@ -33,7 +33,7 @@
         }
     .end annotation
 
-    .line 143
+    .line 154
     iput-object p1, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$1$4;->this$0:Lcom/streamsync/app/updater/StreamSyncUpdater$1;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
@@ -46,13 +46,13 @@
 .method public run()V
     .registers 2
 
-    .line 146
+    .line 157
     iget-object v0, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$1$4;->this$0:Lcom/streamsync/app/updater/StreamSyncUpdater$1;
 
     iget-object v0, v0, Lcom/streamsync/app/updater/StreamSyncUpdater$1;->val$context:Landroid/content/Context;
 
     invoke-static {v0}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$smshowErrorDialog(Landroid/content/Context;)V
 
-    .line 147
+    .line 158
     return-void
 .end method

@@ -125,24 +125,22 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG="v1.9.0"
+          TAG="v1.9.1"
           echo "=== Publishing Release $TAG ==="
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" output-apks/StreamSync-arm64-v8a.apk output-apks/StreamSync-armeabi-v7a.apk output-apks/StreamSync-universal.apk --clobber
           else
             gh release create "$TAG" output-apks/StreamSync-arm64-v8a.apk output-apks/StreamSync-armeabi-v7a.apk output-apks/StreamSync-universal.apk \
-              --title "StreamSync v1.9.0 (OTA In-App Updater, Meta Enhancements & Supabase Account)" \
-              --notes "Bản phát hành chính thức StreamSync v1.9.0:
+              --title "AioStream v1.9.1 (Meta Fix, Auto Sync, Continue Watching & OTA)" \
+              --notes "Bản phát hành chính thức AioStream v1.9.1:
               - Chuẩn 3 phiên bản duy nhất: arm64-v8a, armeabi-v7a và universal.
-              - Mục Tài khoản: chuẩn phong cách Nuvio, tự động đồng bộ khi đăng nhập, hỗ trợ đăng nhập qua mã QR / liên kết thiết bị.
-              - Cập nhật ứng dụng OTA trong app: tự động kiểm tra phiên bản mới từ repo StreamSync, tải trực tiếp và cài đặt trong ứng dụng.
-              - Trang chi tiết (Meta):
-                + Sửa lỗi hiển thị diễn viên (Cast/Actors).
-                + Ẩn danh sách stream cho đến khi người dùng bấm 'Xem phim'.
-                + Thêm nút hành động chính 'Xem phim' trên trang chi tiết.
-                + Sửa lỗi phim lẻ hiển thị danh sách tập như phim bộ.
-                + Hiển thị thông tin luồng stream nhiều dòng (multi-line) rõ ràng, sắc nét giống Nuvio.
-              - Sửa lỗi cử chỉ vuốt quay lại: chỉ hiện hộp thoại xác nhận thoát khi ở trang Home (catalog), các trang khác lùi về trang trước bình thường.
-              - Keystore cố định cho phép cài đè trực tiếp mà không cần gỡ bản cũ." \
+              - Sửa lỗi không load được trang chi tiết (Meta detail).
+              - Sửa lỗi mục Tiếp tục xem (Continue Watching) không hiện sau khi đồng bộ tài khoản.
+              - Tự động đồng bộ hoàn toàn khi đăng nhập tài khoản Supabase (bỏ nút thủ công, bỏ tự khôi phục 4 addon mặc định, bỏ thông báo số tiện ích/mục xem).
+              - Tự động làm mới màn hình Home ngay khi đồng bộ hoàn tất để nhận dữ liệu mới.
+              - Cập nhật ứng dụng OTA trực tiếp trong app chuẩn xác cho phiên bản v1.9.1.
+              - Tắt hoàn toàn việc ghi log ra ứng dụng và thiết bị.
+              - Chân trang Cài đặt hiển thị căn giữa tên ứng dụng AioStream và phiên bản v1.9.1.
+              - Keystore cố định hỗ trợ cài đè trực tiếp lên phiên bản cũ." \
               --latest
           fi

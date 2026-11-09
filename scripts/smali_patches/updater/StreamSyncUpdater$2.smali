@@ -8,7 +8,7 @@
 
 # annotations
 .annotation system Ldalvik/annotation/EnclosingMethod;
-    value = Lcom/streamsync/app/updater/StreamSyncUpdater;->showUpdatePrompt(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+    value = Lcom/streamsync/app/updater/StreamSyncUpdater;->showUpdatePrompt(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V
 .end annotation
 
 .annotation system Ldalvik/annotation/InnerClass;
@@ -34,7 +34,7 @@
         }
     .end annotation
 
-    .line 182
+    .line 199
     iput-object p1, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$2;->val$context:Landroid/content/Context;
 
     iput-object p2, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$2;->val$downloadUrl:Ljava/lang/String;
@@ -51,7 +51,7 @@
 .method public onClick(Landroid/content/DialogInterface;I)V
     .registers 4
 
-    .line 185
+    .line 202
     iget-object p1, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$2;->val$context:Landroid/content/Context;
 
     check-cast p1, Landroid/app/Activity;
@@ -62,6 +62,6 @@
 
     invoke-static {p1, p2, v0}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$smstartInAppDownloadAndInstall(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 186
+    .line 203
     return-void
 .end method

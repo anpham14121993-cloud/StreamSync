@@ -43,7 +43,7 @@
         }
     .end annotation
 
-    .line 152
+    .line 157
     iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseSyncService$2$1;->this$0:Lcom/streamsync/app/auth/SupabaseSyncService$2;
 
     iput-object p2, p0, Lcom/streamsync/app/auth/SupabaseSyncService$2$1;->val$finalToken:Ljava/lang/String;
@@ -58,7 +58,7 @@
 .method public run()V
     .registers 4
 
-    .line 155
+    .line 160
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseSyncService$2$1;->this$0:Lcom/streamsync/app/auth/SupabaseSyncService$2;
 
     iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseSyncService$2;->val$callback:Lcom/streamsync/app/auth/SupabaseSyncService$AuthCallback;
@@ -75,6 +75,6 @@
 
     invoke-interface {v0, v1, v2}, Lcom/streamsync/app/auth/SupabaseSyncService$AuthCallback;->onSuccess(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 156
+    .line 161
     return-void
 .end method

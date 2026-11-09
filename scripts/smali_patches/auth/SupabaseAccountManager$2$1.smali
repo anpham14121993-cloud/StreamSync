@@ -1,4 +1,4 @@
-.class Lcom/streamsync/app/auth/SupabaseAccountManager$3$1;
+.class Lcom/streamsync/app/auth/SupabaseAccountManager$2$1;
 .super Ljava/lang/Object;
 .source "SupabaseAccountManager.java"
 
@@ -8,7 +8,7 @@
 
 # annotations
 .annotation system Ldalvik/annotation/EnclosingMethod;
-    value = Lcom/streamsync/app/auth/SupabaseAccountManager$3;->onClick(Landroid/view/View;)V
+    value = Lcom/streamsync/app/auth/SupabaseAccountManager$2;->onClick(Landroid/view/View;)V
 .end annotation
 
 .annotation system Ldalvik/annotation/InnerClass;
@@ -18,11 +18,11 @@
 
 
 # instance fields
-.field final synthetic this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$3;
+.field final synthetic this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$2;
 
 
 # direct methods
-.method constructor <init>(Lcom/streamsync/app/auth/SupabaseAccountManager$3;)V
+.method constructor <init>(Lcom/streamsync/app/auth/SupabaseAccountManager$2;)V
     .registers 2
     .annotation system Ldalvik/annotation/MethodParameters;
         accessFlags = {
@@ -33,8 +33,8 @@
         }
     .end annotation
 
-    .line 204
-    iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$3$1;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$3;
+    .line 180
+    iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$2$1;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$2;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
@@ -46,10 +46,10 @@
 .method public onError(Ljava/lang/String;)V
     .registers 5
 
-    .line 224
-    iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$3$1;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$3;
+    .line 200
+    iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$2$1;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$2;
 
-    iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseAccountManager$3;->val$context:Landroid/content/Context;
+    iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseAccountManager$2;->val$context:Landroid/content/Context;
 
     new-instance v1, Ljava/lang/StringBuilder;
 
@@ -77,31 +77,31 @@
 
     invoke-virtual {p1}, Landroid/widget/Toast;->show()V
 
-    .line 225
+    .line 201
     return-void
 .end method
 
 .method public onSuccess(Ljava/lang/String;Ljava/lang/String;)V
     .registers 3
 
-    .line 207
-    iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$3$1;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$3;
+    .line 183
+    iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$2$1;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$2;
 
-    iget-object p1, p1, Lcom/streamsync/app/auth/SupabaseAccountManager$3;->val$dialog:Landroid/app/AlertDialog;
+    iget-object p1, p1, Lcom/streamsync/app/auth/SupabaseAccountManager$2;->val$dialog:Landroid/app/AlertDialog;
 
     invoke-virtual {p1}, Landroid/app/AlertDialog;->dismiss()V
 
-    .line 209
-    iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$3$1;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$3;
+    .line 185
+    iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$2$1;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$2;
 
-    iget-object p1, p1, Lcom/streamsync/app/auth/SupabaseAccountManager$3;->val$context:Landroid/content/Context;
+    iget-object p1, p1, Lcom/streamsync/app/auth/SupabaseAccountManager$2;->val$context:Landroid/content/Context;
 
-    new-instance p2, Lcom/streamsync/app/auth/SupabaseAccountManager$3$1$1;
+    new-instance p2, Lcom/streamsync/app/auth/SupabaseAccountManager$2$1$1;
 
-    invoke-direct {p2, p0}, Lcom/streamsync/app/auth/SupabaseAccountManager$3$1$1;-><init>(Lcom/streamsync/app/auth/SupabaseAccountManager$3$1;)V
+    invoke-direct {p2, p0}, Lcom/streamsync/app/auth/SupabaseAccountManager$2$1$1;-><init>(Lcom/streamsync/app/auth/SupabaseAccountManager$2$1;)V
 
     invoke-static {p1, p2}, Lcom/streamsync/app/auth/SupabaseSyncService;->syncLive(Landroid/content/Context;Lcom/streamsync/app/auth/SupabaseSyncService$SyncCallback;)V
 
-    .line 220
+    .line 196
     return-void
 .end method

@@ -22,20 +22,24 @@
 
 .field final synthetic val$dialog:Landroid/app/AlertDialog;
 
+.field final synthetic val$prefs:Landroid/content/SharedPreferences;
+
 
 # direct methods
-.method constructor <init>(Landroid/content/Context;Landroid/app/AlertDialog;)V
-    .registers 3
+.method constructor <init>(Landroid/content/SharedPreferences;Landroid/content/Context;Landroid/app/AlertDialog;)V
+    .registers 4
     .annotation system Ldalvik/annotation/Signature;
         value = {
             "()V"
         }
     .end annotation
 
-    .line 94
-    iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$1;->val$context:Landroid/content/Context;
+    .line 89
+    iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$1;->val$prefs:Landroid/content/SharedPreferences;
 
-    iput-object p2, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$1;->val$dialog:Landroid/app/AlertDialog;
+    iput-object p2, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$1;->val$context:Landroid/content/Context;
+
+    iput-object p3, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$1;->val$dialog:Landroid/app/AlertDialog;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
@@ -47,10 +51,23 @@
 .method public onClick(Landroid/view/View;)V
     .registers 4
 
-    .line 97
+    .line 92
+    iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$1;->val$prefs:Landroid/content/SharedPreferences;
+
+    invoke-interface {p1}, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
+
+    move-result-object p1
+
+    invoke-interface {p1}, Landroid/content/SharedPreferences$Editor;->clear()Landroid/content/SharedPreferences$Editor;
+
+    move-result-object p1
+
+    invoke-interface {p1}, Landroid/content/SharedPreferences$Editor;->apply()V
+
+    .line 93
     iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$1;->val$context:Landroid/content/Context;
 
-    const-string v0, "\u0110ang \u0111\u1ed3ng b\u1ed9..."
+    const-string v0, "\u0110\u00e3 \u0111\u0103ng xu\u1ea5t t\u00e0i kho\u1ea3n"
 
     const/4 v1, 0x0
 
@@ -60,15 +77,16 @@
 
     invoke-virtual {p1}, Landroid/widget/Toast;->show()V
 
-    .line 98
+    .line 94
+    iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$1;->val$dialog:Landroid/app/AlertDialog;
+
+    invoke-virtual {p1}, Landroid/app/AlertDialog;->dismiss()V
+
+    .line 95
     iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$1;->val$context:Landroid/content/Context;
 
-    new-instance v0, Lcom/streamsync/app/auth/SupabaseAccountManager$1$1;
+    invoke-static {p1}, Lcom/streamsync/app/auth/SupabaseAccountManager;->-$$Nest$smshowLoginDialog(Landroid/content/Context;)V
 
-    invoke-direct {v0, p0}, Lcom/streamsync/app/auth/SupabaseAccountManager$1$1;-><init>(Lcom/streamsync/app/auth/SupabaseAccountManager$1;)V
-
-    invoke-static {p1, v0}, Lcom/streamsync/app/auth/SupabaseSyncService;->syncLive(Landroid/content/Context;Lcom/streamsync/app/auth/SupabaseSyncService$SyncCallback;)V
-
-    .line 110
+    .line 96
     return-void
 .end method
