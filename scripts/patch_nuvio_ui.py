@@ -612,21 +612,22 @@ def patch_meta_screen(unpack_dir, script_dir):
         p_enrich_parts = re.compile(r'invoke-interface\s*\{v11\},\s*Ljava/util/List;->size\(\)I[\s\S]*?check-cast\s+v3,\s*Ljava/lang/String;')
         enrich_parts_rep = """invoke-static {v3}, Lcom/streamsync/app/data/MetaHelper;->isValidParts(Ljava/util/List;)Z
     move-result v8
-    if-nez v8, :cond_parts_ok
-    return-object v7
-
-    :cond_parts_ok
+    if-nez v8, :cond_enrich_parts_fail
     invoke-static {v3}, Lcom/streamsync/app/data/MetaHelper;->getAddonId(Ljava/util/List;)Ljava/lang/String;
     move-result-object v11
     invoke-static {v3}, Lcom/streamsync/app/data/MetaHelper;->getItemId(Ljava/util/List;)Ljava/lang/String;
-    move-result-object v3"""
+    move-result-object v3
+    goto :cond_enrich_parts_ok
+    :cond_enrich_parts_fail
+    return-object v7
+    :cond_enrich_parts_ok"""
         if p_enrich_parts.search(repo_content):
             repo_content = p_enrich_parts.sub(enrich_parts_rep, repo_content, count=1)
             changed_repo = True
             log("Patched enrichFromMeta parts validation with MetaHelper.")
 
         # 2b. enrichFromMeta firstOrNull
-        p_enrich_match = re.compile(r'invoke-virtual\s*\{v15\},\s*Lcom/streamsync/app/data/addon/AddonManifest;->getId\(\)Ljava/lang/String;[\s\S]*?invoke-static\s*\{v7,\s*v11\},\s*Lkotlin/jvm/internal/Intrinsics;->areEqual\(Ljava/lang/Object;Ljava/lang/Object;\)Z')
+        p_enrich_match = re.compile(r'invoke-virtual\s*\{v15\},\s*Lcom/streamsync/app/data/addon/AddonManifest;->getId\(\)Ljava/lang/String;\s*\n\s*move-result-object\s+v7\s*\n\s*invoke-static\s*\{v7,\s*v11\},\s*Lkotlin/jvm/internal/Intrinsics;->areEqual\(Ljava/lang/Object;Ljava/lang/Object;\)Z')
         enrich_match_rep = """invoke-static {v15, v11}, Lcom/streamsync/app/data/MetaHelper;->matchesAddon(Lcom/streamsync/app/data/addon/AddonManifest;Ljava/lang/String;)Z"""
         if p_enrich_match.search(repo_content):
             repo_content = p_enrich_match.sub(enrich_match_rep, repo_content, count=1)
@@ -637,22 +638,23 @@ def patch_meta_screen(unpack_dir, script_dir):
         p_find_parts = re.compile(r'invoke-interface\s*\{v5\},\s*Ljava/util/List;->size\(\)I[\s\S]*?check-cast\s+v0,\s*Ljava/lang/String;')
         find_parts_rep = """invoke-static {v0}, Lcom/streamsync/app/data/MetaHelper;->isValidParts(Ljava/util/List;)Z
     move-result v2
-    if-nez v2, :cond_find_ok
-    const/4 v2, 0x0
-    return-object v2
-
-    :cond_find_ok
+    if-nez v2, :cond_find_parts_fail
     invoke-static {v0}, Lcom/streamsync/app/data/MetaHelper;->getAddonId(Ljava/util/List;)Ljava/lang/String;
     move-result-object v2
     invoke-static {v0}, Lcom/streamsync/app/data/MetaHelper;->getItemId(Ljava/util/List;)Ljava/lang/String;
-    move-result-object v0"""
+    move-result-object v0
+    goto :cond_find_parts_ok
+    :cond_find_parts_fail
+    const/4 v2, 0x0
+    return-object v2
+    :cond_find_parts_ok"""
         if p_find_parts.search(repo_content):
             repo_content = p_find_parts.sub(find_parts_rep, repo_content, count=1)
             changed_repo = True
             log("Patched findItemRaw parts validation with MetaHelper.")
 
-        # 2d. findItemRaw firstOrNull
-        p_find_match = re.compile(r'invoke-virtual\s*\{v7\},\s*Lcom/streamsync/app/data/addon/AddonManifest;->getId\(\)Ljava/lang/String;[\s\S]*?invoke-static\s*\{v2,\s*v13\},\s*Lkotlin/jvm/internal/Intrinsics;->areEqual\(Ljava/lang/Object;Ljava/lang/Object;\)Z')
+        # 2d. findItemRaw firstOrNull (must strictly match only adjacent getId + areEqual)
+        p_find_match = re.compile(r'invoke-virtual\s*\{v7\},\s*Lcom/streamsync/app/data/addon/AddonManifest;->getId\(\)Ljava/lang/String;\s*\n\s*move-result-object\s+v2\s*\n\s*invoke-static\s*\{v2,\s*v13\},\s*Lkotlin/jvm/internal/Intrinsics;->areEqual\(Ljava/lang/Object;Ljava/lang/Object;\)Z')
         find_match_rep = """invoke-static {v7, v13}, Lcom/streamsync/app/data/MetaHelper;->matchesAddon(Lcom/streamsync/app/data/addon/AddonManifest;Ljava/lang/String;)Z"""
         if p_find_match.search(repo_content):
             repo_content = p_find_match.sub(find_match_rep, repo_content, count=1)
@@ -741,19 +743,21 @@ def patch_meta_screen(unpack_dir, script_dir):
             )
             changed_mds = True
 
-        p_start_mds = re.compile(r'(\.method public static final MovieDetailScreen[^\n]+\s*\.locals\s+\d+)')
-        if "PlayClickLambda;->sWatchRequested" not in mds_content and p_start_mds.search(mds_content):
-            mds_content = p_start_mds.sub(
-                r'\1\n    const/4 v0, 0x0\n    sput-boolean v0, Lcom/streamsync/app/ui/detail/PlayClickLambda;->sWatchRequested:Z',
-                mds_content
+        p_start_reset = re.compile(r'(const-string\s+v\d+,\s*\"mediaId\"\s*\n\s*invoke-static\s*\{[^\}]+\},\s*Lkotlin/jvm/internal/Intrinsics;->checkNotNullParameter)')
+        if "PlayClickLambda;->sWatchRequested" not in mds_content and p_start_reset.search(mds_content):
+            mds_content = p_start_reset.sub(
+                r'const/4 v0, 0x0\n    sput-boolean v0, Lcom/streamsync/app/ui/detail/PlayClickLambda;->sWatchRequested:Z\n    \1',
+                mds_content,
+                count=1
             )
             changed_mds = True
 
-        p_cast_vm = re.compile(r'(check-cast\s+(v\d+),\s*Lcom/streamsync/app/ui/detail/MovieDetailViewModel;\s*\n\s*\.local\s+\2,\s*\"viewModel\")')
+        p_cast_vm = re.compile(r'(check-cast\s+(v\d+),\s*Lcom/streamsync/app/ui/detail/MovieDetailViewModel;)')
         if "sCurrentViewModel" in mds_content and "sput-object" not in mds_content:
             mds_content = p_cast_vm.sub(
                 r'\1\n    sput-object \2, Lcom/streamsync/app/ui/detail/MovieDetailScreenKt;->sCurrentViewModel:Lcom/streamsync/app/ui/detail/MovieDetailViewModel;',
-                mds_content
+                mds_content,
+                count=1
             )
             changed_mds = True
 
@@ -768,12 +772,13 @@ def patch_meta_screen(unpack_dir, script_dir):
         with open(m341_targets[0], 'r', encoding='utf-8', errors='ignore') as f:
             m341_content = f.read()
 
-        p_stream_gate = re.compile(r'(:cond_7\s*\n\s*iget-object\s+v0,\s*p0,\s*Lcom/streamsync/app/ui/detail/MovieDetailScreenKt\$MovieDetailScreen\$3\$4\$1;->\$streamSection:Lkotlin/jvm/functions/Function1;)')
-        if p_stream_gate.search(m341_content):
-            m341_content = p_stream_gate.sub(
-                ":cond_7\n    sget-boolean v0, Lcom/streamsync/app/ui/detail/PlayClickLambda;->sWatchRequested:Z\n    if-nez v0, :cond_8\n    \\1",
-                m341_content
-            )
+        p_stream_gate = re.compile(r'(goto\s+:goto_\w+\s*\n[\s\S]*?)(iget-object\s+v0,\s*p0,\s*Lcom/streamsync/app/ui/detail/MovieDetailScreenKt\$MovieDetailScreen\$3\$4\$1;->\$streamSection:Lkotlin/jvm/functions/Function1;\s*\n\s*invoke-interface\s*\{v0,\s*p1\},\s*Lkotlin/jvm/functions/Function1;->invoke\(Ljava/lang/Object;\)Ljava/lang/Object;)')
+        if "PlayClickLambda;->sWatchRequested" not in m341_content and p_stream_gate.search(m341_content):
+            stream_rep = r"""\1sget-boolean v0, Lcom/streamsync/app/ui/detail/PlayClickLambda;->sWatchRequested:Z
+    if-eqz v0, :cond_skip_stream
+    \2
+    :cond_skip_stream"""
+            m341_content = p_stream_gate.sub(stream_rep, m341_content, count=1)
             with open(m341_targets[0], 'w', encoding='utf-8') as f:
                 f.write(m341_content)
             log("Gated MovieDetailScreen movie streamSection on sWatchRequested.")
@@ -784,17 +789,15 @@ def patch_meta_screen(unpack_dir, script_dir):
         with open(sd_targets[0], 'r', encoding='utf-8', errors='ignore') as f:
             sd_content = f.read()
 
-        p_sd = re.compile(r'(:pswitch_1\s*\n\s*invoke-static\s*\{p1\},\s*Lkotlin/ResultKt;->throwOnFailure\(Ljava/lang/Object;\)V)')
-        if p_sd.search(sd_content):
-            sd_rep = r""":pswitch_1
-    invoke-static {p1}, Lkotlin/ResultKt;->throwOnFailure(Ljava/lang/Object;)V
-    sget-boolean v0, Lcom/streamsync/app/ui/detail/PlayClickLambda;->sWatchRequested:Z
-    if-nez v0, :cond_fetch_sources
+        p_sd = re.compile(r'(:pswitch_\w+\s*\n\s*invoke-static\s*\{p1\},\s*Lkotlin/ResultKt;->throwOnFailure\(Ljava/lang/Object;\)V\s*\n)(\s*move-object\s+v1,\s*p0)')
+        if "PlayClickLambda;->sWatchRequested" not in sd_content and p_sd.search(sd_content):
+            sd_rep = r"""\1    sget-boolean v1, Lcom/streamsync/app/ui/detail/PlayClickLambda;->sWatchRequested:Z
+    if-nez v1, :cond_fetch_sources
     invoke-static {}, Lkotlin/collections/CollectionsKt;->emptyList()Ljava/util/List;
     move-result-object v2
     return-object v2
-    :cond_fetch_sources"""
-            sd_content = p_sd.sub(sd_rep, sd_content)
+    :cond_fetch_sources\n\2"""
+            sd_content = p_sd.sub(sd_rep, sd_content, count=1)
             with open(sd_targets[0], 'w', encoding='utf-8') as f:
                 f.write(sd_content)
             log("Patched MovieDetailViewModel sourcesDeferred to wait for watch click.")
@@ -806,6 +809,7 @@ def patch_meta_screen(unpack_dir, script_dir):
             ds_content = f.read()
 
         p_row_start = re.compile(r'(const\s+v5,\s*-0x222835d3\s*\n\s*invoke-interface\s*\{v12,\s*v5\},\s*Landroidx/compose/runtime/Composer;->startReplaceableGroup\(I\)V)')
+        changed_ds = False
         if "PlayClickLambda" not in ds_content and p_row_start.search(ds_content):
             play_btn_smali = """# [NUVIO PATCH] Primary 'Xem phim' ActionButton
     sget-object v8, Landroidx/compose/material/icons/Icons;->INSTANCE:Landroidx/compose/material/icons/Icons;
@@ -824,14 +828,17 @@ def patch_meta_screen(unpack_dir, script_dir):
 
     \\1"""
             ds_content = p_row_start.sub(play_btn_smali, ds_content)
-            # Make trailer button secondary (const/16 v34, 0x0)
-            ds_content = ds_content.replace(
-                'const-string v33, "Xem trailer"\\n\\n    const/16 v34, 0x1',
-                'const-string v33, "Xem trailer"\\n\\n    const/16 v34, 0x0'
-            )
+            changed_ds = True
+
+        p_trailer = re.compile(r'(const-string\s+v33,\s*\"Xem trailer\"\s*\n\s*const/16\s+v34,\s*)0x1')
+        if p_trailer.search(ds_content):
+            ds_content = p_trailer.sub(r'\g<1>0x0', ds_content)
+            changed_ds = True
+
+        if changed_ds:
             with open(ds_targets[0], 'w', encoding='utf-8') as f:
                 f.write(ds_content)
-            log("Injected primary 'Xem phim' ActionButton into DetailActionRow.")
+            log("Injected primary 'Xem phim' ActionButton into DetailActionRow and made trailer secondary.")
 
     # 9. Patch StreamRow$1.smali (multi-line stream rows up to 5 lines)
     sr_targets = find_file_exact(unpack_dir, "MovieDetailScreenKt$StreamRow$1.smali")
