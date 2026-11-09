@@ -3,12 +3,12 @@
 .source "SupabaseAccountManager.java"
 
 # interfaces
-.implements Ljava/lang/Runnable;
+.implements Lcom/streamsync/app/auth/SupabaseSyncService$SyncCallback;
 
 
 # annotations
 .annotation system Ldalvik/annotation/EnclosingMethod;
-    value = Lcom/streamsync/app/auth/SupabaseAccountManager$1;->onClick(Landroid/content/DialogInterface;I)V
+    value = Lcom/streamsync/app/auth/SupabaseAccountManager$1;->onClick(Landroid/view/View;)V
 .end annotation
 
 .annotation system Ldalvik/annotation/InnerClass;
@@ -33,7 +33,7 @@
         }
     .end annotation
 
-    .line 54
+    .line 111
     iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$1$1;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$1;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
@@ -43,24 +43,43 @@
 
 
 # virtual methods
-.method public run()V
+.method public onError(Ljava/lang/String;)V
     .registers 4
 
-    .line 57
+    .line 120
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$1$1;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$1;
 
-    iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseAccountManager$1;->val$activity:Landroid/app/Activity;
+    iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseAccountManager$1;->val$context:Landroid/content/Context;
 
-    const-string v1, "\u0110\u1ed3ng b\u1ed9 Supabase th\u00e0nh c\u00f4ng!"
+    const/4 v1, 0x1
 
-    const/4 v2, 0x0
+    invoke-static {v0, p1, v1}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
 
-    invoke-static {v0, v1, v2}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
+    move-result-object p1
 
-    move-result-object v0
+    invoke-virtual {p1}, Landroid/widget/Toast;->show()V
 
-    invoke-virtual {v0}, Landroid/widget/Toast;->show()V
+    .line 121
+    return-void
+.end method
 
-    .line 58
+.method public onSuccess(II)V
+    .registers 3
+
+    .line 114
+    iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$1$1;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$1;
+
+    iget-object p1, p1, Lcom/streamsync/app/auth/SupabaseAccountManager$1;->val$dialog:Landroid/app/AlertDialog;
+
+    invoke-virtual {p1}, Landroid/app/AlertDialog;->dismiss()V
+
+    .line 115
+    iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$1$1;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$1;
+
+    iget-object p1, p1, Lcom/streamsync/app/auth/SupabaseAccountManager$1;->val$context:Landroid/content/Context;
+
+    invoke-static {p1}, Lcom/streamsync/app/auth/SupabaseAccountManager;->-$$Nest$smshowLoggedInDialog(Landroid/content/Context;)V
+
+    .line 116
     return-void
 .end method

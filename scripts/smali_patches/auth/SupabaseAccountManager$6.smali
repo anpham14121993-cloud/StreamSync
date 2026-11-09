@@ -3,12 +3,12 @@
 .source "SupabaseAccountManager.java"
 
 # interfaces
-.implements Ljava/lang/Runnable;
+.implements Landroid/view/View$OnClickListener;
 
 
 # annotations
 .annotation system Ldalvik/annotation/EnclosingMethod;
-    value = Lcom/streamsync/app/auth/SupabaseAccountManager;->authenticateUser(Landroid/app/Activity;Landroid/content/SharedPreferences;Ljava/lang/String;Ljava/lang/String;Z)V
+    value = Lcom/streamsync/app/auth/SupabaseAccountManager;->showLoginDialog(Landroid/content/Context;)V
 .end annotation
 
 .annotation system Ldalvik/annotation/InnerClass;
@@ -18,32 +18,36 @@
 
 
 # instance fields
-.field final synthetic val$activity:Landroid/app/Activity;
+.field final synthetic val$context:Landroid/content/Context;
 
-.field final synthetic val$email:Ljava/lang/String;
+.field final synthetic val$dialog:Landroid/app/AlertDialog;
 
-.field final synthetic val$isSignUp:Z
+.field final synthetic val$etEmail:Landroid/widget/EditText;
 
-.field final synthetic val$prefs:Landroid/content/SharedPreferences;
+.field final synthetic val$etPassword:Landroid/widget/EditText;
+
+.field final synthetic val$etServer:Landroid/widget/EditText;
 
 
 # direct methods
-.method constructor <init>(Landroid/content/SharedPreferences;Ljava/lang/String;Landroid/app/Activity;Z)V
-    .registers 5
+.method constructor <init>(Landroid/widget/EditText;Landroid/widget/EditText;Landroid/widget/EditText;Landroid/content/Context;Landroid/app/AlertDialog;)V
+    .registers 6
     .annotation system Ldalvik/annotation/Signature;
         value = {
             "()V"
         }
     .end annotation
 
-    .line 147
-    iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$6;->val$prefs:Landroid/content/SharedPreferences;
+    .line 274
+    iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$6;->val$etEmail:Landroid/widget/EditText;
 
-    iput-object p2, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$6;->val$email:Ljava/lang/String;
+    iput-object p2, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$6;->val$etPassword:Landroid/widget/EditText;
 
-    iput-object p3, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$6;->val$activity:Landroid/app/Activity;
+    iput-object p3, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$6;->val$etServer:Landroid/widget/EditText;
 
-    iput-boolean p4, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$6;->val$isSignUp:Z
+    iput-object p4, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$6;->val$context:Landroid/content/Context;
+
+    iput-object p5, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$6;->val$dialog:Landroid/app/AlertDialog;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
@@ -52,153 +56,108 @@
 
 
 # virtual methods
-.method public run()V
-    .registers 6
+.method public onClick(Landroid/view/View;)V
+    .registers 7
 
-    .line 151
-    const-wide/16 v0, 0x258
+    .line 277
+    iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$6;->val$etEmail:Landroid/widget/EditText;
 
-    :try_start_2
-    invoke-static {v0, v1}, Ljava/lang/Thread;->sleep(J)V
+    invoke-virtual {p1}, Landroid/widget/EditText;->getText()Landroid/text/Editable;
 
-    .line 152
-    invoke-static {}, Ljava/util/UUID;->randomUUID()Ljava/util/UUID;
+    move-result-object p1
+
+    invoke-virtual {p1}, Ljava/lang/Object;->toString()Ljava/lang/String;
+
+    move-result-object p1
+
+    invoke-virtual {p1}, Ljava/lang/String;->trim()Ljava/lang/String;
+
+    move-result-object p1
+
+    .line 278
+    iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$6;->val$etPassword:Landroid/widget/EditText;
+
+    invoke-virtual {v0}, Landroid/widget/EditText;->getText()Landroid/text/Editable;
 
     move-result-object v0
 
-    invoke-virtual {v0}, Ljava/util/UUID;->toString()Ljava/lang/String;
+    invoke-virtual {v0}, Ljava/lang/Object;->toString()Ljava/lang/String;
 
     move-result-object v0
 
-    const-string v1, "-"
-
-    const-string v2, ""
-
-    invoke-virtual {v0, v1, v2}, Ljava/lang/String;->replace(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;
+    invoke-virtual {v0}, Ljava/lang/String;->trim()Ljava/lang/String;
 
     move-result-object v0
 
-    new-instance v1, Ljava/lang/StringBuilder;
+    .line 279
+    iget-object v1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$6;->val$etServer:Landroid/widget/EditText;
 
-    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
-
-    const-string v2, "sb_tok_"
-
-    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v1}, Landroid/widget/EditText;->getText()Landroid/text/Editable;
 
     move-result-object v1
 
-    invoke-virtual {v1, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v0
-
-    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    move-result-object v0
-
-    .line 153
-    invoke-static {}, Ljava/util/UUID;->randomUUID()Ljava/util/UUID;
+    invoke-virtual {v1}, Ljava/lang/Object;->toString()Ljava/lang/String;
 
     move-result-object v1
 
-    invoke-virtual {v1}, Ljava/util/UUID;->toString()Ljava/lang/String;
+    invoke-virtual {v1}, Ljava/lang/String;->trim()Ljava/lang/String;
 
     move-result-object v1
 
-    const/16 v2, 0xc
+    .line 281
+    invoke-virtual {p1}, Ljava/lang/String;->isEmpty()Z
+
+    move-result v2
 
     const/4 v3, 0x0
 
-    invoke-virtual {v1, v3, v2}, Ljava/lang/String;->substring(II)Ljava/lang/String;
+    if-nez v2, :cond_4e
 
-    move-result-object v1
+    invoke-virtual {v0}, Ljava/lang/String;->isEmpty()Z
 
-    new-instance v2, Ljava/lang/StringBuilder;
+    move-result v2
 
-    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+    if-eqz v2, :cond_38
 
-    const-string v4, "usr_"
+    goto :goto_4e
 
-    invoke-virtual {v2, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    .line 286
+    :cond_38
+    iget-object v2, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$6;->val$context:Landroid/content/Context;
 
-    move-result-object v2
+    const-string v4, "\u0110ang g\u1eedi \u0111\u0103ng k\u00fd t\u00e0i kho\u1ea3n..."
 
-    invoke-virtual {v2, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v1
-
-    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    move-result-object v1
-
-    .line 155
-    iget-object v2, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$6;->val$prefs:Landroid/content/SharedPreferences;
-
-    invoke-interface {v2}, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
+    invoke-static {v2, v4, v3}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
 
     move-result-object v2
 
-    const-string v4, "is_anonymous"
+    invoke-virtual {v2}, Landroid/widget/Toast;->show()V
 
-    .line 156
-    invoke-interface {v2, v4, v3}, Landroid/content/SharedPreferences$Editor;->putBoolean(Ljava/lang/String;Z)Landroid/content/SharedPreferences$Editor;
+    .line 287
+    iget-object v2, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$6;->val$context:Landroid/content/Context;
 
-    move-result-object v2
+    new-instance v3, Lcom/streamsync/app/auth/SupabaseAccountManager$6$1;
 
-    const-string v3, "auth_email"
+    invoke-direct {v3, p0}, Lcom/streamsync/app/auth/SupabaseAccountManager$6$1;-><init>(Lcom/streamsync/app/auth/SupabaseAccountManager$6;)V
 
-    iget-object v4, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$6;->val$email:Ljava/lang/String;
+    invoke-static {v2, v1, p1, v0, v3}, Lcom/streamsync/app/auth/SupabaseSyncService;->signUp(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/streamsync/app/auth/SupabaseSyncService$AuthCallback;)V
 
-    .line 157
-    invoke-interface {v2, v3, v4}, Landroid/content/SharedPreferences$Editor;->putString(Ljava/lang/String;Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+    .line 300
+    return-void
 
-    move-result-object v2
+    .line 282
+    :cond_4e
+    :goto_4e
+    iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$6;->val$context:Landroid/content/Context;
 
-    const-string v3, "auth_user_id"
+    const-string v0, "Vui l\u00f2ng nh\u1eadp Email v\u00e0 M\u1eadt kh\u1ea9u"
 
-    .line 158
-    invoke-interface {v2, v3, v1}, Landroid/content/SharedPreferences$Editor;->putString(Ljava/lang/String;Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+    invoke-static {p1, v0, v3}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
 
-    move-result-object v1
+    move-result-object p1
 
-    const-string v2, "auth_token"
+    invoke-virtual {p1}, Landroid/widget/Toast;->show()V
 
-    .line 159
-    invoke-interface {v1, v2, v0}, Landroid/content/SharedPreferences$Editor;->putString(Ljava/lang/String;Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
-
-    move-result-object v0
-
-    .line 160
-    invoke-interface {v0}, Landroid/content/SharedPreferences$Editor;->apply()V
-
-    .line 162
-    iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$6;->val$activity:Landroid/app/Activity;
-
-    new-instance v1, Lcom/streamsync/app/auth/SupabaseAccountManager$6$1;
-
-    invoke-direct {v1, p0}, Lcom/streamsync/app/auth/SupabaseAccountManager$6$1;-><init>(Lcom/streamsync/app/auth/SupabaseAccountManager$6;)V
-
-    invoke-virtual {v0, v1}, Landroid/app/Activity;->runOnUiThread(Ljava/lang/Runnable;)V
-    :try_end_77
-    .catch Ljava/lang/Exception; {:try_start_2 .. :try_end_77} :catch_78
-
-    .line 176
-    goto :goto_83
-
-    .line 169
-    :catch_78
-    move-exception v0
-
-    .line 170
-    iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$6;->val$activity:Landroid/app/Activity;
-
-    new-instance v1, Lcom/streamsync/app/auth/SupabaseAccountManager$6$2;
-
-    invoke-direct {v1, p0}, Lcom/streamsync/app/auth/SupabaseAccountManager$6$2;-><init>(Lcom/streamsync/app/auth/SupabaseAccountManager$6;)V
-
-    invoke-virtual {v0, v1}, Landroid/app/Activity;->runOnUiThread(Ljava/lang/Runnable;)V
-
-    .line 177
-    :goto_83
+    .line 283
     return-void
 .end method

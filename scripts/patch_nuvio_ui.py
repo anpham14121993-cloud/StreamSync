@@ -188,17 +188,58 @@ def patch_single_swipe_and_exit_dialog(unpack_dir, script_dir):
         )
         changed = True
 
-    # 2. Remove controller.hide(systemBars) to enable immediate 1-swipe back gesture
+    # 2. Show systemBars explicitly (instead of hide) and set behavior to 2
+    # This prevents Android from hiding the status bar or capturing the 1st edge swipe gesture
     if "Landroidx/core/view/WindowInsetsControllerCompat;->hide(I)V" in content:
-        pattern = re.compile(r"(invoke-virtual\s*\{[^\}]+\},\s*Landroidx/core/view/WindowInsetsControllerCompat;->hide\(I\)V)")
-        content = pattern.sub(r"# [NUVIO PATCH] \1", content)
-        log("Disabled WindowInsetsControllerCompat.hide() to enable single-swipe edge back gesture.")
+        content = re.sub(
+            r"invoke-virtual\s*\{([^\}]+)\},\s*Landroidx/core/view/WindowInsetsControllerCompat;->hide\(I\)V",
+            r"invoke-virtual {\1}, Landroidx/core/view/WindowInsetsControllerCompat;->show(I)V",
+            content
+        )
+        log("Replaced WindowInsetsControllerCompat.hide() with show() to keep status bar visible.")
         changed = True
 
-    # 3. Change setSystemBarsBehavior from 1 to 2
+    # 3. Explicitly set setSystemBarsBehavior to 2 (BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE)
     if "setSystemBarsBehavior" in content:
-        pattern = re.compile(r"(const/4\s+v\d+,\s*)0x1(\s+invoke-virtual\s*\{[^\}]+\},\s*Landroidx/core/view/WindowInsetsControllerCompat;->setSystemBarsBehavior)")
-        content = pattern.sub(r"\g<1>0x2\2", content)
+        content = re.sub(
+            r"invoke-virtual\s*\{([^\}]+),\s*([^\}]+)\},\s*Landroidx/core/view/WindowInsetsControllerCompat;->setSystemBarsBehavior\(I\)V",
+            r"const/4 \2, 0x2\n    invoke-virtual {\1, \2}, Landroidx/core/view/WindowInsetsControllerCompat;->setSystemBarsBehavior(I)V",
+            content
+        )
+        log("Set WindowInsetsControllerCompat.setSystemBarsBehavior to 2.")
+        changed = True
+
+    # 3b. Add onResume() to MainActivity so system bars are always visible when returning to activity
+    if "protected onResume()V" not in content:
+        on_resume_smali = """
+.method protected onResume()V
+    .registers 4
+
+    invoke-super {p0}, Landroidx/activity/ComponentActivity;->onResume()V
+
+    # [NUVIO PATCH] Ensure systemBars are visible on resume for 1-swipe back gesture
+    invoke-virtual {p0}, Lcom/streamsync/app/MainActivity;->getWindow()Landroid/view/Window;
+    move-result-object v0
+    if-eqz v0, :cond_resume_end
+
+    new-instance v1, Landroidx/core/view/WindowInsetsControllerCompat;
+    invoke-virtual {v0}, Landroid/view/Window;->getDecorView()Landroid/view/View;
+    move-result-object v2
+    invoke-direct {v1, v0, v2}, Landroidx/core/view/WindowInsetsControllerCompat;-><init>(Landroid/view/Window;Landroid/view/View;)V
+
+    invoke-static {}, Landroidx/core/view/WindowInsetsCompat$Type;->systemBars()I
+    move-result v0
+    invoke-virtual {v1, v0}, Landroidx/core/view/WindowInsetsControllerCompat;->show(I)V
+
+    const/4 v0, 0x2
+    invoke-virtual {v1, v0}, Landroidx/core/view/WindowInsetsControllerCompat;->setSystemBarsBehavior(I)V
+
+    :cond_resume_end
+    return-void
+.end method
+"""
+        content += "\n" + on_resume_smali
+        log("Added onResume() to MainActivity to maintain visible systemBars.")
         changed = True
 
     # 4. Register HomeBackCallback and set sInstance in onCreate(Bundle)
@@ -296,6 +337,45 @@ def patch_single_swipe_and_exit_dialog(unpack_dir, script_dir):
                 with open(cs_targets[0], 'w', encoding='utf-8') as f:
                     f.write(cs_content_patched)
                 log("Captured NavController in ComposableSingletons rememberNavController.")
+
+    # 8. Restore systemBars in PlayerScreen.onDispose
+    player_dispose_targets = find_files(unpack_dir, r"^PlayerScreenKt\$PlayerScreen\$2\$1\$invoke\$\$inlined\$onDispose\$1\.smali$")
+    if player_dispose_targets:
+        with open(player_dispose_targets[0], 'r', encoding='utf-8') as f:
+            dispose_smali = f.read()
+        restore_bars_dispose = """
+.method public dispose()V
+    .locals 4
+
+    # [NUVIO PATCH] Restore systemBars when leaving player screen
+    sget-object v0, Lcom/streamsync/app/MainActivity;->sInstance:Lcom/streamsync/app/MainActivity;
+    if-eqz v0, :cond_0
+
+    invoke-virtual {v0}, Lcom/streamsync/app/MainActivity;->getWindow()Landroid/view/Window;
+    move-result-object v1
+    if-eqz v1, :cond_0
+
+    new-instance v2, Landroidx/core/view/WindowInsetsControllerCompat;
+    invoke-virtual {v1}, Landroid/view/Window;->getDecorView()Landroid/view/View;
+    move-result-object v3
+    invoke-direct {v2, v1, v3}, Landroidx/core/view/WindowInsetsControllerCompat;-><init>(Landroid/view/Window;Landroid/view/View;)V
+
+    invoke-static {}, Landroidx/core/view/WindowInsetsCompat$Type;->systemBars()I
+    move-result v1
+    invoke-virtual {v2, v1}, Landroidx/core/view/WindowInsetsControllerCompat;->show(I)V
+
+    const/4 v1, 0x2
+    invoke-virtual {v2, v1}, Landroidx/core/view/WindowInsetsControllerCompat;->setSystemBarsBehavior(I)V
+
+    :cond_0
+    return-void
+.end method
+"""
+        if "public dispose()V" in dispose_smali:
+            dispose_smali = re.sub(r"\.method public dispose\(\)V[\s\S]*?\.end method", restore_bars_dispose.strip(), dispose_smali)
+            with open(player_dispose_targets[0], 'w', encoding='utf-8') as f:
+                f.write(dispose_smali)
+            log("Injected systemBars restoration into PlayerScreen.onDispose().")
 
     # 8. Copy verified HomeBackCallback.smali & ExitConfirmListener.smali
     smali_patches_dir = os.path.join(script_dir, "smali_patches")
@@ -485,7 +565,7 @@ def patch_manifest_and_resources(unpack_dir):
         log(f"ERROR: {manifest_path} not found!")
         return False
 
-    with open(manifest_path, 'r', encoding='utf-8') as f:
+    with open(manifest_path, 'r', encoding='utf-8', errors='ignore') as f:
         manifest = f.read()
 
     changed = False

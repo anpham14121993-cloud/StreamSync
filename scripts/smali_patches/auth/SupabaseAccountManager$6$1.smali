@@ -3,12 +3,12 @@
 .source "SupabaseAccountManager.java"
 
 # interfaces
-.implements Ljava/lang/Runnable;
+.implements Lcom/streamsync/app/auth/SupabaseSyncService$AuthCallback;
 
 
 # annotations
 .annotation system Ldalvik/annotation/EnclosingMethod;
-    value = Lcom/streamsync/app/auth/SupabaseAccountManager$6;->run()V
+    value = Lcom/streamsync/app/auth/SupabaseAccountManager$6;->onClick(Landroid/view/View;)V
 .end annotation
 
 .annotation system Ldalvik/annotation/InnerClass;
@@ -33,7 +33,7 @@
         }
     .end annotation
 
-    .line 162
+    .line 287
     iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$6$1;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$6;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
@@ -43,43 +43,58 @@
 
 
 # virtual methods
-.method public run()V
+.method public onError(Ljava/lang/String;)V
     .registers 4
 
-    .line 165
+    .line 297
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$6$1;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$6;
 
-    iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseAccountManager$6;->val$activity:Landroid/app/Activity;
+    iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseAccountManager$6;->val$context:Landroid/content/Context;
 
-    iget-object v1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$6$1;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$6;
+    const/4 v1, 0x1
 
-    iget-boolean v1, v1, Lcom/streamsync/app/auth/SupabaseAccountManager$6;->val$isSignUp:Z
+    invoke-static {v0, p1, v1}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
 
-    if-eqz v1, :cond_d
+    move-result-object p1
 
-    const-string v1, "T\u1ea1o t\u00e0i kho\u1ea3n Supabase th\u00e0nh c\u00f4ng!"
+    invoke-virtual {p1}, Landroid/widget/Toast;->show()V
 
-    goto :goto_f
+    .line 298
+    return-void
+.end method
 
-    :cond_d
-    const-string v1, "\u0110\u0103ng nh\u1eadp Supabase th\u00e0nh c\u00f4ng!"
+.method public onSuccess(Ljava/lang/String;Ljava/lang/String;)V
+    .registers 4
 
-    :goto_f
-    const/4 v2, 0x0
+    .line 290
+    iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$6$1;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$6;
 
-    invoke-static {v0, v1, v2}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
+    iget-object p1, p1, Lcom/streamsync/app/auth/SupabaseAccountManager$6;->val$context:Landroid/content/Context;
 
-    move-result-object v0
+    const-string p2, "\u0110\u0103ng k\u00fd th\u00e0nh c\u00f4ng!"
 
-    invoke-virtual {v0}, Landroid/widget/Toast;->show()V
+    const/4 v0, 0x0
 
-    .line 166
-    iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$6$1;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$6;
+    invoke-static {p1, p2, v0}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
 
-    iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseAccountManager$6;->val$activity:Landroid/app/Activity;
+    move-result-object p1
 
-    invoke-static {v0}, Lcom/streamsync/app/auth/SupabaseAccountManager;->show(Landroid/content/Context;)V
+    invoke-virtual {p1}, Landroid/widget/Toast;->show()V
 
-    .line 167
+    .line 291
+    iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$6$1;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$6;
+
+    iget-object p1, p1, Lcom/streamsync/app/auth/SupabaseAccountManager$6;->val$dialog:Landroid/app/AlertDialog;
+
+    invoke-virtual {p1}, Landroid/app/AlertDialog;->dismiss()V
+
+    .line 292
+    iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$6$1;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$6;
+
+    iget-object p1, p1, Lcom/streamsync/app/auth/SupabaseAccountManager$6;->val$context:Landroid/content/Context;
+
+    invoke-static {p1}, Lcom/streamsync/app/auth/SupabaseAccountManager;->-$$Nest$smshowLoggedInDialog(Landroid/content/Context;)V
+
+    .line 293
     return-void
 .end method

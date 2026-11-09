@@ -3,12 +3,12 @@
 .source "SupabaseAccountManager.java"
 
 # interfaces
-.implements Landroid/content/DialogInterface$OnClickListener;
+.implements Landroid/view/View$OnClickListener;
 
 
 # annotations
 .annotation system Ldalvik/annotation/EnclosingMethod;
-    value = Lcom/streamsync/app/auth/SupabaseAccountManager;->show(Landroid/content/Context;)V
+    value = Lcom/streamsync/app/auth/SupabaseAccountManager;->showLoggedInDialog(Landroid/content/Context;)V
 .end annotation
 
 .annotation system Ldalvik/annotation/InnerClass;
@@ -18,32 +18,28 @@
 
 
 # instance fields
-.field final synthetic val$activity:Landroid/app/Activity;
+.field final synthetic val$context:Landroid/content/Context;
 
-.field final synthetic val$etEmail:Landroid/widget/EditText;
-
-.field final synthetic val$etPassword:Landroid/widget/EditText;
+.field final synthetic val$dialog:Landroid/app/AlertDialog;
 
 .field final synthetic val$prefs:Landroid/content/SharedPreferences;
 
 
 # direct methods
-.method constructor <init>(Landroid/widget/EditText;Landroid/widget/EditText;Landroid/app/Activity;Landroid/content/SharedPreferences;)V
-    .registers 5
+.method constructor <init>(Landroid/content/SharedPreferences;Landroid/content/Context;Landroid/app/AlertDialog;)V
+    .registers 4
     .annotation system Ldalvik/annotation/Signature;
         value = {
             "()V"
         }
     .end annotation
 
-    .line 113
-    iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$etEmail:Landroid/widget/EditText;
+    .line 140
+    iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$prefs:Landroid/content/SharedPreferences;
 
-    iput-object p2, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$etPassword:Landroid/widget/EditText;
+    iput-object p2, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$context:Landroid/content/Context;
 
-    iput-object p3, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$activity:Landroid/app/Activity;
-
-    iput-object p4, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$prefs:Landroid/content/SharedPreferences;
+    iput-object p3, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$dialog:Landroid/app/AlertDialog;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
@@ -52,82 +48,45 @@
 
 
 # virtual methods
-.method public onClick(Landroid/content/DialogInterface;I)V
-    .registers 6
+.method public onClick(Landroid/view/View;)V
+    .registers 4
 
-    .line 116
-    iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$etEmail:Landroid/widget/EditText;
+    .line 143
+    iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$prefs:Landroid/content/SharedPreferences;
 
-    invoke-virtual {p1}, Landroid/widget/EditText;->getText()Landroid/text/Editable;
-
-    move-result-object p1
-
-    invoke-virtual {p1}, Ljava/lang/Object;->toString()Ljava/lang/String;
+    invoke-interface {p1}, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
 
     move-result-object p1
 
-    invoke-virtual {p1}, Ljava/lang/String;->trim()Ljava/lang/String;
+    invoke-interface {p1}, Landroid/content/SharedPreferences$Editor;->clear()Landroid/content/SharedPreferences$Editor;
 
     move-result-object p1
 
-    .line 117
-    iget-object p2, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$etPassword:Landroid/widget/EditText;
+    invoke-interface {p1}, Landroid/content/SharedPreferences$Editor;->apply()V
 
-    invoke-virtual {p2}, Landroid/widget/EditText;->getText()Landroid/text/Editable;
+    .line 144
+    iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$context:Landroid/content/Context;
 
-    move-result-object p2
+    const-string v0, "\u0110\u00e3 \u0111\u0103ng xu\u1ea5t t\u00e0i kho\u1ea3n"
 
-    invoke-virtual {p2}, Ljava/lang/Object;->toString()Ljava/lang/String;
+    const/4 v1, 0x0
 
-    move-result-object p2
-
-    invoke-virtual {p2}, Ljava/lang/String;->trim()Ljava/lang/String;
-
-    move-result-object p2
-
-    .line 118
-    invoke-static {p1}, Landroid/text/TextUtils;->isEmpty(Ljava/lang/CharSequence;)Z
-
-    move-result v0
-
-    if-nez v0, :cond_32
-
-    invoke-static {p2}, Landroid/text/TextUtils;->isEmpty(Ljava/lang/CharSequence;)Z
-
-    move-result v0
-
-    if-eqz v0, :cond_29
-
-    goto :goto_32
-
-    .line 122
-    :cond_29
-    iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$activity:Landroid/app/Activity;
-
-    iget-object v1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$prefs:Landroid/content/SharedPreferences;
-
-    const/4 v2, 0x1
-
-    invoke-static {v0, v1, p1, p2, v2}, Lcom/streamsync/app/auth/SupabaseAccountManager;->-$$Nest$smauthenticateUser(Landroid/app/Activity;Landroid/content/SharedPreferences;Ljava/lang/String;Ljava/lang/String;Z)V
-
-    .line 123
-    return-void
-
-    .line 119
-    :cond_32
-    :goto_32
-    iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$activity:Landroid/app/Activity;
-
-    const-string p2, "Vui l\u00f2ng nh\u1eadp email v\u00e0 m\u1eadt kh\u1ea9u \u0111\u1ec3 t\u1ea1o t\u00e0i kho\u1ea3n."
-
-    const/4 v0, 0x0
-
-    invoke-static {p1, p2, v0}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
+    invoke-static {p1, v0, v1}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
 
     move-result-object p1
 
     invoke-virtual {p1}, Landroid/widget/Toast;->show()V
 
-    .line 120
+    .line 145
+    iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$dialog:Landroid/app/AlertDialog;
+
+    invoke-virtual {p1}, Landroid/app/AlertDialog;->dismiss()V
+
+    .line 146
+    iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$context:Landroid/content/Context;
+
+    invoke-static {p1}, Lcom/streamsync/app/auth/SupabaseAccountManager;->-$$Nest$smshowLoginDialog(Landroid/content/Context;)V
+
+    .line 147
     return-void
 .end method
