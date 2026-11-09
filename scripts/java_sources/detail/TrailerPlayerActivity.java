@@ -28,6 +28,9 @@ public class TrailerPlayerActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Auto rotate landscape fullscreen like playing a movie
+        setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+
         // Enable fullscreen and keep screen on
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         Window window = getWindow();
@@ -72,19 +75,19 @@ public class TrailerPlayerActivity extends Activity {
 
         mWebView.setWebChromeClient(new WebChromeClient());
 
-        // HTML embed for perfect aspect-ratio centering
+        // HTML embed for perfect full-screen video
         String embedHtml = "<!DOCTYPE html>\n" +
             "<html>\n" +
             "<head>\n" +
             "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\">\n" +
             "  <style>\n" +
             "    * { margin:0; padding:0; box-sizing:border-box; }\n" +
-            "    html, body { width:100%; height:100%; background:#000; overflow:hidden; display:flex; justify-content:center; align-items:center; }\n" +
-            "    iframe { width:100vw; height:100vh; border:none; }\n" +
+            "    html, body { width:100%; height:100%; background:#000; overflow:hidden; }\n" +
+            "    iframe { position:absolute; top:0; left:0; width:100%; height:100%; border:none; }\n" +
             "  </style>\n" +
             "</head>\n" +
             "<body>\n" +
-            "  <iframe src=\"https://www.youtube-nocookie.com/embed/" + trailerKey + "?autoplay=1&controls=1&playsinline=1&rel=0&modestbranding=1&fs=1\"\n" +
+            "  <iframe src=\"https://www.youtube-nocookie.com/embed/" + trailerKey + "?autoplay=1&controls=1&playsinline=0&rel=0&modestbranding=1&fs=1\"\n" +
             "          allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen\"\n" +
             "          allowfullscreen></iframe>\n" +
             "</body>\n" +

@@ -85,6 +85,11 @@
     .line 29
     invoke-super {p0, p1}, Landroid/app/Activity;->onCreate(Landroid/os/Bundle;)V
 
+    .line 31
+    const/4 v0, 0x6
+
+    invoke-virtual {p0, v0}, Lcom/streamsync/app/ui/detail/TrailerPlayerActivity;->setRequestedOrientation(I)V
+
     .line 32
     const/4 p1, 0x1
 
@@ -237,7 +242,7 @@
 
     invoke-direct {p1}, Ljava/lang/StringBuilder;-><init>()V
 
-    const-string v1, "<!DOCTYPE html>\n<html>\n<head>\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\">\n  <style>\n    * { margin:0; padding:0; box-sizing:border-box; }\n    html, body { width:100%; height:100%; background:#000; overflow:hidden; display:flex; justify-content:center; align-items:center; }\n    iframe { width:100vw; height:100vh; border:none; }\n  </style>\n</head>\n<body>\n  <iframe src=\"https://www.youtube-nocookie.com/embed/"
+    const-string v1, "<!DOCTYPE html>\n<html>\n<head>\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\">\n  <style>\n    * { margin:0; padding:0; box-sizing:border-box; }\n    html, body { width:100%; height:100%; background:#000; overflow:hidden; }\n    iframe { position:absolute; top:0; left:0; width:100%; height:100%; border:none; }\n  </style>\n</head>\n<body>\n  <iframe src=\"https://www.youtube-nocookie.com/embed/"
 
     invoke-virtual {p1, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
@@ -247,7 +252,7 @@
 
     move-result-object p1
 
-    const-string v0, "?autoplay=1&controls=1&playsinline=1&rel=0&modestbranding=1&fs=1\"\n          allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen\"\n          allowfullscreen></iframe>\n</body>\n</html>"
+    const-string v0, "?autoplay=1&controls=1&playsinline=0&rel=0&modestbranding=1&fs=1\"\n          allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen\"\n          allowfullscreen></iframe>\n</body>\n</html>"
 
     invoke-virtual {p1, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 

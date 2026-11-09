@@ -505,7 +505,7 @@ def patch_settings_integrations_and_account_and_updater(unpack_dir, script_dir):
                     "    const/high16 v8, 0x3f800000    # 1.0f\n"
                     "    invoke-static {v0, v8, v1, v6}, Landroidx/compose/foundation/layout/SizeKt;->fillMaxWidth$default(Landroidx/compose/ui/Modifier;FILjava/lang/Object;)Landroidx/compose/ui/Modifier;\n"
                     "    move-result-object v53\n"
-                    "    const-string v52, \"AioStream v1.9.7\"" + m.group(2) +
+                    "    const-string v52, \"AioStream v1.9.8\"" + m.group(2) +
                     "sget-object v0, Landroidx/compose/ui/text/style/TextAlign;->Companion:Landroidx/compose/ui/text/style/TextAlign$Companion;\n"
                     "    invoke-virtual {v0}, Landroidx/compose/ui/text/style/TextAlign$Companion;->getCenter-e0LSkKk()I\n"
                     "    move-result v0\n"
@@ -514,7 +514,7 @@ def patch_settings_integrations_and_account_and_updater(unpack_dir, script_dir):
                     "const v76, 0xfef8" + m.group(6)
                 )
             s2_content = pattern_disclaimer.sub(repl_disclaimer, s2_content, count=1)
-            log("Replaced settings disclaimer note with centered single-line AioStream v1.9.7.")
+            log("Replaced settings disclaimer note with centered single-line AioStream v1.9.8.")
 
         with open(s2_path, 'w', encoding='utf-8') as f:
             f.write(s2_content)
@@ -556,7 +556,7 @@ def patch_settings_integrations_and_account_and_updater(unpack_dir, script_dir):
     invoke-static {v0}, Landroidx/compose/material/icons/filled/SystemUpdateKt;->getSystemUpdate(Landroidx/compose/material/icons/Icons$Filled;)Landroidx/compose/ui/graphics/vector/ImageVector;
     move-result-object v1
     const-string v2, "C\\u1eadp nh\\u1eadt \\u1ee9ng d\\u1ee5ng"
-    const-string v3, "B\\u1ea3n v1.9.7 \\u2022 Ki\\u1ec3m tra & c\\u1eadp nh\\u1eadt tr\\u1ef1c ti\\u1ebfp (OTA)"
+    const-string v3, "B\\u1ea3n v1.9.8 \\u2022 Ki\\u1ec3m tra & c\\u1eadp nh\\u1eadt tr\\u1ef1c ti\\u1ebfp (OTA)"
     new-instance v4, Lcom/streamsync/app/updater/UpdaterClickLambda;
     invoke-direct {v4}, Lcom/streamsync/app/updater/UpdaterClickLambda;-><init>()V
     const/16 v6, 0x1b0
@@ -1032,6 +1032,144 @@ def patch_exo_native_buffers(unpack_dir):
 
     return True
 
+def patch_player_speed_and_cleanups(unpack_dir):
+    """
+    1. Fixes slow playback start and slow seeking delays:
+       - Patches PlayerScreenKt.buildLoadControl so it ALWAYS applies user start/seek buffer settings (defaults to 1s),
+         never bypassing to hardcoded 2.5s / 5s stock() when custom buffer toggle is off.
+       - Patches AdjustableLoadControl.stock to 1000ms start buffer & 1000ms seek buffer.
+       - Patches AdjustableLoadControl.shouldStartPlayback so rebuffering (seek) uses seekBufferMs (1s) instead of hardcoded 5000ms.
+       - Patches PlaybackSettingsStore so start_buffer_seconds & seek_buffer_seconds default to 1 second.
+    2. Removes Initial Bandwidth Estimation:
+       - Removes setBandwidthMeter with initialBitrateEstimate in PlayerScreenKt so ExoPlayer starts playback immediately.
+       - Returns 0 from PlaybackSettingsStore.getInitialBitrateBps.
+       - Removes LabeledSlider for initial bandwidth estimation from PlayerSettingsScreenKt UI.
+    3. Removes HTTP/2:
+       - Patches OkHttpVideoDataSource$Companion to always use reliable standard HTTP/1.1 (bypasses HTTP/2 branch).
+       - Returns false from PlaybackSettingsStore.isHttp2Enabled.
+       - Removes SwitchSettingRow for HTTP/2 from PlayerSettingsScreenKt UI.
+    """
+    log("Patching Player speed optimizations, buffer timings (1s), removing bandwidth estimation & HTTP/2...")
+
+    # 1. AdjustableLoadControl$Companion.smali (stock defaults: 2500ms/5000ms -> 1000ms/1000ms)
+    alc_comp_targets = find_file_exact(unpack_dir, "AdjustableLoadControl$Companion.smali")
+    if alc_comp_targets:
+        with open(alc_comp_targets[0], 'r', encoding='utf-8', errors='ignore') as f:
+            c = f.read()
+        c = re.sub(
+            r'(const/16\s+v3,\s*)0x9c4(\s*const/16\s+v4,\s*)0x1388',
+            r'\g<1>0x3e8\g<2>0x3e8',
+            c
+        )
+        with open(alc_comp_targets[0], 'w', encoding='utf-8') as f:
+            f.write(c)
+        log("Patched AdjustableLoadControl.stock to 1000ms start & seek buffer.")
+
+    # 2. AdjustableLoadControl.smali (shouldStartPlayback: rebuffering uses seekBufferMs instead of 5000ms)
+    alc_targets = find_file_exact(unpack_dir, "AdjustableLoadControl.smali")
+    if alc_targets:
+        with open(alc_targets[0], 'r', encoding='utf-8', errors='ignore') as f:
+            c = f.read()
+        c = re.sub(
+            r':cond_d\s*const/16\s+v0,\s*0x1388',
+            ':cond_d\n    iget v0, p0, Lcom/streamsync/app/ui/player/AdjustableLoadControl;->seekBufferMs:I',
+            c
+        )
+        with open(alc_targets[0], 'w', encoding='utf-8') as f:
+            f.write(c)
+        log("Patched AdjustableLoadControl.shouldStartPlayback to use seekBufferMs on rebuffering.")
+
+    # 3. PlayerScreenKt.smali (buildLoadControl bypasses stock and uses user settings; remove initial bandwidth meter)
+    ps_targets = find_file_exact(unpack_dir, "PlayerScreenKt.smali")
+    if ps_targets:
+        with open(ps_targets[0], 'r', encoding='utf-8', errors='ignore') as f:
+            c = f.read()
+        # Ensure buildLoadControl always executes custom buffer & timing calculation
+        c = re.sub(
+            r'(\.method private static final buildLoadControl\(Landroid/content/Context;Lcom/streamsync/app/settings/PlaybackSettingsStore;Lcom/streamsync/app/settings/RamTier;\)Lcom/streamsync/app/ui/player/AdjustableLoadControl;[\s\S]*?)if-nez\s+v1,\s*:cond_97',
+            r'\g<1>goto :cond_97',
+            c
+        )
+        # Remove setBandwidthMeter with initialBitrateEstimate
+        c = re.sub(
+            r'invoke-virtual\s*\{v14,\s*v6\},\s*Landroidx/media3/exoplayer/ExoPlayer\$Builder;->setBandwidthMeter\(Landroidx/media3/exoplayer/upstream/BandwidthMeter;\)Landroidx/media3/exoplayer/ExoPlayer\$Builder;',
+            '# [PATCH] Bandwidth meter estimation removed for zero-delay start',
+            c
+        )
+        with open(ps_targets[0], 'w', encoding='utf-8') as f:
+            f.write(c)
+        log("Patched PlayerScreenKt buildLoadControl and removed artificial bandwidth meter estimate.")
+
+    # 4. PlaybackSettingsStore.smali (default 1s start/seek buffer, http2 false, bitrate estimate 0)
+    pss_targets = find_file_exact(unpack_dir, "PlaybackSettingsStore.smali")
+    if pss_targets:
+        with open(pss_targets[0], 'r', encoding='utf-8', errors='ignore') as f:
+            c = f.read()
+        c = re.sub(
+            r'(const-string\s+v1,\s*"start_buffer_seconds"\s*const/4\s+)v2,\s*0x2',
+            r'\g<1>v2, 0x1',
+            c
+        )
+        c = re.sub(
+            r'(const-string\s+v1,\s*"seek_buffer_seconds"\s*const/4\s+)v2,\s*0x2',
+            r'\g<1>v2, 0x1',
+            c
+        )
+        c = re.sub(
+            r'(\.method public final isHttp2Enabled\(\)Z[\s\S]*?const-string\s+v1,\s*"http2_enabled"\s*const/4\s+)v2,\s*0x1',
+            r'\g<1>v2, 0x0',
+            c
+        )
+        c = re.sub(
+            r'\.method public final getInitialBitrateBps\(\)J[\s\S]*?\.end method',
+            """.method public final getInitialBitrateBps()J
+    .registers 3
+
+    const-wide/16 v0, 0x0
+
+    return-wide v0
+.end method""",
+            c
+        )
+        with open(pss_targets[0], 'w', encoding='utf-8') as f:
+            f.write(c)
+        log("Patched PlaybackSettingsStore: default 1s buffer, http2 disabled, zero initial bitrate.")
+
+    # 5. OkHttpVideoDataSource$Companion.smali (always use stable HTTP/1.1)
+    okhttp_targets = find_file_exact(unpack_dir, "OkHttpVideoDataSource$Companion.smali")
+    if okhttp_targets:
+        with open(okhttp_targets[0], 'r', encoding='utf-8', errors='ignore') as f:
+            c = f.read()
+        c = re.sub(
+            r'invoke-virtual\s*\{p2\},\s*Lcom/streamsync/app/settings/PlaybackSettingsStore;->isHttp2Enabled\(\)Z\s*move-result\s+v2',
+            'const/4 v2, 0x0',
+            c
+        )
+        with open(okhttp_targets[0], 'w', encoding='utf-8') as f:
+            f.write(c)
+        log("Patched OkHttpVideoDataSource to use stable HTTP/1.1 without HTTP/2.")
+
+    # 6. PlayerSettingsScreenKt$PlayerSettingsScreen$3$1$8.smali (remove UI sliders)
+    ui_targets = find_file_exact(unpack_dir, "PlayerSettingsScreenKt$PlayerSettingsScreen$3$1$8.smali")
+    if ui_targets:
+        with open(ui_targets[0], 'r', encoding='utf-8', errors='ignore') as f:
+            c = f.read()
+        c = re.sub(
+            r'invoke-static/range\s*\{v1\s*\.\.\s*v13\},\s*Lcom/streamsync/app/ui/components/SettingComponentsKt;->LabeledSlider-VRxQTpk[^\n]+',
+            '# [PATCH] Removed LabeledSlider for initial bandwidth estimation',
+            c
+        )
+        c = re.sub(
+            r'invoke-static/range\s*\{v1\s*\.\.\s*v9\},\s*Lcom/streamsync/app/ui/components/SettingComponentsKt;->SwitchSettingRow-FV1VA1c[^\n]+',
+            '# [PATCH] Removed SwitchSettingRow for HTTP/2',
+            c
+        )
+        with open(ui_targets[0], 'w', encoding='utf-8') as f:
+            f.write(c)
+        log("Removed initial bandwidth estimate and HTTP/2 toggles from PlayerSettingsScreen UI.")
+
+    return True
+
 def patch_disable_logging(unpack_dir):
     """
     Disables all disk and Logcat logging across the app (FileLog).
@@ -1170,6 +1308,7 @@ def patch_manifest_and_resources(unpack_dir):
         activity_xml = """        <activity
             android:name="com.streamsync.app.ui.detail.TrailerPlayerActivity"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+            android:screenOrientation="sensorLandscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:exported="false" />
     </application>"""
@@ -1177,14 +1316,14 @@ def patch_manifest_and_resources(unpack_dir):
         log("Registered TrailerPlayerActivity in AndroidManifest.")
         changed = True
 
-    # 4. Bump versionCode to 197 and versionName to 1.9.7 for overwrite/update support
+    # 4. Bump versionCode to 198 and versionName to 1.9.8 for overwrite/update support
     if 'android:versionCode=' in manifest:
-        manifest = re.sub(r'android:versionCode="[^"]*"', 'android:versionCode="197"', manifest)
-        manifest = re.sub(r'android:versionName="[^"]*"', 'android:versionName="1.9.7"', manifest)
-        log("Updated AndroidManifest versionCode to 197 and versionName to 1.9.7.")
+        manifest = re.sub(r'android:versionCode="[^"]*"', 'android:versionCode="198"', manifest)
+        manifest = re.sub(r'android:versionName="[^"]*"', 'android:versionName="1.9.8"', manifest)
+        log("Updated AndroidManifest versionCode to 198 and versionName to 1.9.8.")
         changed = True
     else:
-        manifest = re.sub(r'<manifest\s+', '<manifest android:versionCode="197" android:versionName="1.9.7" ', manifest)
+        manifest = re.sub(r'<manifest\s+', '<manifest android:versionCode="198" android:versionName="1.9.8" ', manifest)
         log("Inserted android:versionCode and versionName into AndroidManifest.")
         changed = True
 
@@ -1231,8 +1370,8 @@ def patch_manifest_and_resources(unpack_dir):
         with open(apktool_yml_path, 'r', encoding='utf-8') as yf:
             yml_content = yf.read()
         
-        yml_content = re.sub(r"versionCode:\s*[^\r\n]+", lambda m: "versionCode: '197'", yml_content)
-        yml_content = re.sub(r"versionName:\s*[^\r\n]+", lambda m: "versionName: '1.9.7'", yml_content)
+        yml_content = re.sub(r"versionCode:\s*[^\r\n]+", lambda m: "versionCode: '198'", yml_content)
+        yml_content = re.sub(r"versionName:\s*[^\r\n]+", lambda m: "versionName: '1.9.8'", yml_content)
 
         if "doNotCompress:" in yml_content and "- so" not in yml_content:
             yml_content = yml_content.replace(
@@ -1241,7 +1380,7 @@ def patch_manifest_and_resources(unpack_dir):
             )
         with open(apktool_yml_path, 'w', encoding='utf-8') as yf:
             yf.write(yml_content)
-        log("Updated apktool.yml with version 197 (1.9.7) and uncompressed shared libraries.")
+        log("Updated apktool.yml with version 198 (1.9.8) and uncompressed shared libraries.")
 
     # 8. Generate tv_banner.png and copy tv_banner.xml into res/drawable
     drawable_dir = os.path.join(unpack_dir, "res", "drawable")
@@ -1304,6 +1443,7 @@ def main():
     patch_meta_screen(unpack_dir, script_dir)
     patch_addons_screen(unpack_dir)
     patch_exo_native_buffers(unpack_dir)
+    patch_player_speed_and_cleanups(unpack_dir)
     patch_disable_logging(unpack_dir)
     patch_manifest_and_resources(unpack_dir)
     inject_native_libraries(unpack_dir, repo_root)
