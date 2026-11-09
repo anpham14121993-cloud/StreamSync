@@ -326,7 +326,7 @@
     move-exception p0
 
     :try_start_70
-    invoke-static {v0, p0}, Lcom/streamsync/app/settings/NuvioNativeBufferHelper$$ExternalSyntheticBackport0;->m(Ljava/lang/Throwable;Ljava/lang/Throwable;)V
+    invoke-static {v0, p0}, Lcom/streamsync/app/auth/SupabaseSyncService$$ExternalSyntheticBackport0;->m(Ljava/lang/Throwable;Ljava/lang/Throwable;)V
 
     :goto_73
     throw v0

@@ -47,7 +47,11 @@
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
+    sget-object v0, Lkotlin/Unit;->INSTANCE:Lkotlin/Unit;
+    return-object v0
+
     :catchall_0
+    move-exception v0
     sget-object v0, Lkotlin/Unit;->INSTANCE:Lkotlin/Unit;
     return-object v0
 .end method

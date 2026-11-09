@@ -33,7 +33,7 @@
         }
     .end annotation
 
-    .line 194
+    .line 196
     iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$2$1;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$2;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
@@ -46,7 +46,7 @@
 .method public onError(Ljava/lang/String;)V
     .registers 5
 
-    .line 221
+    .line 223
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$2$1;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$2;
 
     iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseAccountManager$2;->val$context:Landroid/content/Context;
@@ -77,14 +77,14 @@
 
     invoke-virtual {p1}, Landroid/widget/Toast;->show()V
 
-    .line 222
+    .line 224
     return-void
 .end method
 
 .method public onSuccess(Ljava/lang/String;Ljava/lang/String;)V
     .registers 3
 
-    .line 198
+    .line 200
     :try_start_0
     iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$2$1;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$2;
 
@@ -96,14 +96,14 @@
 
     goto :goto_9
 
-    .line 199
+    .line 201
     :catchall_8
     move-exception p1
 
     :goto_9
     nop
 
-    .line 202
+    .line 204
     iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$2$1;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$2;
 
     iget-object p1, p1, Lcom/streamsync/app/auth/SupabaseAccountManager$2;->val$context:Landroid/content/Context;
@@ -114,6 +114,6 @@
 
     invoke-static {p1, p2}, Lcom/streamsync/app/auth/SupabaseSyncService;->syncLive(Landroid/content/Context;Lcom/streamsync/app/auth/SupabaseSyncService$SyncCallback;)V
 
-    .line 217
+    .line 219
     return-void
 .end method

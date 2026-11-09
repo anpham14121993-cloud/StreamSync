@@ -90,7 +90,7 @@ public class SupabaseAccountManager {
 
         scrollView.addView(layout);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(context, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setView(scrollView);
         builder.setNegativeButton("Đóng", null);
         final AlertDialog dialog = builder.create();
@@ -108,7 +108,9 @@ public class SupabaseAccountManager {
         });
 
         if (isActivityValid(context)) {
-            dialog.show();
+            try {
+                dialog.show();
+            } catch (Throwable ignored) {}
         }
     }
 
@@ -174,7 +176,7 @@ public class SupabaseAccountManager {
 
         scrollView.addView(layout);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(context, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setView(scrollView);
         builder.setNegativeButton("Hủy", null);
         final AlertDialog dialog = builder.create();
@@ -235,7 +237,9 @@ public class SupabaseAccountManager {
         });
 
         if (isActivityValid(context)) {
-            dialog.show();
+            try {
+                dialog.show();
+            } catch (Throwable ignored) {}
         }
     }
 
@@ -336,7 +340,7 @@ public class SupabaseAccountManager {
 
                 scrollView.addView(layout);
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(context, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setView(scrollView);
                 builder.setNegativeButton("Đóng", new DialogInterface.OnClickListener() {
                     @Override
@@ -419,7 +423,9 @@ public class SupabaseAccountManager {
                 }).start();
 
                 if (isActivityValid(context)) {
-                    qrDialog.show();
+                    try {
+                        qrDialog.show();
+                    } catch (Throwable ignored) {}
                 }
             }
 

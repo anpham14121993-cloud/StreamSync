@@ -59,7 +59,7 @@
         }
     .end annotation
 
-    .line 356
+    .line 360
     iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$5;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$4;
 
     iput p2, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$5;->val$pollInterval:I
@@ -82,10 +82,10 @@
 .method public run()V
     .registers 7
 
-    .line 359
+    .line 363
     nop
 
-    .line 360
+    .line 364
     iget v0, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$5;->val$pollInterval:I
 
     mul-int/lit16 v0, v0, 0x3e8
@@ -100,7 +100,7 @@
 
     const/4 v2, 0x0
 
-    .line 361
+    .line 365
     :goto_d
     iget-object v3, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$5;->val$isCancelled:[Z
 
@@ -112,7 +112,7 @@
 
     if-ge v2, v3, :cond_6b
 
-    .line 363
+    .line 367
     int-to-long v3, v0
 
     :try_start_18
@@ -120,10 +120,10 @@
     :try_end_1b
     .catch Ljava/lang/InterruptedException; {:try_start_18 .. :try_end_1b} :catch_69
 
-    .line 366
+    .line 370
     nop
 
-    .line 367
+    .line 371
     iget-object v3, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$5;->val$isCancelled:[Z
 
     aget-boolean v3, v3, v1
@@ -142,11 +142,11 @@
 
     goto :goto_6b
 
-    .line 369
+    .line 373
     :cond_2d
     add-int/lit8 v2, v2, 0x1
 
-    .line 370
+    .line 374
     iget-object v3, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$5;->val$deviceCode:Ljava/lang/String;
 
     iget-object v4, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$5;->val$nonce:Ljava/lang/String;
@@ -155,7 +155,7 @@
 
     move-result-object v3
 
-    .line 371
+    .line 375
     const-string v4, "approved"
 
     invoke-virtual {v4, v3}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
@@ -164,7 +164,7 @@
 
     if-eqz v4, :cond_56
 
-    .line 372
+    .line 376
     iget-object v3, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$5;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$4;
 
     iget-object v3, v3, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$context:Landroid/content/Context;
@@ -177,20 +177,20 @@
 
     move-result v3
 
-    .line 373
+    .line 377
     if-eqz v3, :cond_67
 
-    .line 374
+    .line 378
     new-instance v0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$5$1;
 
     invoke-direct {v0, p0}, Lcom/streamsync/app/auth/SupabaseAccountManager$4$5$1;-><init>(Lcom/streamsync/app/auth/SupabaseAccountManager$4$5;)V
 
     invoke-static {v0}, Lcom/streamsync/app/auth/SupabaseSyncService;->runOnMain(Ljava/lang/Runnable;)V
 
-    .line 401
+    .line 405
     goto :goto_6b
 
-    .line 403
+    .line 407
     :cond_56
     const-string v4, "expired"
 
@@ -200,31 +200,31 @@
 
     if-eqz v3, :cond_67
 
-    .line 404
+    .line 408
     new-instance v0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$5$2;
 
     invoke-direct {v0, p0}, Lcom/streamsync/app/auth/SupabaseAccountManager$4$5$2;-><init>(Lcom/streamsync/app/auth/SupabaseAccountManager$4$5;)V
 
     invoke-static {v0}, Lcom/streamsync/app/auth/SupabaseSyncService;->runOnMain(Ljava/lang/Runnable;)V
 
-    .line 415
+    .line 419
     goto :goto_6b
 
-    .line 403
+    .line 407
     :cond_67
     nop
 
-    .line 417
+    .line 421
     goto :goto_d
 
-    .line 364
+    .line 368
     :catch_69
     move-exception v0
 
-    .line 365
+    .line 369
     nop
 
-    .line 418
+    .line 422
     :cond_6b
     :goto_6b
     return-void

@@ -36,7 +36,7 @@
         }
     .end annotation
 
-    .line 182
+    .line 184
     iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$2;->val$etEmail:Landroid/widget/EditText;
 
     iput-object p2, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$2;->val$etPassword:Landroid/widget/EditText;
@@ -55,7 +55,7 @@
 .method public onClick(Landroid/view/View;)V
     .registers 6
 
-    .line 185
+    .line 187
     iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$2;->val$etEmail:Landroid/widget/EditText;
 
     invoke-virtual {p1}, Landroid/widget/EditText;->getText()Landroid/text/Editable;
@@ -70,7 +70,7 @@
 
     move-result-object p1
 
-    .line 186
+    .line 188
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$2;->val$etPassword:Landroid/widget/EditText;
 
     invoke-virtual {v0}, Landroid/widget/EditText;->getText()Landroid/text/Editable;
@@ -85,7 +85,7 @@
 
     move-result-object v0
 
-    .line 188
+    .line 190
     invoke-virtual {p1}, Ljava/lang/String;->isEmpty()Z
 
     move-result v1
@@ -102,7 +102,7 @@
 
     goto :goto_42
 
-    .line 193
+    .line 195
     :cond_2a
     iget-object v1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$2;->val$context:Landroid/content/Context;
 
@@ -114,7 +114,7 @@
 
     invoke-virtual {v1}, Landroid/widget/Toast;->show()V
 
-    .line 194
+    .line 196
     iget-object v1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$2;->val$context:Landroid/content/Context;
 
     new-instance v2, Lcom/streamsync/app/auth/SupabaseAccountManager$2$1;
@@ -125,10 +125,10 @@
 
     invoke-static {v1, v3, p1, v0, v2}, Lcom/streamsync/app/auth/SupabaseSyncService;->login(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/streamsync/app/auth/SupabaseSyncService$AuthCallback;)V
 
-    .line 224
+    .line 226
     return-void
 
-    .line 189
+    .line 191
     :cond_42
     :goto_42
     iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$2;->val$context:Landroid/content/Context;
@@ -141,6 +141,6 @@
 
     invoke-virtual {p1}, Landroid/widget/Toast;->show()V
 
-    .line 190
+    .line 192
     return-void
 .end method

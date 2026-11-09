@@ -61,12 +61,12 @@
 .method public static ensureRoomDatabase(Landroid/content/Context;)V
     .registers 8
 
-    .line 1000
+    .line 1021
     if-nez p0, :cond_3
 
     return-void
 
-    .line 1002
+    .line 1023
     :cond_3
     :try_start_3
     const-string v0, "com.streamsync.app.data.local.AppDatabase"
@@ -75,7 +75,7 @@
 
     move-result-object v0
 
-    .line 1003
+    .line 1024
     const-string v1, "Companion"
 
     invoke-virtual {v0, v1}, Ljava/lang/Class;->getField(Ljava/lang/String;)Ljava/lang/reflect/Field;
@@ -88,7 +88,7 @@
 
     move-result-object v0
 
-    .line 1004
+    .line 1025
     invoke-virtual {v0}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
 
     move-result-object v1
@@ -109,7 +109,7 @@
 
     move-result-object v1
 
-    .line 1005
+    .line 1026
     invoke-virtual {p0}, Landroid/content/Context;->getApplicationContext()Landroid/content/Context;
 
     move-result-object p0
@@ -124,14 +124,14 @@
 
     goto :goto_33
 
-    .line 1006
+    .line 1027
     :catchall_32
     move-exception p0
 
     :goto_33
     nop
 
-    .line 1007
+    .line 1028
     return-void
 .end method
 
@@ -235,7 +235,7 @@
 
     move-result-object v10
     :try_end_5b
-    .catchall {:try_start_d .. :try_end_5b} :catchall_153
+    .catchall {:try_start_d .. :try_end_5b} :catchall_152
 
     .line 319
     :try_start_5b
@@ -258,7 +258,7 @@
     .line 323
     const/16 v10, 0xc8
 
-    if-ne v9, v10, :cond_154
+    if-ne v9, v10, :cond_153
 
     .line 324
     invoke-virtual {v7}, Ljava/net/HttpURLConnection;->getInputStream()Ljava/io/InputStream;
@@ -297,7 +297,7 @@
 
     move-result v12
     :try_end_88
-    .catchall {:try_start_60 .. :try_end_88} :catchall_153
+    .catchall {:try_start_60 .. :try_end_88} :catchall_152
 
     const-string v13, "id"
 
@@ -345,7 +345,7 @@
 
     move-result v0
     :try_end_a9
-    .catchall {:try_start_8e .. :try_end_a9} :catchall_153
+    .catchall {:try_start_8e .. :try_end_a9} :catchall_152
 
     if-nez v0, :cond_f9
 
@@ -538,7 +538,7 @@
     .line 364
     invoke-interface {v0}, Landroid/content/SharedPreferences$Editor;->apply()V
     :try_end_144
-    .catchall {:try_start_f9 .. :try_end_144} :catchall_153
+    .catchall {:try_start_f9 .. :try_end_144} :catchall_152
 
     .line 365
     return v8
@@ -549,34 +549,32 @@
 
     move-object v1, v0
 
-    if-eqz v10, :cond_152
+    if-eqz v10, :cond_151
 
     :try_start_149
     invoke-virtual {v10}, Ljava/io/OutputStream;->close()V
     :try_end_14c
     .catchall {:try_start_149 .. :try_end_14c} :catchall_14d
 
-    goto :goto_152
+    goto :goto_151
 
     :catchall_14d
     move-exception v0
 
-    move-object v2, v0
+    :try_start_14e
+    invoke-static {v1, v0}, Lcom/streamsync/app/auth/SupabaseSyncService$$ExternalSyntheticBackport0;->m(Ljava/lang/Throwable;Ljava/lang/Throwable;)V
 
-    :try_start_14f
-    invoke-static {v1, v2}, Lcom/streamsync/app/auth/SupabaseSyncService$$ExternalSyntheticBackport0;->m(Ljava/lang/Throwable;Ljava/lang/Throwable;)V
-
-    :cond_152
-    :goto_152
+    :cond_151
+    :goto_151
     throw v1
-    :try_end_153
-    .catchall {:try_start_14f .. :try_end_153} :catchall_153
+    :try_end_152
+    .catchall {:try_start_14e .. :try_end_152} :catchall_152
 
     .line 367
-    :catchall_153
+    :catchall_152
     move-exception v0
 
-    :cond_154
+    :cond_153
     nop
 
     .line 368
@@ -706,13 +704,13 @@
 .method private static getDefaultManifestFallback(Ljava/lang/String;)Lorg/json/JSONObject;
     .registers 15
 
-    .line 940
+    .line 961
     :try_start_0
     new-instance v0, Lorg/json/JSONObject;
 
     invoke-direct {v0}, Lorg/json/JSONObject;-><init>()V
 
-    .line 941
+    .line 962
     const-string v1, "cinemeta"
 
     invoke-virtual {p0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
@@ -745,35 +743,35 @@
 
     if-eqz v1, :cond_61
 
-    .line 942
+    .line 963
     :try_start_23
     const-string p0, "community.cinemeta"
 
     invoke-virtual {v0, v12, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 943
+    .line 964
     const-string p0, "Cinemeta"
 
     invoke-virtual {v0, v11, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 944
+    .line 965
     const-string p0, "3.0.12"
 
     invoke-virtual {v0, v10, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 945
+    .line 966
     const-string p0, "Cung c\u1ea5p danh m\u1ee5c v\u00e0 si\u00eau d\u1eef li\u1ec7u ch\u00ednh th\u1ee9c cho phim & TV series"
 
     invoke-virtual {v0, v9, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 946
+    .line 967
     new-instance p0, Lorg/json/JSONArray;
 
     invoke-direct {p0, v7}, Lorg/json/JSONArray;-><init>(Ljava/lang/String;)V
 
     invoke-virtual {v0, v8, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 947
+    .line 968
     new-instance p0, Lorg/json/JSONArray;
 
     const-string v1, "[{\"type\":\"movie\",\"id\":\"top\",\"name\":\"Top Phim\",\"extra\":[],\"extraSupported\":[],\"extraRequired\":[]},{\"type\":\"series\",\"id\":\"top\",\"name\":\"Top Series\",\"extra\":[],\"extraSupported\":[],\"extraRequired\":[]}]"
@@ -782,7 +780,7 @@
 
     invoke-virtual {v0, v6, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 948
+    .line 969
     new-instance p0, Lorg/json/JSONArray;
 
     const-string v1, "[{\"name\":\"catalog\",\"types\":[\"movie\",\"series\"],\"idPrefixes\":[\"tt\"]},{\"name\":\"meta\",\"types\":[\"movie\",\"series\"],\"idPrefixes\":[\"tt\"]}]"
@@ -791,22 +789,22 @@
 
     invoke-virtual {v0, v5, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 949
+    .line 970
     new-instance p0, Lorg/json/JSONArray;
 
     invoke-direct {p0, v3}, Lorg/json/JSONArray;-><init>(Ljava/lang/String;)V
 
     invoke-virtual {v0, v4, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 950
+    .line 971
     const-string p0, "https://v3-cinemeta.strem.io/logo.png"
 
     invoke-virtual {v0, v2, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 951
+    .line 972
     return-object v0
 
-    .line 952
+    .line 973
     :cond_61
     const-string v1, "opensubtitles"
 
@@ -820,42 +818,42 @@
 
     if-eqz v1, :cond_a7
 
-    .line 953
+    .line 974
     :try_start_6b
     const-string p0, "org.stremio.opensubtitles-v3"
 
     invoke-virtual {v0, v12, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 954
+    .line 975
     const-string p0, "OpenSubtitles v3"
 
     invoke-virtual {v0, v11, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 955
+    .line 976
     const-string p0, "1.0.0"
 
     invoke-virtual {v0, v10, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 956
+    .line 977
     const-string p0, "Ph\u1ee5 \u0111\u1ec1 \u0111a ng\u00f4n ng\u1eef ch\u00ednh th\u1ee9c t\u1eeb OpenSubtitles"
 
     invoke-virtual {v0, v9, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 957
+    .line 978
     new-instance p0, Lorg/json/JSONArray;
 
     invoke-direct {p0, v7}, Lorg/json/JSONArray;-><init>(Ljava/lang/String;)V
 
     invoke-virtual {v0, v8, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 958
+    .line 979
     new-instance p0, Lorg/json/JSONArray;
 
     invoke-direct {p0, v13}, Lorg/json/JSONArray;-><init>(Ljava/lang/String;)V
 
     invoke-virtual {v0, v6, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 959
+    .line 980
     new-instance p0, Lorg/json/JSONArray;
 
     const-string v1, "[{\"name\":\"subtitles\",\"types\":[\"movie\",\"series\"],\"idPrefixes\":[\"tt\"]}]"
@@ -864,22 +862,22 @@
 
     invoke-virtual {v0, v5, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 960
+    .line 981
     new-instance p0, Lorg/json/JSONArray;
 
     invoke-direct {p0, v3}, Lorg/json/JSONArray;-><init>(Ljava/lang/String;)V
 
     invoke-virtual {v0, v4, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 961
+    .line 982
     const-string p0, "https://opensubtitles-v3.strem.io/logo.png"
 
     invoke-virtual {v0, v2, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 962
+    .line 983
     return-object v0
 
-    .line 963
+    .line 984
     :cond_a7
     const-string v1, "cyberflix"
 
@@ -889,34 +887,34 @@
 
     if-eqz v1, :cond_ed
 
-    .line 964
+    .line 985
     const-string p0, "tv.cyberflix.catalog"
 
     invoke-virtual {v0, v12, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 965
+    .line 986
     const-string p0, "Cyberflix Catalog"
 
     invoke-virtual {v0, v11, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 966
+    .line 987
     const-string p0, "1.5.0"
 
     invoke-virtual {v0, v10, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 967
+    .line 988
     const-string p0, "Danh m\u1ee5c phim v\u00e0 series t\u1eeb c\u00e1c n\u1ec1n t\u1ea3ng tr\u1ef1c tuy\u1ebfn ph\u1ed5 bi\u1ebfn"
 
     invoke-virtual {v0, v9, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 968
+    .line 989
     new-instance p0, Lorg/json/JSONArray;
 
     invoke-direct {p0, v7}, Lorg/json/JSONArray;-><init>(Ljava/lang/String;)V
 
     invoke-virtual {v0, v8, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 969
+    .line 990
     new-instance p0, Lorg/json/JSONArray;
 
     const-string v1, "[{\"type\":\"movie\",\"id\":\"cyberflix_netflix_movies\",\"name\":\"Netflix Phim\",\"extra\":[],\"extraSupported\":[],\"extraRequired\":[]},{\"type\":\"series\",\"id\":\"cyberflix_netflix_series\",\"name\":\"Netflix Series\",\"extra\":[],\"extraSupported\":[],\"extraRequired\":[]}]"
@@ -925,7 +923,7 @@
 
     invoke-virtual {v0, v6, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 970
+    .line 991
     new-instance p0, Lorg/json/JSONArray;
 
     const-string v1, "[{\"name\":\"catalog\",\"types\":[\"movie\",\"series\"],\"idPrefixes\":[\"tt\"]}]"
@@ -934,22 +932,22 @@
 
     invoke-virtual {v0, v5, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 971
+    .line 992
     new-instance p0, Lorg/json/JSONArray;
 
     invoke-direct {p0, v3}, Lorg/json/JSONArray;-><init>(Ljava/lang/String;)V
 
     invoke-virtual {v0, v4, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 972
+    .line 993
     const-string p0, ""
 
     invoke-virtual {v0, v2, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 973
+    .line 994
     return-object v0
 
-    .line 974
+    .line 995
     :cond_ed
     const-string v1, "torrentio"
 
@@ -959,41 +957,41 @@
 
     if-eqz p0, :cond_132
 
-    .line 975
+    .line 996
     const-string p0, "com.stremio.torrentio"
 
     invoke-virtual {v0, v12, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 976
+    .line 997
     const-string p0, "Torrentio"
 
     invoke-virtual {v0, v11, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 977
+    .line 998
     const-string p0, "1.0.13"
 
     invoke-virtual {v0, v10, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 978
+    .line 999
     const-string p0, "Ngu\u1ed3n ph\u00e1t torrent v\u00e0 debrid \u0111a d\u1ea1ng"
 
     invoke-virtual {v0, v9, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 979
+    .line 1000
     new-instance p0, Lorg/json/JSONArray;
 
     invoke-direct {p0, v7}, Lorg/json/JSONArray;-><init>(Ljava/lang/String;)V
 
     invoke-virtual {v0, v8, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 980
+    .line 1001
     new-instance p0, Lorg/json/JSONArray;
 
     invoke-direct {p0, v13}, Lorg/json/JSONArray;-><init>(Ljava/lang/String;)V
 
     invoke-virtual {v0, v6, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 981
+    .line 1002
     new-instance p0, Lorg/json/JSONArray;
 
     const-string v1, "[{\"name\":\"stream\",\"types\":[\"movie\",\"series\"],\"idPrefixes\":[\"tt\"]}]"
@@ -1002,31 +1000,31 @@
 
     invoke-virtual {v0, v5, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 982
+    .line 1003
     new-instance p0, Lorg/json/JSONArray;
 
     invoke-direct {p0, v3}, Lorg/json/JSONArray;-><init>(Ljava/lang/String;)V
 
     invoke-virtual {v0, v4, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 983
+    .line 1004
     const-string p0, "https://torrentio.strem.fun/logo.png"
 
     invoke-virtual {v0, v2, p0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
     :try_end_130
     .catchall {:try_start_6b .. :try_end_130} :catchall_131
 
-    .line 984
+    .line 1005
     return-object v0
 
-    .line 986
+    .line 1007
     :catchall_131
     move-exception p0
 
     :cond_132
     nop
 
-    .line 987
+    .line 1008
     const/4 p0, 0x0
 
     return-object p0
@@ -1044,196 +1042,135 @@
         }
     .end annotation
 
-    .line 747
-    const-string v1, "type"
+    .line 755
+    const-string v2, "type"
 
-    const-string v2, "resources"
+    const-string v3, "resources"
 
-    const-string v3, "catalogs"
+    const-string v4, "catalogs"
 
-    const-string v4, "description"
+    const-string v5, "description"
 
-    const-string v5, "version"
+    const-string v6, "version"
 
-    const-string v6, "extraRequired"
+    const-string v7, "extraRequired"
 
-    const-string v7, "extraSupported"
+    const-string v8, "extraSupported"
 
-    const-string v8, "extra"
+    const-string v9, "extra"
 
-    const-string v9, "id"
+    const-string v10, "id"
 
-    const-string v10, "/manifest.json"
+    const-string v11, "/manifest.json"
 
-    const-string v11, "idPrefixes"
+    const-string v12, "idPrefixes"
 
-    const-string v12, "types"
+    const-string v13, "types"
 
-    const-string v13, "name"
+    const-string v14, "name"
 
-    .line 748
-    const-string v0, "streamsync.db"
+    if-eqz p0, :cond_4ae
 
-    move-object/from16 v14, p0
-
-    invoke-virtual {v14, v0}, Landroid/content/Context;->getDatabasePath(Ljava/lang/String;)Ljava/io/File;
-
-    move-result-object v0
-
-    .line 749
-    invoke-virtual {v0}, Ljava/io/File;->getParentFile()Ljava/io/File;
-
-    move-result-object v15
-
-    invoke-virtual {v15}, Ljava/io/File;->exists()Z
-
-    move-result v15
-
-    if-nez v15, :cond_33
-
-    .line 750
-    invoke-virtual {v0}, Ljava/io/File;->getParentFile()Ljava/io/File;
-
-    move-result-object v15
-
-    invoke-virtual {v15}, Ljava/io/File;->mkdirs()Z
-
-    .line 752
-    :cond_33
-    if-eqz p1, :cond_49a
+    if-eqz p1, :cond_4ae
 
     invoke-interface/range {p1 .. p1}, Ljava/util/List;->isEmpty()Z
 
-    move-result v16
+    move-result v0
 
-    if-eqz v16, :cond_3d
+    if-eqz v0, :cond_26
 
-    goto/16 :goto_49a
+    goto/16 :goto_4ae
 
-    .line 754
-    :cond_3d
-    invoke-static/range {p0 .. p0}, Lcom/streamsync/app/auth/SupabaseSyncService;->ensureRoomDatabase(Landroid/content/Context;)V
+    .line 757
+    :cond_26
+    new-instance v15, Ljava/util/ArrayList;
 
-    .line 756
-    invoke-virtual {v0}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
-
-    move-result-object v0
-
-    const/high16 v14, 0x10000000
-
-    const/4 v15, 0x0
-
-    invoke-static {v0, v15, v14}, Landroid/database/sqlite/SQLiteDatabase;->openDatabase(Ljava/lang/String;Landroid/database/sqlite/SQLiteDatabase$CursorFactory;I)Landroid/database/sqlite/SQLiteDatabase;
-
-    move-result-object v14
+    invoke-direct {v15}, Ljava/util/ArrayList;-><init>()V
 
     .line 758
-    :try_start_4b
-    const-string v0, "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)"
-
-    invoke-virtual {v14, v0}, Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V
-
-    .line 759
-    const-string v0, "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \'4201b4cf7d52e2b03ff5e210c14b7a60\')"
-
-    invoke-virtual {v14, v0}, Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V
+    nop
 
     .line 760
-    const-string v0, "PRAGMA user_version = 7"
-
-    invoke-virtual {v14, v0}, Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V
-
-    .line 762
-    const-string v0, "CREATE TABLE IF NOT EXISTS `installed_addons` (`baseUrl` TEXT NOT NULL, `id` TEXT NOT NULL, `name` TEXT NOT NULL, `version` TEXT NOT NULL, `description` TEXT, `typesCsv` TEXT NOT NULL, `catalogsJson` TEXT NOT NULL, `resourcesJson` TEXT NOT NULL, `idPrefixesCsv` TEXT NOT NULL, `logoUrl` TEXT, `sortOrder` INTEGER NOT NULL, PRIMARY KEY(`baseUrl`));"
-
-    invoke-virtual {v14, v0}, Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V
-
-    .line 764
-    invoke-virtual {v14}, Landroid/database/sqlite/SQLiteDatabase;->beginTransaction()V
-
-    .line 765
     invoke-interface/range {p1 .. p1}, Ljava/util/List;->iterator()Ljava/util/Iterator;
 
     move-result-object v17
 
     const/16 v18, 0x0
 
-    :goto_68
+    :goto_32
     invoke-interface/range {v17 .. v17}, Ljava/util/Iterator;->hasNext()Z
 
     move-result v0
 
-    if-eqz v0, :cond_483
+    if-eqz v0, :cond_436
 
     invoke-interface/range {v17 .. v17}, Ljava/util/Iterator;->next()Ljava/lang/Object;
 
     move-result-object v0
 
     check-cast v0, Ljava/lang/String;
-    :try_end_74
-    .catchall {:try_start_4b .. :try_end_74} :catchall_491
 
-    .line 767
-    :try_start_74
+    .line 762
+    :try_start_3e
     invoke-virtual {v0}, Ljava/lang/String;->trim()Ljava/lang/String;
 
     move-result-object v0
 
-    .line 768
+    .line 763
     invoke-virtual {v0}, Ljava/lang/String;->isEmpty()Z
 
     move-result v19
 
-    if-eqz v19, :cond_86
+    if-eqz v19, :cond_50
 
-    move-object/from16 v19, v2
+    move-object/from16 v19, v3
 
-    move-object/from16 v21, v10
+    move-object/from16 v21, v11
 
-    move-object/from16 v20, v14
+    move-object/from16 v20, v15
 
-    goto/16 :goto_11b
+    goto/16 :goto_e0
 
-    .line 770
-    :cond_86
-    invoke-virtual {v0, v10}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    .line 765
+    :cond_50
+    invoke-virtual {v0, v11}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
 
     move-result v19
-    :try_end_8a
-    .catchall {:try_start_74 .. :try_end_8a} :catchall_467
+    :try_end_54
+    .catchall {:try_start_3e .. :try_end_54} :catchall_416
 
-    const-string v15, "/+$"
+    const-string v1, "/+$"
 
-    move-object/from16 v20, v14
+    move-object/from16 v20, v15
 
-    const-string v14, ""
+    const-string v15, ""
 
-    if-eqz v19, :cond_95
+    if-eqz v19, :cond_5f
 
-    move-object/from16 v19, v2
+    move-object/from16 v19, v3
 
-    goto :goto_ac
+    goto :goto_76
 
-    :cond_95
-    :try_start_95
-    invoke-virtual {v0, v15, v14}, Ljava/lang/String;->replaceAll(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v0
-    :try_end_99
-    .catchall {:try_start_95 .. :try_end_99} :catchall_458
-
-    move-object/from16 v19, v2
-
-    :try_start_9b
-    new-instance v2, Ljava/lang/StringBuilder;
-
-    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
-
-    invoke-virtual {v2, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    :cond_5f
+    :try_start_5f
+    invoke-virtual {v0, v1, v15}, Ljava/lang/String;->replaceAll(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v0
+    :try_end_63
+    .catchall {:try_start_5f .. :try_end_63} :catchall_404
 
-    invoke-virtual {v0, v10}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-object/from16 v19, v3
+
+    :try_start_65
+    new-instance v3, Ljava/lang/StringBuilder;
+
+    invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
+
+    invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    invoke-virtual {v0, v11}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v0
 
@@ -1241,111 +1178,106 @@
 
     move-result-object v0
 
-    .line 771
-    :goto_ac
+    .line 766
+    :goto_76
     nop
 
-    .line 772
-    invoke-virtual {v0, v10}, Ljava/lang/String;->indexOf(Ljava/lang/String;)I
+    .line 767
+    invoke-virtual {v0, v11}, Ljava/lang/String;->indexOf(Ljava/lang/String;)I
 
-    move-result v2
-    :try_end_b1
-    .catchall {:try_start_9b .. :try_end_b1} :catchall_449
+    move-result v3
+    :try_end_7b
+    .catchall {:try_start_65 .. :try_end_7b} :catchall_3f6
 
-    .line 773
-    move-object/from16 v21, v10
+    .line 768
+    move-object/from16 v21, v11
 
-    const/4 v10, -0x1
+    const/4 v11, -0x1
 
-    if-eq v2, v10, :cond_c9
+    if-eq v3, v11, :cond_8e
 
-    .line 774
-    const/4 v10, 0x0
+    .line 769
+    const/4 v11, 0x0
 
-    :try_start_b7
-    invoke-virtual {v0, v10, v2}, Ljava/lang/String;->substring(II)Ljava/lang/String;
+    :try_start_81
+    invoke-virtual {v0, v11, v3}, Ljava/lang/String;->substring(II)Ljava/lang/String;
 
-    move-result-object v2
+    move-result-object v3
 
-    goto :goto_ca
+    goto :goto_8f
 
-    .line 928
-    :catchall_bc
+    .line 923
+    :catchall_86
     move-exception v0
 
-    move-object/from16 v25, v3
+    move-object v3, v6
 
-    move-object v10, v4
+    move-object v6, v5
 
-    move-object/from16 v31, v19
+    move-object v5, v3
 
-    move-object/from16 v4, v20
+    move-object/from16 v25, v4
 
-    :goto_c4
-    move-object/from16 v19, v1
+    goto/16 :goto_3fe
 
-    move-object v1, v11
+    .line 768
+    :cond_8e
+    move-object v3, v0
 
-    goto/16 :goto_456
+    .line 771
+    :goto_8f
+    invoke-virtual {v3, v1, v15}, Ljava/lang/String;->replaceAll(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v1
+    :try_end_93
+    .catchall {:try_start_81 .. :try_end_93} :catchall_86
 
     .line 773
-    :cond_c9
-    move-object v2, v0
-
-    .line 776
-    :goto_ca
-    invoke-virtual {v2, v15, v14}, Ljava/lang/String;->replaceAll(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v2
-    :try_end_ce
-    .catchall {:try_start_b7 .. :try_end_ce} :catchall_bc
-
-    .line 778
     nop
 
-    .line 780
-    :try_start_cf
-    new-instance v10, Ljava/net/URL;
+    .line 775
+    :try_start_94
+    new-instance v3, Ljava/net/URL;
 
-    invoke-direct {v10, v0}, Ljava/net/URL;-><init>(Ljava/lang/String;)V
+    invoke-direct {v3, v0}, Ljava/net/URL;-><init>(Ljava/lang/String;)V
 
-    .line 781
-    invoke-virtual {v10}, Ljava/net/URL;->openConnection()Ljava/net/URLConnection;
+    .line 776
+    invoke-virtual {v3}, Ljava/net/URL;->openConnection()Ljava/net/URLConnection;
 
     move-result-object v0
 
     check-cast v0, Ljava/net/HttpURLConnection;
 
-    .line 782
-    const-string v10, "GET"
+    .line 777
+    const-string v3, "GET"
 
-    invoke-virtual {v0, v10}, Ljava/net/HttpURLConnection;->setRequestMethod(Ljava/lang/String;)V
+    invoke-virtual {v0, v3}, Ljava/net/HttpURLConnection;->setRequestMethod(Ljava/lang/String;)V
 
-    .line 783
-    const-string v10, "User-Agent"
+    .line 778
+    const-string v3, "User-Agent"
 
-    const-string v15, "Mozilla/5.0 StreamSync"
+    const-string v11, "Mozilla/5.0 StreamSync"
 
-    invoke-virtual {v0, v10, v15}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
+    invoke-virtual {v0, v3, v11}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 784
-    const/16 v10, 0x1f40
+    .line 779
+    const/16 v3, 0x1770
 
-    invoke-virtual {v0, v10}, Ljava/net/HttpURLConnection;->setConnectTimeout(I)V
+    invoke-virtual {v0, v3}, Ljava/net/HttpURLConnection;->setConnectTimeout(I)V
 
-    .line 785
-    invoke-virtual {v0, v10}, Ljava/net/HttpURLConnection;->setReadTimeout(I)V
+    .line 780
+    invoke-virtual {v0, v3}, Ljava/net/HttpURLConnection;->setReadTimeout(I)V
 
-    .line 786
+    .line 781
     invoke-virtual {v0}, Ljava/net/HttpURLConnection;->getResponseCode()I
 
-    move-result v10
+    move-result v3
 
-    const/16 v15, 0xc8
+    const/16 v11, 0xc8
 
-    if-ne v10, v15, :cond_104
+    if-ne v3, v11, :cond_c9
 
-    .line 787
+    .line 782
     invoke-virtual {v0}, Ljava/net/HttpURLConnection;->getInputStream()Ljava/io/InputStream;
 
     move-result-object v0
@@ -1354,415 +1286,423 @@
 
     move-result-object v0
 
+    .line 783
+    new-instance v3, Lorg/json/JSONObject;
+
+    invoke-direct {v3, v0}, Lorg/json/JSONObject;-><init>(Ljava/lang/String;)V
+    :try_end_c8
+    .catchall {:try_start_94 .. :try_end_c8} :catchall_cb
+
+    goto :goto_ca
+
+    .line 781
+    :cond_c9
+    const/4 v3, 0x0
+
+    .line 785
+    :goto_ca
+    goto :goto_cd
+
+    :catchall_cb
+    move-exception v0
+
+    const/4 v3, 0x0
+
+    .line 787
+    :goto_cd
+    if-nez v3, :cond_d3
+
     .line 788
-    new-instance v10, Lorg/json/JSONObject;
-
-    invoke-direct {v10, v0}, Lorg/json/JSONObject;-><init>(Ljava/lang/String;)V
-    :try_end_103
-    .catchall {:try_start_cf .. :try_end_103} :catchall_106
-
-    goto :goto_105
-
-    .line 786
-    :cond_104
-    const/4 v10, 0x0
-
-    .line 790
-    :goto_105
-    goto :goto_108
-
-    :catchall_106
-    move-exception v0
-
-    const/4 v10, 0x0
-
-    .line 792
-    :goto_108
-    if-nez v10, :cond_10e
-
-    .line 793
-    :try_start_10a
-    invoke-static {v2}, Lcom/streamsync/app/auth/SupabaseSyncService;->getDefaultManifestFallback(Ljava/lang/String;)Lorg/json/JSONObject;
-
-    move-result-object v10
-
-    .line 796
-    :cond_10e
-    if-nez v10, :cond_111
-
-    goto :goto_11b
-
-    .line 798
-    :cond_111
-    invoke-virtual {v10, v9, v14}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v0
-
-    .line 799
-    invoke-virtual {v0}, Ljava/lang/String;->isEmpty()Z
-
-    move-result v15
-
-    if-eqz v15, :cond_124
-
-    .line 765
-    :goto_11b
-    move-object/from16 v2, v19
-
-    move-object/from16 v14, v20
-
-    move-object/from16 v10, v21
-
-    const/4 v15, 0x0
-
-    goto/16 :goto_68
-
-    .line 801
-    :cond_124
-    invoke-virtual {v10, v13, v0}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v15
-
-    .line 802
-    move-object/from16 p1, v15
-
-    const-string v15, "1.0.0"
-
-    invoke-virtual {v10, v5, v15}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v15
-    :try_end_130
-    .catchall {:try_start_10a .. :try_end_130} :catchall_bc
-
-    .line 803
-    move-object/from16 v22, v5
-
-    :try_start_132
-    invoke-virtual {v10, v4, v14}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v5
-    :try_end_136
-    .catchall {:try_start_132 .. :try_end_136} :catchall_43d
-
-    .line 804
-    move-object/from16 v23, v4
-
-    :try_start_138
-    const-string v4, "logo"
-
-    move-object/from16 v24, v5
-
-    const-string v5, "icon"
-
-    invoke-virtual {v10, v5, v14}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v5
-
-    invoke-virtual {v10, v4, v5}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v4
-
-    .line 806
-    const-string v5, "movie,series"
-
-    .line 807
-    move-object/from16 v25, v5
-
-    new-instance v5, Lorg/json/JSONArray;
-
-    move-object/from16 v26, v4
-
-    const-string v4, "[\"movie\",\"series\"]"
-
-    invoke-direct {v5, v4}, Lorg/json/JSONArray;-><init>(Ljava/lang/String;)V
-
-    .line 808
-    invoke-virtual {v10, v12}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
-
-    move-result v4
-    :try_end_157
-    .catchall {:try_start_138 .. :try_end_157} :catchall_430
-
-    move-object/from16 v27, v5
-
-    const-string v5, ","
-
-    if-eqz v4, :cond_199
-
-    .line 809
-    :try_start_15d
-    invoke-virtual {v10, v12}, Lorg/json/JSONObject;->optJSONArray(Ljava/lang/String;)Lorg/json/JSONArray;
-
-    move-result-object v4
-
-    .line 810
-    if-eqz v4, :cond_192
-
-    invoke-virtual {v4}, Lorg/json/JSONArray;->length()I
-
-    move-result v28
-
-    if-lez v28, :cond_192
-
-    .line 811
-    nop
-
-    .line 812
-    move-object/from16 v28, v15
-
-    new-instance v15, Ljava/lang/StringBuilder;
-
-    invoke-direct {v15}, Ljava/lang/StringBuilder;-><init>()V
-
-    .line 813
-    move-object/from16 v29, v0
-
-    const/4 v0, 0x0
-
-    :goto_174
-    move-object/from16 v30, v2
-
-    invoke-virtual {v4}, Lorg/json/JSONArray;->length()I
-
-    move-result v2
-
-    if-ge v0, v2, :cond_18d
-
-    .line 814
-    if-lez v0, :cond_181
-
-    invoke-virtual {v15, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    .line 815
-    :cond_181
-    invoke-virtual {v4, v0}, Lorg/json/JSONArray;->optString(I)Ljava/lang/String;
-
-    move-result-object v2
-
-    invoke-virtual {v15, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    .line 813
-    add-int/lit8 v0, v0, 0x1
-
-    move-object/from16 v2, v30
-
-    goto :goto_174
-
-    .line 817
-    :cond_18d
-    invoke-virtual {v15}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    move-result-object v0
-
-    goto :goto_1a3
-
-    .line 810
-    :cond_192
-    move-object/from16 v29, v0
-
-    move-object/from16 v30, v2
-
-    move-object/from16 v28, v15
-
-    goto :goto_19f
-
-    .line 808
-    :cond_199
-    move-object/from16 v29, v0
-
-    move-object/from16 v30, v2
-
-    move-object/from16 v28, v15
-
-    .line 821
-    :goto_19f
-    move-object/from16 v0, v25
-
-    move-object/from16 v4, v27
-
-    :goto_1a3
-    new-instance v2, Lorg/json/JSONArray;
-
-    const-string v15, "[\"tt\"]"
-
-    invoke-direct {v2, v15}, Lorg/json/JSONArray;-><init>(Ljava/lang/String;)V
-
-    .line 822
-    const-string v15, "tt"
-
-    .line 823
-    invoke-virtual {v10, v11}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
-
-    move-result v25
-    :try_end_1b0
-    .catchall {:try_start_15d .. :try_end_1b0} :catchall_430
-
-    if-eqz v25, :cond_1f1
-
-    .line 824
-    move-object/from16 v25, v2
-
-    :try_start_1b4
-    invoke-virtual {v10, v11}, Lorg/json/JSONObject;->optJSONArray(Ljava/lang/String;)Lorg/json/JSONArray;
-
-    move-result-object v2
-
-    .line 825
-    if-eqz v2, :cond_1e7
-
-    invoke-virtual {v2}, Lorg/json/JSONArray;->length()I
-
-    move-result v27
-
-    if-lez v27, :cond_1e7
-
-    .line 826
-    nop
-
-    .line 827
-    new-instance v15, Ljava/lang/StringBuilder;
-
-    invoke-direct {v15}, Ljava/lang/StringBuilder;-><init>()V
-    :try_end_1c6
-    .catchall {:try_start_1b4 .. :try_end_1c6} :catchall_1ec
-
-    .line 828
-    move-object/from16 v27, v0
-
-    const/4 v0, 0x0
-
-    :goto_1c9
-    move-object/from16 v31, v11
-
-    :try_start_1cb
-    invoke-virtual {v2}, Lorg/json/JSONArray;->length()I
-
-    move-result v11
-
-    if-ge v0, v11, :cond_1e2
-
-    .line 829
-    if-lez v0, :cond_1d6
-
-    invoke-virtual {v15, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    .line 830
-    :cond_1d6
-    invoke-virtual {v2, v0}, Lorg/json/JSONArray;->optString(I)Ljava/lang/String;
-
-    move-result-object v11
-
-    invoke-virtual {v15, v11}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    .line 828
-    add-int/lit8 v0, v0, 0x1
-
-    move-object/from16 v11, v31
-
-    goto :goto_1c9
-
-    .line 832
-    :cond_1e2
-    invoke-virtual {v15}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    move-result-object v15
-
-    goto :goto_1f9
-
-    .line 825
-    :cond_1e7
-    move-object/from16 v27, v0
-
-    move-object/from16 v31, v11
-
-    goto :goto_1f7
-
-    .line 928
-    :catchall_1ec
-    move-exception v0
-
-    move-object/from16 v31, v11
-
-    goto/16 :goto_41e
-
-    .line 823
-    :cond_1f1
-    move-object/from16 v27, v0
-
-    move-object/from16 v25, v2
-
-    move-object/from16 v31, v11
-
-    .line 837
-    :goto_1f7
-    move-object/from16 v2, v25
-
-    :goto_1f9
-    new-instance v0, Lorg/json/JSONArray;
-
-    invoke-direct {v0}, Lorg/json/JSONArray;-><init>()V
-
-    .line 838
-    invoke-virtual {v10, v3}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
-
-    move-result v5
-
-    if-eqz v5, :cond_2bb
-
-    .line 839
-    invoke-virtual {v10, v3}, Lorg/json/JSONObject;->opt(Ljava/lang/String;)Ljava/lang/Object;
-
-    move-result-object v5
-
-    .line 840
-    instance-of v11, v5, Lorg/json/JSONArray;
-
-    if-eqz v11, :cond_2b6
-
-    .line 841
-    check-cast v5, Lorg/json/JSONArray;
-    :try_end_20e
-    .catchall {:try_start_1cb .. :try_end_20e} :catchall_41d
-
-    .line 842
-    const/4 v11, 0x0
-
-    :goto_20f
-    move-object/from16 v25, v3
-
-    :try_start_211
-    invoke-virtual {v5}, Lorg/json/JSONArray;->length()I
-
-    move-result v3
-
-    if-ge v11, v3, :cond_2b3
-
-    .line 843
-    invoke-virtual {v5, v11}, Lorg/json/JSONArray;->opt(I)Ljava/lang/Object;
+    :try_start_cf
+    invoke-static {v1}, Lcom/streamsync/app/auth/SupabaseSyncService;->getDefaultManifestFallback(Ljava/lang/String;)Lorg/json/JSONObject;
 
     move-result-object v3
 
-    .line 844
-    move-object/from16 v32, v5
+    .line 791
+    :cond_d3
+    if-nez v3, :cond_d6
 
-    instance-of v5, v3, Lorg/json/JSONObject;
+    goto :goto_e0
 
-    if-eqz v5, :cond_2a7
+    .line 793
+    :cond_d6
+    invoke-virtual {v3, v10, v15}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 
-    .line 845
-    check-cast v3, Lorg/json/JSONObject;
+    move-result-object v0
 
-    .line 846
-    invoke-virtual {v3, v9, v14}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    .line 794
+    invoke-virtual {v0}, Ljava/lang/String;->isEmpty()Z
+
+    move-result v11
+
+    if-eqz v11, :cond_e8
+
+    .line 760
+    :goto_e0
+    move-object/from16 v3, v19
+
+    move-object/from16 v15, v20
+
+    move-object/from16 v11, v21
+
+    goto/16 :goto_32
+
+    .line 796
+    :cond_e8
+    invoke-virtual {v3, v14, v0}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v11
+
+    .line 797
+    move-object/from16 p1, v11
+
+    const-string v11, "1.0.0"
+
+    invoke-virtual {v3, v6, v11}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v11
+    :try_end_f4
+    .catchall {:try_start_cf .. :try_end_f4} :catchall_86
+
+    .line 798
+    move-object/from16 v22, v6
+
+    :try_start_f6
+    invoke-virtual {v3, v5, v15}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v6
+    :try_end_fa
+    .catchall {:try_start_f6 .. :try_end_fa} :catchall_3ec
+
+    .line 799
+    move-object/from16 v23, v5
+
+    :try_start_fc
+    const-string v5, "logo"
+
+    move-object/from16 v24, v6
+
+    const-string v6, "icon"
+
+    invoke-virtual {v3, v6, v15}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v6
+
+    invoke-virtual {v3, v5, v6}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v5
 
-    invoke-virtual {v5}, Ljava/lang/String;->trim()Ljava/lang/String;
+    .line 801
+    const-string v6, "movie,series"
 
-    move-result-object v5
+    .line 802
+    move-object/from16 v25, v6
 
-    .line 847
-    invoke-virtual {v3, v1, v14}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    new-instance v6, Lorg/json/JSONArray;
+
+    move-object/from16 v26, v5
+
+    const-string v5, "[\"movie\",\"series\"]"
+
+    invoke-direct {v6, v5}, Lorg/json/JSONArray;-><init>(Ljava/lang/String;)V
+
+    .line 803
+    invoke-virtual {v3, v13}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
+
+    move-result v5
+    :try_end_11b
+    .catchall {:try_start_fc .. :try_end_11b} :catchall_3e1
+
+    move/from16 v27, v5
+
+    const-string v5, ","
+
+    if-eqz v27, :cond_164
+
+    .line 804
+    move-object/from16 v27, v6
+
+    :try_start_123
+    invoke-virtual {v3, v13}, Lorg/json/JSONObject;->optJSONArray(Ljava/lang/String;)Lorg/json/JSONArray;
+
+    move-result-object v6
+
+    .line 805
+    if-eqz v6, :cond_15d
+
+    invoke-virtual {v6}, Lorg/json/JSONArray;->length()I
+
+    move-result v28
+
+    if-lez v28, :cond_15d
+
+    .line 806
+    nop
+
+    .line 807
+    move-object/from16 v28, v11
+
+    new-instance v11, Ljava/lang/StringBuilder;
+
+    invoke-direct {v11}, Ljava/lang/StringBuilder;-><init>()V
+
+    .line 808
+    move-object/from16 v29, v0
+
+    const/4 v0, 0x0
+
+    :goto_13a
+    move-object/from16 v30, v1
+
+    invoke-virtual {v6}, Lorg/json/JSONArray;->length()I
+
+    move-result v1
+
+    if-ge v0, v1, :cond_153
+
+    .line 809
+    if-lez v0, :cond_147
+
+    invoke-virtual {v11, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 810
+    :cond_147
+    invoke-virtual {v6, v0}, Lorg/json/JSONArray;->optString(I)Ljava/lang/String;
+
+    move-result-object v1
+
+    invoke-virtual {v11, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 808
+    add-int/lit8 v0, v0, 0x1
+
+    move-object/from16 v1, v30
+
+    goto :goto_13a
+
+    .line 812
+    :cond_153
+    invoke-virtual {v11}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v0
+
+    move-object/from16 v35, v6
+
+    move-object v6, v0
+
+    move-object/from16 v0, v35
+
+    goto :goto_170
+
+    .line 805
+    :cond_15d
+    move-object/from16 v29, v0
+
+    move-object/from16 v30, v1
+
+    move-object/from16 v28, v11
+
+    goto :goto_16c
+
+    .line 803
+    :cond_164
+    move-object/from16 v29, v0
+
+    move-object/from16 v30, v1
+
+    move-object/from16 v27, v6
+
+    move-object/from16 v28, v11
+
+    .line 816
+    :goto_16c
+    move-object/from16 v6, v25
+
+    move-object/from16 v0, v27
+
+    :goto_170
+    new-instance v1, Lorg/json/JSONArray;
+
+    const-string v11, "[\"tt\"]"
+
+    invoke-direct {v1, v11}, Lorg/json/JSONArray;-><init>(Ljava/lang/String;)V
+
+    .line 817
+    const-string v11, "tt"
+
+    .line 818
+    invoke-virtual {v3, v12}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
+
+    move-result v25
+    :try_end_17d
+    .catchall {:try_start_123 .. :try_end_17d} :catchall_3e1
+
+    if-eqz v25, :cond_1be
+
+    .line 819
+    move-object/from16 v25, v1
+
+    :try_start_181
+    invoke-virtual {v3, v12}, Lorg/json/JSONObject;->optJSONArray(Ljava/lang/String;)Lorg/json/JSONArray;
+
+    move-result-object v1
+
+    .line 820
+    if-eqz v1, :cond_1b4
+
+    invoke-virtual {v1}, Lorg/json/JSONArray;->length()I
+
+    move-result v27
+
+    if-lez v27, :cond_1b4
+
+    .line 821
+    nop
+
+    .line 822
+    new-instance v11, Ljava/lang/StringBuilder;
+
+    invoke-direct {v11}, Ljava/lang/StringBuilder;-><init>()V
+    :try_end_193
+    .catchall {:try_start_181 .. :try_end_193} :catchall_1b9
+
+    .line 823
+    move-object/from16 v27, v6
+
+    const/4 v6, 0x0
+
+    :goto_196
+    move-object/from16 v31, v12
+
+    :try_start_198
+    invoke-virtual {v1}, Lorg/json/JSONArray;->length()I
+
+    move-result v12
+
+    if-ge v6, v12, :cond_1af
+
+    .line 824
+    if-lez v6, :cond_1a3
+
+    invoke-virtual {v11, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 825
+    :cond_1a3
+    invoke-virtual {v1, v6}, Lorg/json/JSONArray;->optString(I)Ljava/lang/String;
+
+    move-result-object v12
+
+    invoke-virtual {v11, v12}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 823
+    add-int/lit8 v6, v6, 0x1
+
+    move-object/from16 v12, v31
+
+    goto :goto_196
+
+    .line 827
+    :cond_1af
+    invoke-virtual {v11}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v11
+
+    goto :goto_1c6
+
+    .line 820
+    :cond_1b4
+    move-object/from16 v27, v6
+
+    move-object/from16 v31, v12
+
+    goto :goto_1c4
+
+    .line 923
+    :catchall_1b9
+    move-exception v0
+
+    move-object/from16 v31, v12
+
+    goto/16 :goto_3d8
+
+    .line 818
+    :cond_1be
+    move-object/from16 v25, v1
+
+    move-object/from16 v27, v6
+
+    move-object/from16 v31, v12
+
+    .line 832
+    :goto_1c4
+    move-object/from16 v1, v25
+
+    :goto_1c6
+    new-instance v5, Lorg/json/JSONArray;
+
+    invoke-direct {v5}, Lorg/json/JSONArray;-><init>()V
+
+    .line 833
+    invoke-virtual {v3, v4}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
+
+    move-result v6
+
+    if-eqz v6, :cond_281
+
+    .line 834
+    invoke-virtual {v3, v4}, Lorg/json/JSONObject;->opt(Ljava/lang/String;)Ljava/lang/Object;
+
+    move-result-object v6
+
+    .line 835
+    instance-of v12, v6, Lorg/json/JSONArray;
+
+    if-eqz v12, :cond_27e
+
+    .line 836
+    check-cast v6, Lorg/json/JSONArray;
+    :try_end_1db
+    .catchall {:try_start_198 .. :try_end_1db} :catchall_3d7
+
+    .line 837
+    const/4 v12, 0x0
+
+    :goto_1dc
+    move-object/from16 v25, v4
+
+    :try_start_1de
+    invoke-virtual {v6}, Lorg/json/JSONArray;->length()I
+
+    move-result v4
+
+    if-ge v12, v4, :cond_283
+
+    .line 838
+    invoke-virtual {v6, v12}, Lorg/json/JSONArray;->opt(I)Ljava/lang/Object;
+
+    move-result-object v4
+
+    .line 839
+    move-object/from16 v32, v6
+
+    instance-of v6, v4, Lorg/json/JSONObject;
+
+    if-eqz v6, :cond_274
+
+    .line 840
+    check-cast v4, Lorg/json/JSONObject;
+
+    .line 841
+    invoke-virtual {v4, v10, v15}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v6
+
+    invoke-virtual {v6}, Ljava/lang/String;->trim()Ljava/lang/String;
+
+    move-result-object v6
+
+    .line 842
+    invoke-virtual {v4, v2, v15}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v33
 
@@ -1770,866 +1710,978 @@
 
     move-result-object v33
 
-    .line 848
-    invoke-virtual {v5}, Ljava/lang/String;->isEmpty()Z
+    .line 843
+    invoke-virtual {v6}, Ljava/lang/String;->isEmpty()Z
 
     move-result v34
 
-    if-nez v34, :cond_2a4
+    if-nez v34, :cond_271
 
-    .line 849
+    .line 844
     invoke-virtual/range {v33 .. v33}, Ljava/lang/String;->isEmpty()Z
 
     move-result v33
 
-    if-eqz v33, :cond_247
+    if-eqz v33, :cond_214
 
-    move-object/from16 v33, v15
+    move/from16 v33, v12
 
-    const-string v15, "movie"
+    const-string v12, "movie"
 
-    invoke-virtual {v3, v1, v15}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+    invoke-virtual {v4, v2, v12}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    goto :goto_249
+    goto :goto_216
 
-    :cond_247
-    move-object/from16 v33, v15
+    :cond_214
+    move/from16 v33, v12
 
-    .line 850
-    :goto_249
-    invoke-virtual {v3, v13}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
+    .line 845
+    :goto_216
+    invoke-virtual {v4, v14}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
 
-    move-result v15
+    move-result v12
 
-    if-eqz v15, :cond_259
+    if-eqz v12, :cond_226
 
-    invoke-virtual {v3, v13, v14}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    invoke-virtual {v4, v14, v15}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 
-    move-result-object v15
+    move-result-object v12
 
-    invoke-virtual {v15}, Ljava/lang/String;->isEmpty()Z
+    invoke-virtual {v12}, Ljava/lang/String;->isEmpty()Z
 
-    move-result v15
+    move-result v12
 
-    if-eqz v15, :cond_25c
+    if-eqz v12, :cond_229
 
-    .line 851
-    :cond_259
-    invoke-virtual {v3, v13, v5}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
-
-    .line 853
-    :cond_25c
-    invoke-virtual {v3, v8}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
-
-    move-result v5
-    :try_end_260
-    .catchall {:try_start_211 .. :try_end_260} :catchall_41b
-
-    const-string v15, "[]"
-
-    if-eqz v5, :cond_26c
-
-    :try_start_264
-    invoke-virtual {v3, v8}, Lorg/json/JSONObject;->opt(Ljava/lang/String;)Ljava/lang/Object;
-
-    move-result-object v5
-
-    instance-of v5, v5, Lorg/json/JSONArray;
-
-    if-nez v5, :cond_274
-
-    .line 854
-    :cond_26c
-    new-instance v5, Lorg/json/JSONArray;
-
-    invoke-direct {v5, v15}, Lorg/json/JSONArray;-><init>(Ljava/lang/String;)V
-
-    invoke-virtual {v3, v8, v5}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
-
-    .line 856
-    :cond_274
-    invoke-virtual {v3, v7}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
-
-    move-result v5
-
-    if-eqz v5, :cond_282
-
-    invoke-virtual {v3, v7}, Lorg/json/JSONObject;->opt(Ljava/lang/String;)Ljava/lang/Object;
-
-    move-result-object v5
-
-    instance-of v5, v5, Lorg/json/JSONArray;
-
-    if-nez v5, :cond_28a
-
-    .line 857
-    :cond_282
-    new-instance v5, Lorg/json/JSONArray;
-
-    invoke-direct {v5, v15}, Lorg/json/JSONArray;-><init>(Ljava/lang/String;)V
-
-    invoke-virtual {v3, v7, v5}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
-
-    .line 859
-    :cond_28a
-    invoke-virtual {v3, v6}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
-
-    move-result v5
-
-    if-eqz v5, :cond_298
-
-    invoke-virtual {v3, v6}, Lorg/json/JSONObject;->opt(Ljava/lang/String;)Ljava/lang/Object;
-
-    move-result-object v5
-
-    instance-of v5, v5, Lorg/json/JSONArray;
-
-    if-nez v5, :cond_2a0
-
-    .line 860
-    :cond_298
-    new-instance v5, Lorg/json/JSONArray;
-
-    invoke-direct {v5, v15}, Lorg/json/JSONArray;-><init>(Ljava/lang/String;)V
-
-    invoke-virtual {v3, v6, v5}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
-
-    .line 862
-    :cond_2a0
-    invoke-virtual {v0, v3}, Lorg/json/JSONArray;->put(Ljava/lang/Object;)Lorg/json/JSONArray;
-
-    goto :goto_2a9
+    .line 846
+    :cond_226
+    invoke-virtual {v4, v14, v6}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
     .line 848
-    :cond_2a4
-    move-object/from16 v33, v15
+    :cond_229
+    invoke-virtual {v4, v9}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
 
-    goto :goto_2a9
+    move-result v6
+    :try_end_22d
+    .catchall {:try_start_1de .. :try_end_22d} :catchall_3d5
 
-    .line 844
-    :cond_2a7
-    move-object/from16 v33, v15
+    const-string v12, "[]"
 
-    .line 842
-    :goto_2a9
-    add-int/lit8 v11, v11, 0x1
+    if-eqz v6, :cond_239
 
-    move-object/from16 v3, v25
+    :try_start_231
+    invoke-virtual {v4, v9}, Lorg/json/JSONObject;->opt(Ljava/lang/String;)Ljava/lang/Object;
 
-    move-object/from16 v5, v32
+    move-result-object v6
 
-    move-object/from16 v15, v33
+    instance-of v6, v6, Lorg/json/JSONArray;
 
-    goto/16 :goto_20f
+    if-nez v6, :cond_241
 
-    :cond_2b3
-    move-object/from16 v33, v15
+    .line 849
+    :cond_239
+    new-instance v6, Lorg/json/JSONArray;
 
-    goto :goto_2bf
+    invoke-direct {v6, v12}, Lorg/json/JSONArray;-><init>(Ljava/lang/String;)V
 
-    .line 840
-    :cond_2b6
-    move-object/from16 v25, v3
+    invoke-virtual {v4, v9, v6}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    move-object/from16 v33, v15
+    .line 851
+    :cond_241
+    invoke-virtual {v4, v8}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
 
-    goto :goto_2bf
+    move-result v6
 
-    .line 838
-    :cond_2bb
-    move-object/from16 v25, v3
+    if-eqz v6, :cond_24f
 
-    move-object/from16 v33, v15
+    invoke-virtual {v4, v8}, Lorg/json/JSONObject;->opt(Ljava/lang/String;)Ljava/lang/Object;
+
+    move-result-object v6
+
+    instance-of v6, v6, Lorg/json/JSONArray;
+
+    if-nez v6, :cond_257
+
+    .line 852
+    :cond_24f
+    new-instance v6, Lorg/json/JSONArray;
+
+    invoke-direct {v6, v12}, Lorg/json/JSONArray;-><init>(Ljava/lang/String;)V
+
+    invoke-virtual {v4, v8, v6}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+
+    .line 854
+    :cond_257
+    invoke-virtual {v4, v7}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
+
+    move-result v6
+
+    if-eqz v6, :cond_265
+
+    invoke-virtual {v4, v7}, Lorg/json/JSONObject;->opt(Ljava/lang/String;)Ljava/lang/Object;
+
+    move-result-object v6
+
+    instance-of v6, v6, Lorg/json/JSONArray;
+
+    if-nez v6, :cond_26d
+
+    .line 855
+    :cond_265
+    new-instance v6, Lorg/json/JSONArray;
+
+    invoke-direct {v6, v12}, Lorg/json/JSONArray;-><init>(Ljava/lang/String;)V
+
+    invoke-virtual {v4, v7, v6}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+
+    .line 857
+    :cond_26d
+    invoke-virtual {v5, v4}, Lorg/json/JSONArray;->put(Ljava/lang/Object;)Lorg/json/JSONArray;
+
+    goto :goto_276
+
+    .line 843
+    :cond_271
+    move/from16 v33, v12
+
+    goto :goto_276
+
+    .line 839
+    :cond_274
+    move/from16 v33, v12
+
+    .line 837
+    :goto_276
+    add-int/lit8 v12, v33, 0x1
+
+    move-object/from16 v4, v25
+
+    move-object/from16 v6, v32
+
+    goto/16 :goto_1dc
+
+    .line 835
+    :cond_27e
+    move-object/from16 v25, v4
+
+    goto :goto_283
+
+    .line 833
+    :cond_281
+    move-object/from16 v25, v4
+
+    .line 863
+    :cond_283
+    :goto_283
+    invoke-virtual {v5}, Lorg/json/JSONArray;->toString()Ljava/lang/String;
+
+    move-result-object v4
+
+    .line 867
+    new-instance v5, Lorg/json/JSONArray;
+
+    invoke-direct {v5}, Lorg/json/JSONArray;-><init>()V
+    :try_end_28c
+    .catchall {:try_start_231 .. :try_end_28c} :catchall_3d5
 
     .line 868
-    :goto_2bf
-    invoke-virtual {v0}, Lorg/json/JSONArray;->toString()Ljava/lang/String;
+    move-object/from16 v6, v19
 
-    move-result-object v0
+    :try_start_28e
+    invoke-virtual {v3, v6}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
+
+    move-result v12
+    :try_end_292
+    .catchall {:try_start_28e .. :try_end_292} :catchall_3c6
+
+    if-eqz v12, :cond_342
+
+    .line 869
+    :try_start_294
+    invoke-virtual {v3, v6}, Lorg/json/JSONObject;->opt(Ljava/lang/String;)Ljava/lang/Object;
+
+    move-result-object v3
+
+    .line 870
+    instance-of v12, v3, Lorg/json/JSONArray;
+
+    if-eqz v12, :cond_332
+
+    .line 871
+    check-cast v3, Lorg/json/JSONArray;
+    :try_end_29e
+    .catchall {:try_start_294 .. :try_end_29e} :catchall_339
 
     .line 872
-    new-instance v3, Lorg/json/JSONArray;
+    const/4 v12, 0x0
 
-    invoke-direct {v3}, Lorg/json/JSONArray;-><init>()V
-    :try_end_2c8
-    .catchall {:try_start_264 .. :try_end_2c8} :catchall_41b
+    :goto_29f
+    move-object/from16 v19, v2
 
-    .line 873
-    move-object/from16 v5, v19
-
-    :try_start_2ca
-    invoke-virtual {v10, v5}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
-
-    move-result v11
-    :try_end_2ce
-    .catchall {:try_start_2ca .. :try_end_2ce} :catchall_40b
-
-    if-eqz v11, :cond_37f
-
-    .line 874
-    :try_start_2d0
-    invoke-virtual {v10, v5}, Lorg/json/JSONObject;->opt(Ljava/lang/String;)Ljava/lang/Object;
-
-    move-result-object v10
-
-    .line 875
-    instance-of v11, v10, Lorg/json/JSONArray;
-
-    if-eqz v11, :cond_36f
-
-    .line 876
-    check-cast v10, Lorg/json/JSONArray;
-
-    .line 877
-    const/4 v11, 0x0
-
-    :goto_2db
-    invoke-virtual {v10}, Lorg/json/JSONArray;->length()I
-
-    move-result v15
-
-    if-ge v11, v15, :cond_368
-
-    .line 878
-    invoke-virtual {v10, v11}, Lorg/json/JSONArray;->opt(I)Ljava/lang/Object;
-
-    move-result-object v15
-    :try_end_2e5
-    .catchall {:try_start_2d0 .. :try_end_2e5} :catchall_376
-
-    .line 879
-    move-object/from16 v19, v1
-
-    :try_start_2e7
-    instance-of v1, v15, Ljava/lang/String;
-    :try_end_2e9
-    .catchall {:try_start_2e7 .. :try_end_2e9} :catchall_366
-
-    if-eqz v1, :cond_31f
-
-    .line 880
-    :try_start_2eb
-    check-cast v15, Ljava/lang/String;
-
-    .line 881
-    invoke-virtual {v15}, Ljava/lang/String;->trim()Ljava/lang/String;
-
-    move-result-object v1
-
-    invoke-virtual {v1}, Ljava/lang/String;->isEmpty()Z
-
-    move-result v1
-
-    if-nez v1, :cond_311
-
-    .line 882
-    new-instance v1, Lorg/json/JSONObject;
-
-    invoke-direct {v1}, Lorg/json/JSONObject;-><init>()V
-
-    .line 883
-    invoke-virtual {v15}, Ljava/lang/String;->trim()Ljava/lang/String;
-
-    move-result-object v15
-
-    invoke-virtual {v1, v13, v15}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
-
-    .line 884
-    invoke-virtual {v1, v12, v4}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
-    :try_end_306
-    .catchall {:try_start_2eb .. :try_end_306} :catchall_317
-
-    .line 885
-    move-object/from16 v15, v31
-
-    :try_start_308
-    invoke-virtual {v1, v15, v2}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
-
-    .line 886
-    invoke-virtual {v3, v1}, Lorg/json/JSONArray;->put(Ljava/lang/Object;)Lorg/json/JSONArray;
-    :try_end_30e
-    .catchall {:try_start_308 .. :try_end_30e} :catchall_30f
-
-    goto :goto_313
-
-    .line 928
-    :catchall_30f
-    move-exception v0
-
-    goto :goto_31a
-
-    .line 881
-    :cond_311
-    move-object/from16 v15, v31
-
-    .line 888
-    :goto_313
-    move-object/from16 v31, v5
-
-    move-object v1, v15
-
-    goto :goto_35c
-
-    .line 928
-    :catchall_317
-    move-exception v0
-
-    move-object/from16 v15, v31
-
-    :goto_31a
-    move-object/from16 v31, v5
-
-    move-object v1, v15
-
-    goto/16 :goto_404
-
-    .line 888
-    :cond_31f
-    move-object/from16 v1, v31
-
-    move-object/from16 v31, v5
-
-    :try_start_323
-    instance-of v5, v15, Lorg/json/JSONObject;
-
-    if-eqz v5, :cond_35c
-
-    .line 889
-    check-cast v15, Lorg/json/JSONObject;
-
-    .line 890
-    invoke-virtual {v15, v13, v14}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v5
-
-    invoke-virtual {v5}, Ljava/lang/String;->trim()Ljava/lang/String;
-
-    move-result-object v5
-
-    .line 891
-    invoke-virtual {v5}, Ljava/lang/String;->isEmpty()Z
-
-    move-result v5
-
-    if-nez v5, :cond_35c
-
-    .line 892
-    invoke-virtual {v15, v12}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
-
-    move-result v5
-
-    if-eqz v5, :cond_345
-
-    invoke-virtual {v15, v12}, Lorg/json/JSONObject;->opt(Ljava/lang/String;)Ljava/lang/Object;
-
-    move-result-object v5
-
-    instance-of v5, v5, Lorg/json/JSONArray;
-
-    if-nez v5, :cond_348
-
-    .line 893
-    :cond_345
-    invoke-virtual {v15, v12, v4}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
-
-    .line 895
-    :cond_348
-    invoke-virtual {v15, v1}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
-
-    move-result v5
-
-    if-eqz v5, :cond_356
-
-    invoke-virtual {v15, v1}, Lorg/json/JSONObject;->opt(Ljava/lang/String;)Ljava/lang/Object;
-
-    move-result-object v5
-
-    instance-of v5, v5, Lorg/json/JSONArray;
-
-    if-nez v5, :cond_359
-
-    .line 896
-    :cond_356
-    invoke-virtual {v15, v1, v2}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
-
-    .line 898
-    :cond_359
-    invoke-virtual {v3, v15}, Lorg/json/JSONArray;->put(Ljava/lang/Object;)Lorg/json/JSONArray;
-
-    .line 877
-    :cond_35c
-    :goto_35c
-    add-int/lit8 v11, v11, 0x1
-
-    move-object/from16 v5, v31
-
-    move-object/from16 v31, v1
-
-    move-object/from16 v1, v19
-
-    goto/16 :goto_2db
-
-    .line 928
-    :catchall_366
-    move-exception v0
-
-    goto :goto_379
-
-    .line 877
-    :cond_368
-    move-object/from16 v19, v1
-
-    move-object/from16 v1, v31
-
-    move-object/from16 v31, v5
-
-    goto :goto_385
-
-    .line 875
-    :cond_36f
-    move-object/from16 v19, v1
-
-    move-object/from16 v1, v31
-
-    move-object/from16 v31, v5
-
-    goto :goto_385
-
-    .line 928
-    :catchall_376
-    move-exception v0
-
-    move-object/from16 v19, v1
-
-    :goto_379
-    move-object/from16 v1, v31
-
-    move-object/from16 v31, v5
-
-    goto/16 :goto_404
-
-    .line 873
-    :cond_37f
-    move-object/from16 v19, v1
-
-    move-object/from16 v1, v31
-
-    move-object/from16 v31, v5
-
-    .line 904
-    :goto_385
+    :try_start_2a1
     invoke-virtual {v3}, Lorg/json/JSONArray;->length()I
 
     move-result v2
 
-    if-nez v2, :cond_392
+    if-ge v12, v2, :cond_32b
 
-    .line 905
-    new-instance v3, Lorg/json/JSONArray;
-
-    const-string v2, "[{\"name\":\"catalog\",\"types\":[\"movie\",\"series\"],\"idPrefixes\":[\"tt\"]},{\"name\":\"meta\",\"types\":[\"movie\",\"series\"],\"idPrefixes\":[\"tt\"]},{\"name\":\"stream\",\"types\":[\"movie\",\"series\"],\"idPrefixes\":[\"tt\"]}]"
-
-    invoke-direct {v3, v2}, Lorg/json/JSONArray;-><init>(Ljava/lang/String;)V
-
-    .line 907
-    :cond_392
-    invoke-virtual {v3}, Lorg/json/JSONArray;->toString()Ljava/lang/String;
+    .line 873
+    invoke-virtual {v3, v12}, Lorg/json/JSONArray;->opt(I)Ljava/lang/Object;
 
     move-result-object v2
 
-    .line 909
-    new-instance v3, Landroid/content/ContentValues;
+    .line 874
+    move-object/from16 v32, v3
 
-    invoke-direct {v3}, Landroid/content/ContentValues;-><init>()V
+    instance-of v3, v2, Ljava/lang/String;
+    :try_end_2af
+    .catchall {:try_start_2a1 .. :try_end_2af} :catchall_330
 
-    .line 910
-    const-string v4, "baseUrl"
+    if-eqz v3, :cond_2e2
+
+    .line 875
+    :try_start_2b1
+    check-cast v2, Ljava/lang/String;
+
+    .line 876
+    invoke-virtual {v2}, Ljava/lang/String;->trim()Ljava/lang/String;
+
+    move-result-object v3
+
+    invoke-virtual {v3}, Ljava/lang/String;->isEmpty()Z
+
+    move-result v3
+
+    if-nez v3, :cond_2d7
+
+    .line 877
+    new-instance v3, Lorg/json/JSONObject;
+
+    invoke-direct {v3}, Lorg/json/JSONObject;-><init>()V
+
+    .line 878
+    invoke-virtual {v2}, Ljava/lang/String;->trim()Ljava/lang/String;
+
+    move-result-object v2
+
+    invoke-virtual {v3, v14, v2}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+
+    .line 879
+    invoke-virtual {v3, v13, v0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+    :try_end_2cc
+    .catchall {:try_start_2b1 .. :try_end_2cc} :catchall_2dd
+
+    .line 880
+    move-object/from16 v2, v31
+
+    :try_start_2ce
+    invoke-virtual {v3, v2, v1}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+
+    .line 881
+    invoke-virtual {v5, v3}, Lorg/json/JSONArray;->put(Ljava/lang/Object;)Lorg/json/JSONArray;
+    :try_end_2d4
+    .catchall {:try_start_2ce .. :try_end_2d4} :catchall_2d5
+
+    goto :goto_2d9
+
+    .line 923
+    :catchall_2d5
+    move-exception v0
+
+    goto :goto_2e0
+
+    .line 876
+    :cond_2d7
+    move-object/from16 v2, v31
+
+    .line 883
+    :goto_2d9
+    move-object v3, v2
+
+    move-object/from16 v31, v6
+
+    goto :goto_31f
+
+    .line 923
+    :catchall_2dd
+    move-exception v0
+
+    move-object/from16 v2, v31
+
+    :goto_2e0
+    move-object v3, v2
+
+    goto :goto_33e
+
+    .line 883
+    :cond_2e2
+    move-object/from16 v3, v31
+
+    move-object/from16 v31, v6
+
+    :try_start_2e6
+    instance-of v6, v2, Lorg/json/JSONObject;
+
+    if-eqz v6, :cond_31f
+
+    .line 884
+    check-cast v2, Lorg/json/JSONObject;
+
+    .line 885
+    invoke-virtual {v2, v14, v15}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v6
+
+    invoke-virtual {v6}, Ljava/lang/String;->trim()Ljava/lang/String;
+
+    move-result-object v6
+
+    .line 886
+    invoke-virtual {v6}, Ljava/lang/String;->isEmpty()Z
+
+    move-result v6
+
+    if-nez v6, :cond_31f
+
+    .line 887
+    invoke-virtual {v2, v13}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
+
+    move-result v6
+
+    if-eqz v6, :cond_308
+
+    invoke-virtual {v2, v13}, Lorg/json/JSONObject;->opt(Ljava/lang/String;)Ljava/lang/Object;
+
+    move-result-object v6
+
+    instance-of v6, v6, Lorg/json/JSONArray;
+
+    if-nez v6, :cond_30b
+
+    .line 888
+    :cond_308
+    invoke-virtual {v2, v13, v0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+
+    .line 890
+    :cond_30b
+    invoke-virtual {v2, v3}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
+
+    move-result v6
+
+    if-eqz v6, :cond_319
+
+    invoke-virtual {v2, v3}, Lorg/json/JSONObject;->opt(Ljava/lang/String;)Ljava/lang/Object;
+
+    move-result-object v6
+
+    instance-of v6, v6, Lorg/json/JSONArray;
+
+    if-nez v6, :cond_31c
+
+    .line 891
+    :cond_319
+    invoke-virtual {v2, v3, v1}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+
+    .line 893
+    :cond_31c
+    invoke-virtual {v5, v2}, Lorg/json/JSONArray;->put(Ljava/lang/Object;)Lorg/json/JSONArray;
+
+    .line 872
+    :cond_31f
+    :goto_31f
+    add-int/lit8 v12, v12, 0x1
+
+    move-object/from16 v2, v19
+
+    move-object/from16 v6, v31
+
+    move-object/from16 v31, v3
+
+    move-object/from16 v3, v32
+
+    goto/16 :goto_29f
+
+    :cond_32b
+    move-object/from16 v3, v31
+
+    move-object/from16 v31, v6
+
+    goto :goto_348
+
+    .line 923
+    :catchall_330
+    move-exception v0
+
+    goto :goto_33c
+
+    .line 870
+    :cond_332
+    move-object/from16 v19, v2
+
+    move-object/from16 v3, v31
+
+    move-object/from16 v31, v6
+
+    goto :goto_348
+
+    .line 923
+    :catchall_339
+    move-exception v0
+
+    move-object/from16 v19, v2
+
+    :goto_33c
+    move-object/from16 v3, v31
+
+    :goto_33e
+    move-object/from16 v31, v6
+
+    goto/16 :goto_3c1
+
+    .line 868
+    :cond_342
+    move-object/from16 v19, v2
+
+    move-object/from16 v3, v31
+
+    move-object/from16 v31, v6
+
+    .line 899
+    :goto_348
+    invoke-virtual {v5}, Lorg/json/JSONArray;->length()I
+
+    move-result v0
+
+    if-nez v0, :cond_355
+
+    .line 900
+    new-instance v5, Lorg/json/JSONArray;
+
+    const-string v0, "[{\"name\":\"catalog\",\"types\":[\"movie\",\"series\"],\"idPrefixes\":[\"tt\"]},{\"name\":\"meta\",\"types\":[\"movie\",\"series\"],\"idPrefixes\":[\"tt\"]},{\"name\":\"stream\",\"types\":[\"movie\",\"series\"],\"idPrefixes\":[\"tt\"]}]"
+
+    invoke-direct {v5, v0}, Lorg/json/JSONArray;-><init>(Ljava/lang/String;)V
+
+    .line 902
+    :cond_355
+    invoke-virtual {v5}, Lorg/json/JSONArray;->toString()Ljava/lang/String;
+
+    move-result-object v0
+
+    .line 904
+    new-instance v1, Landroid/content/ContentValues;
+
+    invoke-direct {v1}, Landroid/content/ContentValues;-><init>()V
+
+    .line 905
+    const-string v2, "baseUrl"
 
     move-object/from16 v5, v30
 
-    invoke-virtual {v3, v4, v5}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
+    invoke-virtual {v1, v2, v5}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 911
-    move-object/from16 v4, v29
+    .line 906
+    move-object/from16 v2, v29
 
-    invoke-virtual {v3, v9, v4}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
+    invoke-virtual {v1, v10, v2}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 912
-    move-object/from16 v4, p1
+    .line 907
+    move-object/from16 v2, p1
 
-    invoke-virtual {v3, v13, v4}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
-    :try_end_3ac
-    .catchall {:try_start_323 .. :try_end_3ac} :catchall_403
+    invoke-virtual {v1, v14, v2}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
+    :try_end_36f
+    .catchall {:try_start_2e6 .. :try_end_36f} :catchall_3c0
 
-    .line 913
+    .line 908
     move-object/from16 v5, v22
 
-    move-object/from16 v4, v28
+    move-object/from16 v2, v28
 
-    :try_start_3b0
-    invoke-virtual {v3, v5, v4}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
-    :try_end_3b3
-    .catchall {:try_start_3b0 .. :try_end_3b3} :catchall_3ff
+    :try_start_373
+    invoke-virtual {v1, v5, v2}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
+    :try_end_376
+    .catchall {:try_start_373 .. :try_end_376} :catchall_3bc
 
-    .line 914
-    move-object/from16 v10, v23
+    .line 909
+    move-object/from16 v6, v23
 
-    move-object/from16 v4, v24
+    move-object/from16 v2, v24
 
-    :try_start_3b7
-    invoke-virtual {v3, v10, v4}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
+    :try_start_37a
+    invoke-virtual {v1, v6, v2}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 915
-    const-string v4, "typesCsv"
+    .line 910
+    const-string v2, "typesCsv"
 
-    move-object/from16 v11, v27
+    move-object/from16 v12, v27
 
-    invoke-virtual {v3, v4, v11}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
+    invoke-virtual {v1, v2, v12}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 916
-    const-string v4, "catalogsJson"
+    .line 911
+    const-string v2, "catalogsJson"
 
-    invoke-virtual {v3, v4, v0}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
+    invoke-virtual {v1, v2, v4}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 917
-    const-string v0, "resourcesJson"
+    .line 912
+    const-string v2, "resourcesJson"
 
-    invoke-virtual {v3, v0, v2}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
+    invoke-virtual {v1, v2, v0}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 918
+    .line 913
     const-string v0, "idPrefixesCsv"
 
-    move-object/from16 v15, v33
+    invoke-virtual {v1, v0, v11}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
 
-    invoke-virtual {v3, v0, v15}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 919
+    .line 914
     invoke-virtual/range {v26 .. v26}, Ljava/lang/String;->isEmpty()Z
 
     move-result v0
-    :try_end_3d6
-    .catchall {:try_start_3b7 .. :try_end_3d6} :catchall_3fc
+    :try_end_397
+    .catchall {:try_start_37a .. :try_end_397} :catchall_3b9
 
     const-string v2, "logoUrl"
 
-    if-nez v0, :cond_3e0
+    if-nez v0, :cond_3a1
 
-    .line 920
+    .line 915
     move-object/from16 v0, v26
 
-    :try_start_3dc
-    invoke-virtual {v3, v2, v0}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
+    :try_start_39d
+    invoke-virtual {v1, v2, v0}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
 
-    goto :goto_3e3
+    goto :goto_3a4
 
-    .line 922
-    :cond_3e0
-    invoke-virtual {v3, v2}, Landroid/content/ContentValues;->putNull(Ljava/lang/String;)V
+    .line 917
+    :cond_3a1
+    invoke-virtual {v1, v2}, Landroid/content/ContentValues;->putNull(Ljava/lang/String;)V
 
-    .line 924
-    :goto_3e3
+    .line 919
+    :goto_3a4
     const-string v0, "sortOrder"
 
     invoke-static/range {v18 .. v18}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
 
     move-result-object v2
 
-    invoke-virtual {v3, v0, v2}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/Integer;)V
+    invoke-virtual {v1, v0, v2}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/Integer;)V
+    :try_end_3ad
+    .catchall {:try_start_39d .. :try_end_3ad} :catchall_3b9
 
-    .line 926
-    const-string v0, "installed_addons"
-    :try_end_3ee
-    .catchall {:try_start_3dc .. :try_end_3ee} :catchall_3fc
+    .line 921
+    move-object/from16 v2, v20
 
-    const/4 v2, 0x5
+    :try_start_3af
+    invoke-interface {v2, v1}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    :try_end_3b2
+    .catchall {:try_start_3af .. :try_end_3b2} :catchall_3b6
 
-    move-object/from16 v4, v20
-
-    const/4 v11, 0x0
-
-    :try_start_3f2
-    invoke-virtual {v4, v0, v11, v3, v2}, Landroid/database/sqlite/SQLiteDatabase;->insertWithOnConflict(Ljava/lang/String;Ljava/lang/String;Landroid/content/ContentValues;I)J
-    :try_end_3f5
-    .catchall {:try_start_3f2 .. :try_end_3f5} :catchall_3f9
-
-    .line 927
+    .line 922
     add-int/lit8 v18, v18, 0x1
 
-    goto/16 :goto_474
+    goto/16 :goto_426
+
+    .line 923
+    :catchall_3b6
+    move-exception v0
+
+    goto/16 :goto_426
+
+    :catchall_3b9
+    move-exception v0
+
+    goto/16 :goto_413
+
+    :catchall_3bc
+    move-exception v0
+
+    move-object/from16 v2, v20
+
+    goto :goto_3d1
+
+    :catchall_3c0
+    move-exception v0
+
+    :goto_3c1
+    move-object/from16 v2, v20
+
+    move-object/from16 v5, v22
+
+    goto :goto_3d1
+
+    :catchall_3c6
+    move-exception v0
+
+    move-object/from16 v19, v2
+
+    move-object/from16 v2, v20
+
+    move-object/from16 v5, v22
+
+    move-object/from16 v3, v31
+
+    move-object/from16 v31, v6
+
+    :goto_3d1
+    move-object/from16 v6, v23
+
+    goto/16 :goto_426
+
+    :catchall_3d5
+    move-exception v0
+
+    goto :goto_3da
+
+    :catchall_3d7
+    move-exception v0
+
+    :goto_3d8
+    move-object/from16 v25, v4
+
+    :goto_3da
+    move-object/from16 v5, v22
+
+    move-object/from16 v6, v23
+
+    move-object/from16 v3, v31
+
+    goto :goto_3ff
+
+    :catchall_3e1
+    move-exception v0
+
+    move-object/from16 v25, v4
+
+    move-object v3, v12
+
+    move-object/from16 v31, v19
+
+    move-object/from16 v5, v22
+
+    move-object/from16 v6, v23
+
+    goto :goto_401
+
+    :catchall_3ec
+    move-exception v0
+
+    move-object/from16 v25, v4
+
+    move-object v6, v5
+
+    move-object v3, v12
+
+    move-object/from16 v31, v19
+
+    move-object/from16 v5, v22
+
+    goto :goto_401
+
+    :catchall_3f6
+    move-exception v0
+
+    move-object v3, v6
+
+    move-object v6, v5
+
+    move-object v5, v3
+
+    move-object/from16 v25, v4
+
+    move-object/from16 v21, v11
+
+    :goto_3fe
+    move-object v3, v12
+
+    :goto_3ff
+    move-object/from16 v31, v19
+
+    :goto_401
+    move-object/from16 v19, v2
+
+    goto :goto_413
+
+    :catchall_404
+    move-exception v0
+
+    move-object/from16 v19, v6
+
+    move-object v6, v5
+
+    move-object/from16 v5, v19
+
+    move-object/from16 v19, v2
+
+    move-object/from16 v31, v3
+
+    move-object/from16 v25, v4
+
+    move-object/from16 v21, v11
+
+    move-object v3, v12
+
+    :goto_413
+    move-object/from16 v2, v20
+
+    goto :goto_426
+
+    :catchall_416
+    move-exception v0
+
+    move-object/from16 v19, v6
+
+    move-object v6, v5
+
+    move-object/from16 v5, v19
+
+    move-object/from16 v19, v2
+
+    move-object/from16 v31, v3
+
+    move-object/from16 v25, v4
+
+    move-object/from16 v21, v11
+
+    move-object v3, v12
+
+    move-object v2, v15
+
+    :goto_426
+    nop
+
+    .line 924
+    move-object v4, v6
+
+    move-object v6, v5
+
+    move-object v5, v4
+
+    move-object v15, v2
+
+    move-object v12, v3
+
+    move-object/from16 v2, v19
+
+    move-object/from16 v11, v21
+
+    move-object/from16 v4, v25
+
+    move-object/from16 v3, v31
+
+    goto/16 :goto_32
+
+    .line 926
+    :cond_436
+    move-object v2, v15
+
+    invoke-interface {v2}, Ljava/util/List;->isEmpty()Z
+
+    move-result v0
+
+    if-eqz v0, :cond_440
+
+    const/16 v16, 0x0
+
+    return v16
 
     .line 928
-    :catchall_3f9
-    move-exception v0
+    :cond_440
+    const-string v0, "streamsync.db"
 
-    goto/16 :goto_474
+    move-object/from16 v1, p0
 
-    :catchall_3fc
-    move-exception v0
+    invoke-virtual {v1, v0}, Landroid/content/Context;->getDatabasePath(Ljava/lang/String;)Ljava/io/File;
 
-    goto/16 :goto_454
-
-    :catchall_3ff
-    move-exception v0
-
-    move-object/from16 v4, v20
-
-    goto :goto_408
-
-    :catchall_403
-    move-exception v0
-
-    :goto_404
-    move-object/from16 v4, v20
-
-    move-object/from16 v5, v22
-
-    :goto_408
-    move-object/from16 v10, v23
-
-    goto :goto_456
-
-    :catchall_40b
-    move-exception v0
-
-    move-object/from16 v19, v1
-
-    move-object/from16 v4, v20
-
-    move-object/from16 v10, v23
-
-    move-object/from16 v1, v31
-
-    const/4 v11, 0x0
-
-    move-object/from16 v31, v5
-
-    move-object/from16 v5, v22
-
-    goto/16 :goto_474
-
-    :catchall_41b
-    move-exception v0
-
-    goto :goto_420
-
-    :catchall_41d
-    move-exception v0
-
-    :goto_41e
-    move-object/from16 v25, v3
-
-    :goto_420
-    move-object/from16 v4, v20
-
-    move-object/from16 v5, v22
-
-    move-object/from16 v10, v23
-
-    const/4 v11, 0x0
-
-    move-object/from16 v35, v19
-
-    move-object/from16 v19, v1
-
-    move-object/from16 v1, v31
-
-    move-object/from16 v31, v35
-
-    goto :goto_474
-
-    :catchall_430
-    move-exception v0
-
-    move-object/from16 v25, v3
-
-    move-object/from16 v31, v19
-
-    move-object/from16 v4, v20
-
-    move-object/from16 v5, v22
-
-    move-object/from16 v10, v23
-
-    goto/16 :goto_c4
-
-    :catchall_43d
-    move-exception v0
-
-    move-object/from16 v25, v3
-
-    move-object v10, v4
-
-    move-object/from16 v31, v19
-
-    move-object/from16 v4, v20
-
-    move-object/from16 v5, v22
-
-    goto/16 :goto_c4
-
-    :catchall_449
-    move-exception v0
-
-    move-object/from16 v25, v3
-
-    move-object/from16 v21, v10
-
-    move-object/from16 v31, v19
-
-    move-object/from16 v19, v1
-
-    move-object v10, v4
-
-    move-object v1, v11
-
-    :goto_454
-    move-object/from16 v4, v20
-
-    :goto_456
-    const/4 v11, 0x0
-
-    goto :goto_474
-
-    :catchall_458
-    move-exception v0
-
-    move-object/from16 v19, v1
-
-    move-object/from16 v31, v2
-
-    move-object/from16 v25, v3
-
-    move-object/from16 v21, v10
-
-    move-object v1, v11
-
-    const/4 v11, 0x0
-
-    move-object v10, v4
-
-    move-object/from16 v4, v20
-
-    goto :goto_474
-
-    :catchall_467
-    move-exception v0
-
-    move-object/from16 v19, v1
-
-    move-object/from16 v31, v2
-
-    move-object/from16 v25, v3
-
-    move-object/from16 v21, v10
-
-    move-object v1, v11
-
-    move-object v11, v15
-
-    move-object v10, v4
-
-    move-object v4, v14
-
-    :goto_474
-    nop
+    move-result-object v0
 
     .line 929
-    move-object v14, v4
+    invoke-virtual {v0}, Ljava/io/File;->getParentFile()Ljava/io/File;
 
-    move-object v4, v10
+    move-result-object v3
 
-    move-object v15, v11
+    invoke-virtual {v3}, Ljava/io/File;->exists()Z
 
-    move-object/from16 v10, v21
+    move-result v3
 
-    move-object/from16 v3, v25
-
-    move-object/from16 v2, v31
-
-    move-object v11, v1
-
-    move-object/from16 v1, v19
-
-    goto/16 :goto_68
+    if-nez v3, :cond_459
 
     .line 930
-    :cond_483
-    move-object v4, v14
+    invoke-virtual {v0}, Ljava/io/File;->getParentFile()Ljava/io/File;
 
-    :try_start_484
-    invoke-virtual {v4}, Landroid/database/sqlite/SQLiteDatabase;->setTransactionSuccessful()V
-    :try_end_487
-    .catchall {:try_start_484 .. :try_end_487} :catchall_48f
+    move-result-object v3
 
-    .line 932
-    invoke-virtual {v4}, Landroid/database/sqlite/SQLiteDatabase;->endTransaction()V
+    invoke-virtual {v3}, Ljava/io/File;->mkdirs()Z
 
     .line 933
-    invoke-virtual {v4}, Landroid/database/sqlite/SQLiteDatabase;->close()V
+    :cond_459
+    invoke-static {v1}, Lcom/streamsync/app/auth/SupabaseSyncService;->ensureRoomDatabase(Landroid/content/Context;)V
 
-    .line 934
+    .line 936
+    :try_start_45c
+    invoke-virtual {v0}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+
+    move-result-object v0
+
+    const/high16 v1, 0x20000000
+
+    const/4 v3, 0x0
+
+    invoke-static {v0, v3, v1}, Landroid/database/sqlite/SQLiteDatabase;->openDatabase(Ljava/lang/String;Landroid/database/sqlite/SQLiteDatabase$CursorFactory;I)Landroid/database/sqlite/SQLiteDatabase;
+
+    move-result-object v1
+    :try_end_467
+    .catchall {:try_start_45c .. :try_end_467} :catchall_4ab
+
+    .line 938
+    :try_start_467
+    const-string v0, "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)"
+
+    invoke-virtual {v1, v0}, Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V
+
+    .line 939
+    const-string v0, "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \'4201b4cf7d52e2b03ff5e210c14b7a60\')"
+
+    invoke-virtual {v1, v0}, Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V
+
+    .line 940
+    const-string v0, "PRAGMA user_version = 7"
+
+    invoke-virtual {v1, v0}, Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V
+
+    .line 941
+    const-string v0, "CREATE TABLE IF NOT EXISTS `installed_addons` (`baseUrl` TEXT NOT NULL, `id` TEXT NOT NULL, `name` TEXT NOT NULL, `version` TEXT NOT NULL, `description` TEXT, `typesCsv` TEXT NOT NULL, `catalogsJson` TEXT NOT NULL, `resourcesJson` TEXT NOT NULL, `idPrefixesCsv` TEXT NOT NULL, `logoUrl` TEXT, `sortOrder` INTEGER NOT NULL, PRIMARY KEY(`baseUrl`));"
+
+    invoke-virtual {v1, v0}, Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V
+
+    .line 943
+    invoke-virtual {v1}, Landroid/database/sqlite/SQLiteDatabase;->beginTransaction()V
+    :try_end_47e
+    .catchall {:try_start_467 .. :try_end_47e} :catchall_4a6
+
+    .line 945
+    :try_start_47e
+    invoke-interface {v2}, Ljava/util/List;->iterator()Ljava/util/Iterator;
+
+    move-result-object v0
+
+    :goto_482
+    invoke-interface {v0}, Ljava/util/Iterator;->hasNext()Z
+
+    move-result v2
+
+    if-eqz v2, :cond_496
+
+    invoke-interface {v0}, Ljava/util/Iterator;->next()Ljava/lang/Object;
+
+    move-result-object v2
+
+    check-cast v2, Landroid/content/ContentValues;
+
+    .line 946
+    const-string v3, "installed_addons"
+
+    const/4 v4, 0x5
+
+    const/4 v5, 0x0
+
+    invoke-virtual {v1, v3, v5, v2, v4}, Landroid/database/sqlite/SQLiteDatabase;->insertWithOnConflict(Ljava/lang/String;Ljava/lang/String;Landroid/content/ContentValues;I)J
+
+    .line 947
+    goto :goto_482
+
+    .line 948
+    :cond_496
+    invoke-virtual {v1}, Landroid/database/sqlite/SQLiteDatabase;->setTransactionSuccessful()V
+    :try_end_499
+    .catchall {:try_start_47e .. :try_end_499} :catchall_4a1
+
+    .line 950
+    :try_start_499
+    invoke-virtual {v1}, Landroid/database/sqlite/SQLiteDatabase;->endTransaction()V
+    :try_end_49c
+    .catchall {:try_start_499 .. :try_end_49c} :catchall_4a6
+
+    .line 951
     nop
 
-    .line 935
+    .line 953
+    :try_start_49d
+    invoke-virtual {v1}, Landroid/database/sqlite/SQLiteDatabase;->close()V
+    :try_end_4a0
+    .catchall {:try_start_49d .. :try_end_4a0} :catchall_4ab
+
+    .line 954
+    goto :goto_4ac
+
+    .line 950
+    :catchall_4a1
+    move-exception v0
+
+    :try_start_4a2
+    invoke-virtual {v1}, Landroid/database/sqlite/SQLiteDatabase;->endTransaction()V
+
+    .line 951
+    throw v0
+    :try_end_4a6
+    .catchall {:try_start_4a2 .. :try_end_4a6} :catchall_4a6
+
+    .line 953
+    :catchall_4a6
+    move-exception v0
+
+    :try_start_4a7
+    invoke-virtual {v1}, Landroid/database/sqlite/SQLiteDatabase;->close()V
+
+    .line 954
+    throw v0
+    :try_end_4ab
+    .catchall {:try_start_4a7 .. :try_end_4ab} :catchall_4ab
+
+    .line 955
+    :catchall_4ab
+    move-exception v0
+
+    :goto_4ac
+    nop
+
+    .line 956
     return v18
 
-    .line 932
-    :catchall_48f
-    move-exception v0
+    .line 755
+    :cond_4ae
+    :goto_4ae
+    const/16 v16, 0x0
 
-    goto :goto_493
-
-    :catchall_491
-    move-exception v0
-
-    move-object v4, v14
-
-    :goto_493
-    invoke-virtual {v4}, Landroid/database/sqlite/SQLiteDatabase;->endTransaction()V
-
-    .line 933
-    invoke-virtual {v4}, Landroid/database/sqlite/SQLiteDatabase;->close()V
-
-    .line 934
-    throw v0
-
-    .line 752
-    :cond_49a
-    :goto_49a
-    const/4 v1, 0x0
-
-    return v1
+    return v16
 .end method
 
 .method public static installDefaultAddonsFallback(Landroid/content/Context;)I
     .registers 3
 
-    .line 991
+    .line 1012
     new-instance v0, Ljava/util/ArrayList;
 
     invoke-direct {v0}, Ljava/util/ArrayList;-><init>()V
 
-    .line 992
+    .line 1013
     const-string v1, "https://v3-cinemeta.strem.io/manifest.json"
 
     invoke-interface {v0, v1}, Ljava/util/List;->add(Ljava/lang/Object;)Z
 
-    .line 993
+    .line 1014
     const-string v1, "https://opensubtitles-v3.strem.io/manifest.json"
 
     invoke-interface {v0, v1}, Ljava/util/List;->add(Ljava/lang/Object;)Z
 
-    .line 994
+    .line 1015
     const-string v1, "https://catalog.cyberflix.tv/manifest.json"
 
     invoke-interface {v0, v1}, Ljava/util/List;->add(Ljava/lang/Object;)Z
 
-    .line 995
+    .line 1016
     const-string v1, "https://torrentio.strem.fun/manifest.json"
 
     invoke-interface {v0, v1}, Ljava/util/List;->add(Ljava/lang/Object;)Z
 
-    .line 996
+    .line 1017
     invoke-static {p0, v0}, Lcom/streamsync/app/auth/SupabaseSyncService;->installAddonsDirectly(Landroid/content/Context;Ljava/util/List;)I
 
     move-result p0
@@ -2638,14 +2690,14 @@
 .end method
 
 .method public static login(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/streamsync/app/auth/SupabaseSyncService$AuthCallback;)V
-    .registers 13
+    .registers 12
 
     .line 102
     new-instance v0, Ljava/lang/Thread;
 
-    new-instance v7, Lcom/streamsync/app/auth/SupabaseSyncService$2;
+    new-instance v1, Lcom/streamsync/app/auth/SupabaseSyncService$2;
 
-    move-object v1, v7
+    move-object v5, p0
 
     move-object v2, p1
 
@@ -2653,13 +2705,11 @@
 
     move-object v4, p3
 
-    move-object v5, p0
-
     move-object v6, p4
 
     invoke-direct/range {v1 .. v6}, Lcom/streamsync/app/auth/SupabaseSyncService$2;-><init>(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Landroid/content/Context;Lcom/streamsync/app/auth/SupabaseSyncService$AuthCallback;)V
 
-    invoke-direct {v0, v7}, Ljava/lang/Thread;-><init>(Ljava/lang/Runnable;)V
+    invoke-direct {v0, v1}, Ljava/lang/Thread;-><init>(Ljava/lang/Runnable;)V
 
     .line 191
     invoke-virtual {v0}, Ljava/lang/Thread;->start()V
@@ -3256,9 +3306,9 @@
     move-result-object v6
 
     .line 476
-    const/4 v7, 0x1
+    const/4 v15, 0x1
 
-    invoke-virtual {v2, v3, v7}, Lorg/json/JSONObject;->optBoolean(Ljava/lang/String;Z)Z
+    invoke-virtual {v2, v3, v15}, Lorg/json/JSONObject;->optBoolean(Ljava/lang/String;Z)Z
 
     move-result v2
 
@@ -3335,7 +3385,7 @@
 .method private static pullLibraryFromSupabase(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
     .registers 13
 
-    .line 675
+    .line 679
     const-string v0, "imdb_rating"
 
     const-string v1, "description"
@@ -3365,31 +3415,31 @@
 
     invoke-direct {v3, p1}, Ljava/net/URL;-><init>(Ljava/lang/String;)V
 
-    .line 676
+    .line 680
     invoke-virtual {v3}, Ljava/net/URL;->openConnection()Ljava/net/URLConnection;
 
     move-result-object p1
 
     check-cast p1, Ljava/net/HttpURLConnection;
 
-    .line 677
+    .line 681
     const-string v3, "POST"
 
     invoke-virtual {p1, v3}, Ljava/net/HttpURLConnection;->setRequestMethod(Ljava/lang/String;)V
 
-    .line 678
+    .line 682
     const-string v3, "Content-Type"
 
     const-string v4, "application/json"
 
     invoke-virtual {p1, v3, v4}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 679
+    .line 683
     const-string v3, "apikey"
 
     invoke-virtual {p1, v3, p3}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 680
+    .line 684
     const-string p3, "Authorization"
 
     new-instance v3, Ljava/lang/StringBuilder;
@@ -3412,44 +3462,44 @@
 
     invoke-virtual {p1, p3, p2}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 681
+    .line 685
     const/16 p2, 0x1f40
 
     invoke-virtual {p1, p2}, Ljava/net/HttpURLConnection;->setConnectTimeout(I)V
 
-    .line 682
+    .line 686
     invoke-virtual {p1, p2}, Ljava/net/HttpURLConnection;->setReadTimeout(I)V
 
-    .line 683
+    .line 687
     const/4 p2, 0x1
 
     invoke-virtual {p1, p2}, Ljava/net/HttpURLConnection;->setDoOutput(Z)V
 
-    .line 685
+    .line 689
     new-instance p3, Lorg/json/JSONObject;
 
     invoke-direct {p3}, Lorg/json/JSONObject;-><init>()V
 
-    .line 686
+    .line 690
     const-string v3, "p_profile_id"
 
     invoke-virtual {p3, v3, p2}, Lorg/json/JSONObject;->put(Ljava/lang/String;I)Lorg/json/JSONObject;
 
-    .line 687
+    .line 691
     const-string p2, "p_limit"
 
     const/16 v3, 0x64
 
     invoke-virtual {p3, p2, v3}, Lorg/json/JSONObject;->put(Ljava/lang/String;I)Lorg/json/JSONObject;
 
-    .line 688
+    .line 692
     const-string p2, "p_offset"
 
     const/4 v3, 0x0
 
     invoke-virtual {p3, p2, v3}, Lorg/json/JSONObject;->put(Ljava/lang/String;I)Lorg/json/JSONObject;
 
-    .line 689
+    .line 693
     invoke-virtual {p3}, Lorg/json/JSONObject;->toString()Ljava/lang/String;
 
     move-result-object p2
@@ -3460,26 +3510,26 @@
 
     move-result-object p2
 
-    .line 690
+    .line 694
     invoke-virtual {p1}, Ljava/net/HttpURLConnection;->getOutputStream()Ljava/io/OutputStream;
 
     move-result-object p3
     :try_end_7e
-    .catchall {:try_start_6 .. :try_end_7e} :catchall_1a3
+    .catchall {:try_start_6 .. :try_end_7e} :catchall_1aa
 
-    .line 691
+    .line 695
     :try_start_7e
     invoke-virtual {p3, p2}, Ljava/io/OutputStream;->write([B)V
     :try_end_81
-    .catchall {:try_start_7e .. :try_end_81} :catchall_197
+    .catchall {:try_start_7e .. :try_end_81} :catchall_19e
 
-    .line 692
+    .line 696
     if-eqz p3, :cond_86
 
     :try_start_83
     invoke-virtual {p3}, Ljava/io/OutputStream;->close()V
 
-    .line 694
+    .line 698
     :cond_86
     invoke-virtual {p1}, Ljava/net/HttpURLConnection;->getResponseCode()I
 
@@ -3487,9 +3537,9 @@
 
     const/16 p3, 0xc8
 
-    if-ne p2, p3, :cond_1a4
+    if-ne p2, p3, :cond_1ab
 
-    .line 695
+    .line 699
     invoke-virtual {p1}, Ljava/net/HttpURLConnection;->getInputStream()Ljava/io/InputStream;
 
     move-result-object p1
@@ -3498,12 +3548,12 @@
 
     move-result-object p1
 
-    .line 696
+    .line 700
     new-instance p2, Lorg/json/JSONArray;
 
     invoke-direct {p2, p1}, Lorg/json/JSONArray;-><init>(Ljava/lang/String;)V
 
-    .line 697
+    .line 701
     invoke-virtual {p2}, Lorg/json/JSONArray;->length()I
 
     move-result p1
@@ -3512,7 +3562,7 @@
 
     return-void
 
-    .line 699
+    .line 703
     :cond_a2
     const-string p1, "streamsync.db"
 
@@ -3520,7 +3570,7 @@
 
     move-result-object p1
 
-    .line 700
+    .line 704
     invoke-virtual {p1}, Ljava/io/File;->exists()Z
 
     move-result p3
@@ -3529,163 +3579,171 @@
 
     return-void
 
-    .line 702
+    .line 706
     :cond_af
     invoke-static {p0}, Lcom/streamsync/app/auth/SupabaseSyncService;->ensureRoomDatabase(Landroid/content/Context;)V
+    :try_end_b2
+    .catchall {:try_start_83 .. :try_end_b2} :catchall_1aa
 
-    .line 704
+    .line 709
+    :try_start_b2
     invoke-virtual {p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
 
     move-result-object p0
 
-    const/4 p1, 0x0
+    const/high16 p1, 0x20000000
 
-    invoke-static {p0, p1, v3}, Landroid/database/sqlite/SQLiteDatabase;->openDatabase(Ljava/lang/String;Landroid/database/sqlite/SQLiteDatabase$CursorFactory;I)Landroid/database/sqlite/SQLiteDatabase;
+    const/4 p3, 0x0
+
+    invoke-static {p0, p3, p1}, Landroid/database/sqlite/SQLiteDatabase;->openDatabase(Ljava/lang/String;Landroid/database/sqlite/SQLiteDatabase$CursorFactory;I)Landroid/database/sqlite/SQLiteDatabase;
 
     move-result-object p0
-    :try_end_bb
-    .catchall {:try_start_83 .. :try_end_bb} :catchall_1a3
+    :try_end_bd
+    .catchall {:try_start_b2 .. :try_end_bd} :catchall_19c
 
-    .line 706
-    :try_start_bb
-    const-string p3, "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)"
+    .line 711
+    :try_start_bd
+    const-string p1, "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)"
 
-    invoke-virtual {p0, p3}, Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V
-
-    .line 707
-    const-string p3, "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \'4201b4cf7d52e2b03ff5e210c14b7a60\')"
-
-    invoke-virtual {p0, p3}, Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V
-
-    .line 708
-    const-string p3, "PRAGMA user_version = 7"
-
-    invoke-virtual {p0, p3}, Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V
-
-    .line 710
-    const-string p3, "CREATE TABLE IF NOT EXISTS `library_items` (`mediaId` TEXT NOT NULL, `title` TEXT NOT NULL, `posterUrl` TEXT, `backgroundUrl` TEXT, `description` TEXT, `type` TEXT NOT NULL, `releaseInfo` TEXT, `imdbRating` TEXT, `genresJson` TEXT NOT NULL, `season` INTEGER, `episode` INTEGER, `addedAtEpochMs` INTEGER NOT NULL, PRIMARY KEY(`mediaId`));"
-
-    invoke-virtual {p0, p3}, Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V
+    invoke-virtual {p0, p1}, Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V
 
     .line 712
-    invoke-virtual {p0}, Landroid/database/sqlite/SQLiteDatabase;->beginTransaction()V
+    const-string p1, "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \'4201b4cf7d52e2b03ff5e210c14b7a60\')"
+
+    invoke-virtual {p0, p1}, Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V
 
     .line 713
-    nop
+    const-string p1, "PRAGMA user_version = 7"
 
-    :goto_d3
-    invoke-virtual {p2}, Lorg/json/JSONArray;->length()I
-
-    move-result p3
-
-    if-ge v3, p3, :cond_185
+    invoke-virtual {p0, p1}, Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V
 
     .line 714
+    const-string p1, "CREATE TABLE IF NOT EXISTS `library_items` (`mediaId` TEXT NOT NULL, `title` TEXT NOT NULL, `posterUrl` TEXT, `backgroundUrl` TEXT, `description` TEXT, `type` TEXT NOT NULL, `releaseInfo` TEXT, `imdbRating` TEXT, `genresJson` TEXT NOT NULL, `season` INTEGER, `episode` INTEGER, `addedAtEpochMs` INTEGER NOT NULL, PRIMARY KEY(`mediaId`));"
+
+    invoke-virtual {p0, p1}, Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V
+
+    .line 716
+    invoke-virtual {p0}, Landroid/database/sqlite/SQLiteDatabase;->beginTransaction()V
+    :try_end_d4
+    .catchall {:try_start_bd .. :try_end_d4} :catchall_197
+
+    .line 718
+    nop
+
+    :goto_d5
+    :try_start_d5
+    invoke-virtual {p2}, Lorg/json/JSONArray;->length()I
+
+    move-result p1
+
+    if-ge v3, p1, :cond_187
+
+    .line 719
     invoke-virtual {p2, v3}, Lorg/json/JSONArray;->getJSONObject(I)Lorg/json/JSONObject;
 
-    move-result-object p3
+    move-result-object p1
 
-    .line 715
+    .line 720
     const-string v4, "content_id"
 
-    invoke-virtual {p3, v4, v2}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    invoke-virtual {p1, v4, v2}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v4
 
-    .line 716
+    .line 721
     invoke-virtual {v4}, Ljava/lang/String;->isEmpty()Z
 
     move-result v5
 
-    if-eqz v5, :cond_eb
+    if-eqz v5, :cond_ed
 
-    goto/16 :goto_181
+    goto/16 :goto_183
 
-    .line 718
-    :cond_eb
+    .line 723
+    :cond_ed
     new-instance v5, Landroid/content/ContentValues;
 
     invoke-direct {v5}, Landroid/content/ContentValues;-><init>()V
 
-    .line 719
+    .line 724
     const-string v6, "mediaId"
 
     invoke-virtual {v5, v6, v4}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 720
+    .line 725
     const-string v4, "title"
 
     const-string v6, "name"
 
-    invoke-virtual {p3, v6, v2}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v6
-
-    invoke-virtual {v5, v4, v6}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 721
-    const-string v4, "posterUrl"
-
-    const-string v6, "poster"
-
-    invoke-virtual {p3, v6, p1}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v6
-
-    invoke-virtual {v5, v4, v6}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 722
-    const-string v4, "backgroundUrl"
-
-    const-string v6, "background"
-
-    invoke-virtual {p3, v6, p1}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v6
-
-    invoke-virtual {v5, v4, v6}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 723
-    invoke-virtual {p3, v1, p1}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v4
-
-    invoke-virtual {v5, v1, v4}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 724
-    const-string v4, "type"
-
-    const-string v6, "content_type"
-
-    const-string v7, "movie"
-
-    invoke-virtual {p3, v6, v7}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v6
-
-    invoke-virtual {v5, v4, v6}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 725
-    const-string v4, "releaseInfo"
-
-    const-string v6, "release_info"
-
-    invoke-virtual {p3, v6, p1}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    invoke-virtual {p1, v6, v2}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v6
 
     invoke-virtual {v5, v4, v6}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
 
     .line 726
+    const-string v4, "posterUrl"
+
+    const-string v6, "poster"
+
+    invoke-virtual {p1, v6, p3}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v6
+
+    invoke-virtual {v5, v4, v6}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
+
+    .line 727
+    const-string v4, "backgroundUrl"
+
+    const-string v6, "background"
+
+    invoke-virtual {p1, v6, p3}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v6
+
+    invoke-virtual {v5, v4, v6}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
+
+    .line 728
+    invoke-virtual {p1, v1, p3}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v4
+
+    invoke-virtual {v5, v1, v4}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
+
+    .line 729
+    const-string v4, "type"
+
+    const-string v6, "content_type"
+
+    const-string v7, "movie"
+
+    invoke-virtual {p1, v6, v7}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v6
+
+    invoke-virtual {v5, v4, v6}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
+
+    .line 730
+    const-string v4, "releaseInfo"
+
+    const-string v6, "release_info"
+
+    invoke-virtual {p1, v6, p3}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v6
+
+    invoke-virtual {v5, v4, v6}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
+
+    .line 731
     const-string v4, "imdbRating"
 
-    invoke-virtual {p3, v0}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
+    invoke-virtual {p1, v0}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
 
     move-result v6
 
-    if-eqz v6, :cond_146
+    if-eqz v6, :cond_148
 
-    invoke-virtual {p3, v0}, Lorg/json/JSONObject;->opt(Ljava/lang/String;)Ljava/lang/Object;
+    invoke-virtual {p1, v0}, Lorg/json/JSONObject;->opt(Ljava/lang/String;)Ljava/lang/Object;
 
     move-result-object v6
 
@@ -3693,49 +3751,49 @@
 
     move-result-object v6
 
-    goto :goto_147
+    goto :goto_149
 
-    :cond_146
-    move-object v6, p1
+    :cond_148
+    move-object v6, p3
 
-    :goto_147
+    :goto_149
     invoke-virtual {v5, v4, v6}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 728
+    .line 733
     const-string v4, "genres"
 
-    invoke-virtual {p3, v4}, Lorg/json/JSONObject;->optJSONArray(Ljava/lang/String;)Lorg/json/JSONArray;
+    invoke-virtual {p1, v4}, Lorg/json/JSONObject;->optJSONArray(Ljava/lang/String;)Lorg/json/JSONArray;
 
     move-result-object v4
 
-    .line 729
+    .line 734
     const-string v6, "genresJson"
 
-    if-eqz v4, :cond_159
+    if-eqz v4, :cond_15b
 
     invoke-virtual {v4}, Lorg/json/JSONArray;->toString()Ljava/lang/String;
 
     move-result-object v4
 
-    goto :goto_15b
+    goto :goto_15d
 
-    :cond_159
+    :cond_15b
     const-string v4, "[]"
 
-    :goto_15b
+    :goto_15d
     invoke-virtual {v5, v6, v4}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 731
+    .line 736
     const-string v4, "season"
 
     invoke-virtual {v5, v4}, Landroid/content/ContentValues;->putNull(Ljava/lang/String;)V
 
-    .line 732
+    .line 737
     const-string v4, "episode"
 
     invoke-virtual {v5, v4}, Landroid/content/ContentValues;->putNull(Ljava/lang/String;)V
 
-    .line 733
+    .line 738
     const-string v4, "addedAtEpochMs"
 
     const-string v6, "added_at"
@@ -3744,102 +3802,125 @@
 
     move-result-wide v7
 
-    invoke-virtual {p3, v6, v7, v8}, Lorg/json/JSONObject;->optLong(Ljava/lang/String;J)J
+    invoke-virtual {p1, v6, v7, v8}, Lorg/json/JSONObject;->optLong(Ljava/lang/String;J)J
 
     move-result-wide v6
 
     invoke-static {v6, v7}, Ljava/lang/Long;->valueOf(J)Ljava/lang/Long;
 
-    move-result-object p3
+    move-result-object p1
 
-    invoke-virtual {v5, v4, p3}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/Long;)V
+    invoke-virtual {v5, v4, p1}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/Long;)V
 
-    .line 735
-    const-string p3, "library_items"
+    .line 740
+    const-string p1, "library_items"
 
     const/4 v4, 0x5
 
-    invoke-virtual {p0, p3, p1, v5, v4}, Landroid/database/sqlite/SQLiteDatabase;->insertWithOnConflict(Ljava/lang/String;Ljava/lang/String;Landroid/content/ContentValues;I)J
+    invoke-virtual {p0, p1, p3, v5, v4}, Landroid/database/sqlite/SQLiteDatabase;->insertWithOnConflict(Ljava/lang/String;Ljava/lang/String;Landroid/content/ContentValues;I)J
 
-    .line 713
-    :goto_181
+    .line 718
+    :goto_183
     add-int/lit8 v3, v3, 0x1
 
-    goto/16 :goto_d3
+    goto/16 :goto_d5
 
-    .line 737
-    :cond_185
+    .line 742
+    :cond_187
     invoke-virtual {p0}, Landroid/database/sqlite/SQLiteDatabase;->setTransactionSuccessful()V
-    :try_end_188
-    .catchall {:try_start_bb .. :try_end_188} :catchall_18f
-
-    .line 739
-    :try_start_188
-    invoke-virtual {p0}, Landroid/database/sqlite/SQLiteDatabase;->endTransaction()V
-
-    .line 740
-    invoke-virtual {p0}, Landroid/database/sqlite/SQLiteDatabase;->close()V
-
-    .line 741
-    goto :goto_1a4
-
-    .line 739
-    :catchall_18f
-    move-exception p1
-
-    invoke-virtual {p0}, Landroid/database/sqlite/SQLiteDatabase;->endTransaction()V
-
-    .line 740
-    invoke-virtual {p0}, Landroid/database/sqlite/SQLiteDatabase;->close()V
-
-    .line 741
-    throw p1
-    :try_end_197
-    .catchall {:try_start_188 .. :try_end_197} :catchall_1a3
-
-    .line 690
-    :catchall_197
-    move-exception p0
-
-    if-eqz p3, :cond_1a2
-
-    :try_start_19a
-    invoke-virtual {p3}, Ljava/io/OutputStream;->close()V
-    :try_end_19d
-    .catchall {:try_start_19a .. :try_end_19d} :catchall_19e
-
-    goto :goto_1a2
-
-    :catchall_19e
-    move-exception p1
-
-    :try_start_19f
-    invoke-static {p0, p1}, Lcom/streamsync/app/auth/SupabaseSyncService$$ExternalSyntheticBackport0;->m(Ljava/lang/Throwable;Ljava/lang/Throwable;)V
-
-    :cond_1a2
-    :goto_1a2
-    throw p0
-    :try_end_1a3
-    .catchall {:try_start_19f .. :try_end_1a3} :catchall_1a3
-
-    .line 743
-    :catchall_1a3
-    move-exception p0
-
-    :cond_1a4
-    :goto_1a4
-    nop
+    :try_end_18a
+    .catchall {:try_start_d5 .. :try_end_18a} :catchall_192
 
     .line 744
+    :try_start_18a
+    invoke-virtual {p0}, Landroid/database/sqlite/SQLiteDatabase;->endTransaction()V
+    :try_end_18d
+    .catchall {:try_start_18a .. :try_end_18d} :catchall_197
+
+    .line 745
+    nop
+
+    .line 747
+    :try_start_18e
+    invoke-virtual {p0}, Landroid/database/sqlite/SQLiteDatabase;->close()V
+    :try_end_191
+    .catchall {:try_start_18e .. :try_end_191} :catchall_19c
+
+    .line 748
+    goto :goto_19d
+
+    .line 744
+    :catchall_192
+    move-exception p1
+
+    :try_start_193
+    invoke-virtual {p0}, Landroid/database/sqlite/SQLiteDatabase;->endTransaction()V
+
+    .line 745
+    throw p1
+    :try_end_197
+    .catchall {:try_start_193 .. :try_end_197} :catchall_197
+
+    .line 747
+    :catchall_197
+    move-exception p1
+
+    :try_start_198
+    invoke-virtual {p0}, Landroid/database/sqlite/SQLiteDatabase;->close()V
+
+    .line 748
+    throw p1
+    :try_end_19c
+    .catchall {:try_start_198 .. :try_end_19c} :catchall_19c
+
+    .line 749
+    :catchall_19c
+    move-exception p0
+
+    :goto_19d
+    goto :goto_1ab
+
+    .line 694
+    :catchall_19e
+    move-exception p0
+
+    if-eqz p3, :cond_1a9
+
+    :try_start_1a1
+    invoke-virtual {p3}, Ljava/io/OutputStream;->close()V
+    :try_end_1a4
+    .catchall {:try_start_1a1 .. :try_end_1a4} :catchall_1a5
+
+    goto :goto_1a9
+
+    :catchall_1a5
+    move-exception p1
+
+    :try_start_1a6
+    invoke-static {p0, p1}, Lcom/streamsync/app/auth/SupabaseSyncService$$ExternalSyntheticBackport0;->m(Ljava/lang/Throwable;Ljava/lang/Throwable;)V
+
+    :cond_1a9
+    :goto_1a9
+    throw p0
+    :try_end_1aa
+    .catchall {:try_start_1a6 .. :try_end_1aa} :catchall_1aa
+
+    .line 751
+    :catchall_1aa
+    move-exception p0
+
+    :cond_1ab
+    :goto_1ab
+    nop
+
+    .line 752
     return-void
 .end method
 
 .method public static pullWatchProgressFromSupabase(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)I
-    .registers 28
+    .registers 30
 
     .line 492
-    move-object/from16 v1, p0
-
     move-object/from16 v2, p2
 
     move-object/from16 v3, p3
@@ -3877,31 +3958,31 @@
     .line 494
     move-object/from16 v17, v5
 
-    :try_start_26
+    :try_start_24
     invoke-static/range {p1 .. p1}, Lcom/streamsync/app/auth/SupabaseSyncService;->normalizeUrl(Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v5
 
     .line 495
-    move-object/from16 v18, v11
+    move-object/from16 v19, v11
 
     new-instance v11, Ljava/util/ArrayList;
 
     invoke-direct {v11}, Ljava/util/ArrayList;-><init>()V
 
     .line 496
-    move-object/from16 v19, v12
+    move-object/from16 v20, v12
 
     new-instance v12, Ljava/util/HashSet;
 
     invoke-direct {v12}, Ljava/util/HashSet;-><init>()V
-    :try_end_38
-    .catchall {:try_start_26 .. :try_end_38} :catchall_4b5
+    :try_end_36
+    .catchall {:try_start_24 .. :try_end_36} :catchall_4b9
 
     .line 500
     move-object/from16 p1, v12
 
-    :try_start_3a
+    :try_start_38
     new-instance v0, Ljava/net/URL;
 
     new-instance v12, Ljava/lang/StringBuilder;
@@ -3911,12 +3992,12 @@
     invoke-virtual {v12, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v12
-    :try_end_45
-    .catchall {:try_start_3a .. :try_end_45} :catchall_d7
+    :try_end_43
+    .catchall {:try_start_38 .. :try_end_43} :catchall_d4
 
-    move-object/from16 v23, v4
+    move-object/from16 v24, v4
 
-    :try_start_47
+    :try_start_45
     const-string v4, "/rest/v1/rpc/sync_pull_watch_progress"
 
     invoke-virtual {v12, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
@@ -4000,30 +4081,30 @@
     invoke-virtual {v0}, Ljava/net/HttpURLConnection;->getOutputStream()Ljava/io/OutputStream;
 
     move-result-object v12
-    :try_end_99
-    .catchall {:try_start_47 .. :try_end_99} :catchall_d5
+    :try_end_97
+    .catchall {:try_start_45 .. :try_end_97} :catchall_d2
 
     .line 514
-    :try_start_99
+    :try_start_97
     invoke-virtual {v12, v4}, Ljava/io/OutputStream;->write([B)V
-    :try_end_9c
-    .catchall {:try_start_99 .. :try_end_9c} :catchall_c7
+    :try_end_9a
+    .catchall {:try_start_97 .. :try_end_9a} :catchall_c5
 
     .line 515
-    if-eqz v12, :cond_a1
+    if-eqz v12, :cond_9f
 
-    :try_start_9e
+    :try_start_9c
     invoke-virtual {v12}, Ljava/io/OutputStream;->close()V
 
     .line 517
-    :cond_a1
+    :cond_9f
     invoke-virtual {v0}, Ljava/net/HttpURLConnection;->getResponseCode()I
 
     move-result v4
 
     const/16 v12, 0xc8
 
-    if-ne v4, v12, :cond_da
+    if-ne v4, v12, :cond_d7
 
     .line 518
     invoke-virtual {v0}, Ljava/net/HttpURLConnection;->getInputStream()Ljava/io/InputStream;
@@ -4042,12 +4123,12 @@
     .line 520
     const/4 v0, 0x0
 
-    :goto_b7
+    :goto_b5
     invoke-virtual {v4}, Lorg/json/JSONArray;->length()I
 
     move-result v12
 
-    if-ge v0, v12, :cond_da
+    if-ge v0, v12, :cond_d7
 
     .line 521
     invoke-virtual {v4, v0}, Lorg/json/JSONArray;->getJSONObject(I)Lorg/json/JSONObject;
@@ -4055,60 +4136,58 @@
     move-result-object v12
 
     invoke-interface {v11, v12}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    :try_end_c4
-    .catchall {:try_start_9e .. :try_end_c4} :catchall_d5
+    :try_end_c2
+    .catchall {:try_start_9c .. :try_end_c2} :catchall_d2
 
     .line 520
     add-int/lit8 v0, v0, 0x1
 
-    goto :goto_b7
+    goto :goto_b5
 
     .line 513
-    :catchall_c7
+    :catchall_c5
     move-exception v0
 
     move-object v4, v0
 
-    if-eqz v12, :cond_d4
+    if-eqz v12, :cond_d1
 
-    :try_start_cb
+    :try_start_c9
     invoke-virtual {v12}, Ljava/io/OutputStream;->close()V
-    :try_end_ce
-    .catchall {:try_start_cb .. :try_end_ce} :catchall_cf
+    :try_end_cc
+    .catchall {:try_start_c9 .. :try_end_cc} :catchall_cd
 
-    goto :goto_d4
+    goto :goto_d1
 
-    :catchall_cf
+    :catchall_cd
     move-exception v0
 
-    move-object v12, v0
+    :try_start_ce
+    invoke-static {v4, v0}, Lcom/streamsync/app/auth/SupabaseSyncService$$ExternalSyntheticBackport0;->m(Ljava/lang/Throwable;Ljava/lang/Throwable;)V
 
-    :try_start_d1
-    invoke-static {v4, v12}, Lcom/streamsync/app/auth/SupabaseSyncService$$ExternalSyntheticBackport0;->m(Ljava/lang/Throwable;Ljava/lang/Throwable;)V
-
-    :cond_d4
-    :goto_d4
+    :cond_d1
+    :goto_d1
     throw v4
-    :try_end_d5
-    .catchall {:try_start_d1 .. :try_end_d5} :catchall_d5
+    :try_end_d2
+    .catchall {:try_start_ce .. :try_end_d2} :catchall_d2
 
     .line 524
-    :catchall_d5
+    :catchall_d2
     move-exception v0
 
-    goto :goto_da
+    goto :goto_d7
 
-    :catchall_d7
+    :catchall_d4
     move-exception v0
 
-    move-object/from16 v23, v4
+    move-object/from16 v24, v4
 
-    :cond_da
-    :goto_da
+    :cond_d7
+    :goto_d7
     nop
 
     .line 528
-    :try_start_db
+    :try_start_d8
     new-instance v0, Ljava/net/URL;
 
     new-instance v4, Ljava/lang/StringBuilder;
@@ -4214,30 +4293,30 @@
     invoke-virtual {v0}, Ljava/net/HttpURLConnection;->getOutputStream()Ljava/io/OutputStream;
 
     move-result-object v6
-    :try_end_144
-    .catchall {:try_start_db .. :try_end_144} :catchall_20d
+    :try_end_141
+    .catchall {:try_start_d8 .. :try_end_141} :catchall_202
 
     .line 544
-    :try_start_144
+    :try_start_141
     invoke-virtual {v6, v4}, Ljava/io/OutputStream;->write([B)V
-    :try_end_147
-    .catchall {:try_start_144 .. :try_end_147} :catchall_1f3
+    :try_end_144
+    .catchall {:try_start_141 .. :try_end_144} :catchall_1eb
 
     .line 545
-    if-eqz v6, :cond_14c
+    if-eqz v6, :cond_149
 
-    :try_start_149
+    :try_start_146
     invoke-virtual {v6}, Ljava/io/OutputStream;->close()V
 
     .line 547
-    :cond_14c
+    :cond_149
     invoke-virtual {v0}, Ljava/net/HttpURLConnection;->getResponseCode()I
 
     move-result v4
 
-    const/16 v6, 0xc8
+    const/16 v12, 0xc8
 
-    if-ne v4, v6, :cond_1e8
+    if-ne v4, v12, :cond_1e2
 
     .line 548
     invoke-virtual {v0}, Ljava/net/HttpURLConnection;->getInputStream()Ljava/io/InputStream;
@@ -4256,12 +4335,12 @@
     .line 550
     const/4 v0, 0x0
 
-    :goto_162
+    :goto_15f
     invoke-virtual {v4}, Lorg/json/JSONArray;->length()I
 
     move-result v6
 
-    if-ge v0, v6, :cond_1dd
+    if-ge v0, v6, :cond_1d9
 
     .line 551
     invoke-virtual {v4, v0}, Lorg/json/JSONArray;->getJSONObject(I)Lorg/json/JSONObject;
@@ -4281,75 +4360,77 @@
     invoke-virtual {v7, v13, v8}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
     .line 554
-    move-object/from16 v8, v23
+    move-object/from16 v8, v24
 
     invoke-virtual {v6, v8, v1}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v9
 
     invoke-virtual {v7, v8, v9}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
-    :try_end_181
-    .catchall {:try_start_149 .. :try_end_181} :catchall_20d
+    :try_end_17e
+    .catchall {:try_start_146 .. :try_end_17e} :catchall_202
 
     .line 555
-    move-object/from16 v9, v19
+    move-object/from16 v9, v20
 
     const/4 v12, 0x0
 
-    move-object/from16 v19, v1
+    move/from16 v20, v0
 
-    :try_start_186
+    :try_start_183
     invoke-virtual {v6, v9, v12}, Lorg/json/JSONObject;->optInt(Ljava/lang/String;I)I
 
-    move-result v1
+    move-result v0
 
-    invoke-virtual {v7, v9, v1}, Lorg/json/JSONObject;->put(Ljava/lang/String;I)Lorg/json/JSONObject;
-    :try_end_18d
-    .catchall {:try_start_186 .. :try_end_18d} :catchall_1d5
+    invoke-virtual {v7, v9, v0}, Lorg/json/JSONObject;->put(Ljava/lang/String;I)Lorg/json/JSONObject;
+    :try_end_18a
+    .catchall {:try_start_183 .. :try_end_18a} :catchall_1d3
 
     .line 556
-    move-object/from16 v1, v18
+    move-object/from16 v25, v19
 
-    move-object/from16 v18, v4
+    move-object/from16 v19, v4
 
-    :try_start_191
-    invoke-virtual {v6, v1, v12}, Lorg/json/JSONObject;->optInt(Ljava/lang/String;I)I
+    move-object/from16 v4, v25
 
-    move-result v4
+    :try_start_190
+    invoke-virtual {v6, v4, v12}, Lorg/json/JSONObject;->optInt(Ljava/lang/String;I)I
 
-    invoke-virtual {v7, v1, v4}, Lorg/json/JSONObject;->put(Ljava/lang/String;I)Lorg/json/JSONObject;
-    :try_end_198
-    .catchall {:try_start_191 .. :try_end_198} :catchall_1d1
+    move-result v0
+
+    invoke-virtual {v7, v4, v0}, Lorg/json/JSONObject;->put(Ljava/lang/String;I)Lorg/json/JSONObject;
+    :try_end_197
+    .catchall {:try_start_190 .. :try_end_197} :catchall_1cf
 
     .line 557
-    const/16 v4, 0x3e8
+    const/16 v0, 0x3e8
 
     move-object/from16 v12, v17
 
-    :try_start_19c
-    invoke-virtual {v7, v12, v4}, Lorg/json/JSONObject;->put(Ljava/lang/String;I)Lorg/json/JSONObject;
+    :try_start_19b
+    invoke-virtual {v7, v12, v0}, Lorg/json/JSONObject;->put(Ljava/lang/String;I)Lorg/json/JSONObject;
 
     .line 558
-    const-string v4, "duration"
+    const-string v0, "duration"
 
-    move-object/from16 v23, v8
+    move-object/from16 v24, v8
 
     const/16 v8, 0x3e8
 
-    invoke-virtual {v7, v4, v8}, Lorg/json/JSONObject;->put(Ljava/lang/String;I)Lorg/json/JSONObject;
+    invoke-virtual {v7, v0, v8}, Lorg/json/JSONObject;->put(Ljava/lang/String;I)Lorg/json/JSONObject;
 
     .line 559
-    const-string v4, "last_watched"
+    const-string v0, "last_watched"
 
     const-string v8, "watched_at"
-    :try_end_1ac
-    .catchall {:try_start_19c .. :try_end_1ac} :catchall_1cd
+    :try_end_1ab
+    .catchall {:try_start_19b .. :try_end_1ab} :catchall_1cb
 
-    move-object/from16 v22, v12
+    move-object/from16 v23, v12
 
     move-object/from16 v17, v13
 
-    :try_start_1b0
+    :try_start_1af
     invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
 
     move-result-wide v12
@@ -4358,179 +4439,167 @@
 
     move-result-wide v12
 
-    invoke-virtual {v7, v4, v12, v13}, Lorg/json/JSONObject;->put(Ljava/lang/String;J)Lorg/json/JSONObject;
+    invoke-virtual {v7, v0, v12, v13}, Lorg/json/JSONObject;->put(Ljava/lang/String;J)Lorg/json/JSONObject;
 
     .line 560
     invoke-interface {v11, v7}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    :try_end_1be
-    .catchall {:try_start_1b0 .. :try_end_1be} :catchall_20b
+    :try_end_1bd
+    .catchall {:try_start_1af .. :try_end_1bd} :catchall_200
 
     .line 550
-    add-int/lit8 v0, v0, 0x1
+    add-int/lit8 v0, v20, 0x1
+
+    move-object/from16 v13, v19
+
+    move-object/from16 v19, v4
+
+    move-object v4, v13
+
+    move-object/from16 v20, v9
 
     move-object/from16 v13, v17
 
-    move-object/from16 v4, v18
+    move-object/from16 v17, v23
 
-    move-object/from16 v17, v22
-
-    move-object/from16 v18, v1
-
-    move-object/from16 v1, v19
-
-    move-object/from16 v19, v9
-
-    goto :goto_162
+    goto :goto_15f
 
     .line 563
-    :catchall_1cd
+    :catchall_1cb
     move-exception v0
 
-    move-object/from16 v22, v12
+    move-object/from16 v23, v12
 
-    goto :goto_1da
+    goto :goto_209
 
-    :catchall_1d1
+    :catchall_1cf
     move-exception v0
 
-    move-object/from16 v22, v17
+    move-object/from16 v23, v17
 
-    goto :goto_1da
+    goto :goto_209
 
-    :catchall_1d5
+    :catchall_1d3
     move-exception v0
 
-    move-object/from16 v22, v17
+    move-object/from16 v23, v17
 
-    move-object/from16 v1, v18
+    move-object/from16 v4, v19
 
-    :goto_1da
-    move-object/from16 v17, v13
-
-    goto :goto_218
+    goto :goto_209
 
     .line 550
-    :cond_1dd
-    move-object/from16 v22, v17
+    :cond_1d9
+    move-object/from16 v23, v17
 
-    move-object/from16 v9, v19
+    move-object/from16 v4, v19
 
-    move-object/from16 v19, v1
+    move-object/from16 v9, v20
 
     move-object/from16 v17, v13
 
-    move-object/from16 v1, v18
-
-    goto :goto_218
+    goto :goto_20b
 
     .line 547
-    :cond_1e8
-    move-object/from16 v22, v17
+    :cond_1e2
+    move-object/from16 v23, v17
 
-    move-object/from16 v9, v19
+    move-object/from16 v4, v19
 
-    move-object/from16 v19, v1
+    move-object/from16 v9, v20
 
     move-object/from16 v17, v13
 
-    move-object/from16 v1, v18
-
-    goto :goto_218
+    goto :goto_20b
 
     .line 543
-    :catchall_1f3
+    :catchall_1eb
     move-exception v0
 
-    move-object/from16 v22, v17
+    move-object/from16 v23, v17
 
-    move-object/from16 v9, v19
+    move-object/from16 v4, v19
 
-    move-object/from16 v19, v1
+    move-object/from16 v9, v20
 
     move-object/from16 v17, v13
 
-    move-object/from16 v1, v18
+    move-object v7, v0
 
-    move-object v4, v0
+    if-eqz v6, :cond_1ff
 
-    if-eqz v6, :cond_20a
-
-    :try_start_201
+    :try_start_1f7
     invoke-virtual {v6}, Ljava/io/OutputStream;->close()V
-    :try_end_204
-    .catchall {:try_start_201 .. :try_end_204} :catchall_205
+    :try_end_1fa
+    .catchall {:try_start_1f7 .. :try_end_1fa} :catchall_1fb
 
-    goto :goto_20a
+    goto :goto_1ff
 
-    :catchall_205
+    :catchall_1fb
     move-exception v0
 
-    move-object v6, v0
+    :try_start_1fc
+    invoke-static {v7, v0}, Lcom/streamsync/app/auth/SupabaseSyncService$$ExternalSyntheticBackport0;->m(Ljava/lang/Throwable;Ljava/lang/Throwable;)V
 
-    :try_start_207
-    invoke-static {v4, v6}, Lcom/streamsync/app/auth/SupabaseSyncService$$ExternalSyntheticBackport0;->m(Ljava/lang/Throwable;Ljava/lang/Throwable;)V
-
-    :cond_20a
-    :goto_20a
-    throw v4
-    :try_end_20b
-    .catchall {:try_start_207 .. :try_end_20b} :catchall_20b
+    :cond_1ff
+    :goto_1ff
+    throw v7
+    :try_end_200
+    .catchall {:try_start_1fc .. :try_end_200} :catchall_200
 
     .line 563
-    :catchall_20b
+    :catchall_200
     move-exception v0
 
-    goto :goto_218
+    goto :goto_20b
 
-    :catchall_20d
+    :catchall_202
     move-exception v0
 
-    move-object/from16 v22, v17
+    move-object/from16 v23, v17
 
-    move-object/from16 v9, v19
+    move-object/from16 v4, v19
 
-    move-object/from16 v19, v1
+    move-object/from16 v9, v20
 
+    :goto_209
     move-object/from16 v17, v13
 
-    move-object/from16 v1, v18
-
-    :goto_218
+    :goto_20b
     nop
 
     .line 566
-    :try_start_219
+    :try_start_20c
     invoke-interface {v11}, Ljava/util/List;->isEmpty()Z
 
     move-result v0
-    :try_end_21d
-    .catchall {:try_start_219 .. :try_end_21d} :catchall_4b5
+    :try_end_210
+    .catchall {:try_start_20c .. :try_end_210} :catchall_4b9
 
-    if-eqz v0, :cond_289
+    if-eqz v0, :cond_27c
 
     .line 568
-    :try_start_21f
+    :try_start_212
     new-instance v0, Ljava/net/URL;
 
-    new-instance v4, Ljava/lang/StringBuilder;
+    new-instance v6, Ljava/lang/StringBuilder;
 
-    invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
+    invoke-direct {v6}, Ljava/lang/StringBuilder;-><init>()V
 
-    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v6, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    move-result-object v4
+    move-result-object v6
 
-    const-string v6, "/rest/v1/watch_progress?select=*"
+    const-string v7, "/rest/v1/watch_progress?select=*"
 
-    invoke-virtual {v4, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v6, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    move-result-object v4
+    move-result-object v6
 
-    invoke-virtual {v4}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    invoke-virtual {v6}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
 
-    move-result-object v4
+    move-result-object v6
 
-    invoke-direct {v0, v4}, Ljava/net/URL;-><init>(Ljava/lang/String;)V
+    invoke-direct {v0, v6}, Ljava/net/URL;-><init>(Ljava/lang/String;)V
 
     .line 569
     invoke-virtual {v0}, Ljava/net/URL;->openConnection()Ljava/net/URLConnection;
@@ -4540,48 +4609,48 @@
     check-cast v0, Ljava/net/HttpURLConnection;
 
     .line 570
-    const-string v4, "GET"
+    const-string v6, "GET"
 
-    invoke-virtual {v0, v4}, Ljava/net/HttpURLConnection;->setRequestMethod(Ljava/lang/String;)V
+    invoke-virtual {v0, v6}, Ljava/net/HttpURLConnection;->setRequestMethod(Ljava/lang/String;)V
 
     .line 571
     invoke-virtual {v0, v10, v3}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
 
     .line 572
-    new-instance v4, Ljava/lang/StringBuilder;
+    new-instance v6, Ljava/lang/StringBuilder;
 
-    invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
+    invoke-direct {v6}, Ljava/lang/StringBuilder;-><init>()V
 
-    invoke-virtual {v4, v14}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v6, v14}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    move-result-object v4
+    move-result-object v6
 
-    invoke-virtual {v4, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v6, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    move-result-object v4
+    move-result-object v6
 
-    invoke-virtual {v4}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    invoke-virtual {v6}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
 
-    move-result-object v4
+    move-result-object v6
 
-    invoke-virtual {v0, v15, v4}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
+    invoke-virtual {v0, v15, v6}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
 
     .line 573
-    const/16 v4, 0x1f40
+    const/16 v6, 0x1f40
 
-    invoke-virtual {v0, v4}, Ljava/net/HttpURLConnection;->setConnectTimeout(I)V
+    invoke-virtual {v0, v6}, Ljava/net/HttpURLConnection;->setConnectTimeout(I)V
 
     .line 574
-    invoke-virtual {v0, v4}, Ljava/net/HttpURLConnection;->setReadTimeout(I)V
+    invoke-virtual {v0, v6}, Ljava/net/HttpURLConnection;->setReadTimeout(I)V
 
     .line 576
     invoke-virtual {v0}, Ljava/net/HttpURLConnection;->getResponseCode()I
 
-    move-result v4
+    move-result v6
 
-    const/16 v6, 0xc8
+    const/16 v12, 0xc8
 
-    if-ne v4, v6, :cond_288
+    if-ne v6, v12, :cond_27b
 
     .line 577
     invoke-virtual {v0}, Ljava/net/HttpURLConnection;->getInputStream()Ljava/io/InputStream;
@@ -4593,67 +4662,65 @@
     move-result-object v0
 
     .line 578
-    new-instance v4, Lorg/json/JSONArray;
+    new-instance v6, Lorg/json/JSONArray;
 
-    invoke-direct {v4, v0}, Lorg/json/JSONArray;-><init>(Ljava/lang/String;)V
+    invoke-direct {v6, v0}, Lorg/json/JSONArray;-><init>(Ljava/lang/String;)V
 
     .line 579
     const/4 v0, 0x0
 
-    :goto_277
-    invoke-virtual {v4}, Lorg/json/JSONArray;->length()I
+    :goto_26a
+    invoke-virtual {v6}, Lorg/json/JSONArray;->length()I
 
-    move-result v6
+    move-result v7
 
-    if-ge v0, v6, :cond_288
+    if-ge v0, v7, :cond_27b
 
     .line 580
-    invoke-virtual {v4, v0}, Lorg/json/JSONArray;->getJSONObject(I)Lorg/json/JSONObject;
+    invoke-virtual {v6, v0}, Lorg/json/JSONArray;->getJSONObject(I)Lorg/json/JSONObject;
 
-    move-result-object v6
+    move-result-object v7
 
-    invoke-interface {v11, v6}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    :try_end_284
-    .catchall {:try_start_21f .. :try_end_284} :catchall_287
+    invoke-interface {v11, v7}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    :try_end_277
+    .catchall {:try_start_212 .. :try_end_277} :catchall_27a
 
     .line 579
     add-int/lit8 v0, v0, 0x1
 
-    goto :goto_277
+    goto :goto_26a
 
     .line 583
-    :catchall_287
+    :catchall_27a
     move-exception v0
 
-    :cond_288
+    :cond_27b
     nop
 
     .line 587
-    :cond_289
-    move-object/from16 v4, p0
+    :cond_27c
+    move-object/from16 v6, p0
 
-    move-object/from16 v6, v19
-
-    :try_start_28d
-    invoke-static {v4, v5, v2, v3}, Lcom/streamsync/app/auth/SupabaseSyncService;->pullLibraryFromSupabase(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+    :try_start_27e
+    invoke-static {v6, v5, v2, v3}, Lcom/streamsync/app/auth/SupabaseSyncService;->pullLibraryFromSupabase(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
 
     .line 589
     invoke-interface {v11}, Ljava/util/List;->isEmpty()Z
 
     move-result v0
 
-    if-eqz v0, :cond_298
+    if-eqz v0, :cond_28a
 
     .line 590
-    const/4 v1, 0x0
+    const/16 v18, 0x0
 
-    return v1
+    return v18
 
     .line 593
-    :cond_298
+    :cond_28a
     const-string v0, "streamsync.db"
 
-    invoke-virtual {v4, v0}, Landroid/content/Context;->getDatabasePath(Ljava/lang/String;)Ljava/io/File;
+    invoke-virtual {v6, v0}, Landroid/content/Context;->getDatabasePath(Ljava/lang/String;)Ljava/io/File;
 
     move-result-object v0
 
@@ -4665,62 +4732,50 @@
     invoke-virtual {v2}, Ljava/io/File;->exists()Z
 
     move-result v2
-    :try_end_2a6
-    .catchall {:try_start_28d .. :try_end_2a6} :catchall_4b5
 
-    if-nez v2, :cond_2b3
+    if-nez v2, :cond_2a1
 
     .line 595
-    :try_start_2a8
     invoke-virtual {v0}, Ljava/io/File;->getParentFile()Ljava/io/File;
 
     move-result-object v2
 
     invoke-virtual {v2}, Ljava/io/File;->mkdirs()Z
-    :try_end_2af
-    .catchall {:try_start_2a8 .. :try_end_2af} :catchall_2b0
-
-    goto :goto_2b3
-
-    .line 669
-    :catchall_2b0
-    move-exception v0
-
-    goto/16 :goto_4b7
 
     .line 598
-    :cond_2b3
-    :goto_2b3
-    :try_start_2b3
-    invoke-static/range {p0 .. p0}, Lcom/streamsync/app/auth/SupabaseSyncService;->ensureRoomDatabase(Landroid/content/Context;)V
+    :cond_2a1
+    invoke-static {v6}, Lcom/streamsync/app/auth/SupabaseSyncService;->ensureRoomDatabase(Landroid/content/Context;)V
+    :try_end_2a4
+    .catchall {:try_start_27e .. :try_end_2a4} :catchall_4b9
 
-    .line 600
+    .line 601
+    :try_start_2a4
     invoke-virtual {v0}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
 
     move-result-object v0
 
-    const/high16 v2, 0x10000000
+    const/high16 v2, 0x20000000
 
     const/4 v3, 0x0
 
     invoke-static {v0, v3, v2}, Landroid/database/sqlite/SQLiteDatabase;->openDatabase(Ljava/lang/String;Landroid/database/sqlite/SQLiteDatabase$CursorFactory;I)Landroid/database/sqlite/SQLiteDatabase;
 
     move-result-object v2
-    :try_end_2c1
-    .catchall {:try_start_2b3 .. :try_end_2c1} :catchall_4b5
+    :try_end_2af
+    .catchall {:try_start_2a4 .. :try_end_2af} :catchall_4b4
 
-    .line 602
-    :try_start_2c1
+    .line 603
+    :try_start_2af
     const-string v0, "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)"
 
     invoke-virtual {v2, v0}, Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V
 
-    .line 603
+    .line 604
     const-string v0, "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \'4201b4cf7d52e2b03ff5e210c14b7a60\')"
 
     invoke-virtual {v2, v0}, Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V
 
-    .line 604
+    .line 605
     const-string v0, "PRAGMA user_version = 7"
 
     invoke-virtual {v2, v0}, Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V
@@ -4732,132 +4787,135 @@
 
     .line 608
     invoke-virtual {v2}, Landroid/database/sqlite/SQLiteDatabase;->beginTransaction()V
+    :try_end_2c6
+    .catchall {:try_start_2af .. :try_end_2c6} :catchall_4aa
 
-    .line 609
+    .line 610
+    :try_start_2c6
     invoke-interface {v11}, Ljava/util/List;->iterator()Ljava/util/Iterator;
 
     move-result-object v0
-    :try_end_2dc
-    .catchall {:try_start_2c1 .. :try_end_2dc} :catchall_4a9
+    :try_end_2ca
+    .catchall {:try_start_2c6 .. :try_end_2ca} :catchall_4a0
 
     const/4 v12, 0x0
 
-    :goto_2dd
-    :try_start_2dd
+    :goto_2cb
+    :try_start_2cb
     invoke-interface {v0}, Ljava/util/Iterator;->hasNext()Z
 
-    move-result v4
+    move-result v5
 
-    if-eqz v4, :cond_498
+    if-eqz v5, :cond_48a
 
     invoke-interface {v0}, Ljava/util/Iterator;->next()Ljava/lang/Object;
 
-    move-result-object v4
+    move-result-object v5
 
-    check-cast v4, Lorg/json/JSONObject;
+    check-cast v5, Lorg/json/JSONObject;
 
-    .line 610
-    move-object/from16 v5, v17
+    .line 611
+    move-object/from16 v6, v17
 
-    invoke-virtual {v4, v5, v6}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    invoke-virtual {v5, v6, v1}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v7
 
-    .line 611
+    .line 612
     invoke-virtual {v7}, Ljava/lang/String;->isEmpty()Z
 
     move-result v8
 
-    if-eqz v8, :cond_2fb
+    if-eqz v8, :cond_2e9
 
     const-string v7, "contentId"
 
-    invoke-virtual {v4, v7, v6}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    invoke-virtual {v5, v7, v1}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v7
 
-    .line 613
-    :cond_2fb
+    .line 614
+    :cond_2e9
     const-string v8, "video_id"
 
-    invoke-virtual {v4, v8, v6}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    invoke-virtual {v5, v8, v1}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v8
 
-    .line 614
+    .line 615
     invoke-virtual {v8}, Ljava/lang/String;->isEmpty()Z
 
     move-result v10
 
-    if-eqz v10, :cond_30d
+    if-eqz v10, :cond_2fb
 
     const-string v8, "videoId"
 
-    invoke-virtual {v4, v8, v6}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    invoke-virtual {v5, v8, v1}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v8
 
-    .line 616
-    :cond_30d
+    .line 617
+    :cond_2fb
     const/4 v10, 0x0
 
-    invoke-virtual {v4, v9, v10}, Lorg/json/JSONObject;->optInt(Ljava/lang/String;I)I
+    invoke-virtual {v5, v9, v10}, Lorg/json/JSONObject;->optInt(Ljava/lang/String;I)I
 
     move-result v11
 
-    .line 617
-    invoke-virtual {v4, v1, v10}, Lorg/json/JSONObject;->optInt(Ljava/lang/String;I)I
+    .line 618
+    invoke-virtual {v5, v4, v10}, Lorg/json/JSONObject;->optInt(Ljava/lang/String;I)I
 
     move-result v13
 
-    .line 619
+    .line 620
     nop
 
-    .line 620
+    .line 621
     invoke-virtual {v8}, Ljava/lang/String;->isEmpty()Z
 
     move-result v10
 
-    if-eqz v10, :cond_323
+    if-eqz v10, :cond_311
 
     const-string v8, "progress_key"
 
-    invoke-virtual {v4, v8, v6}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    invoke-virtual {v5, v8, v1}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v8
 
-    .line 621
-    :cond_323
+    .line 622
+    :cond_311
     invoke-virtual {v8}, Ljava/lang/String;->isEmpty()Z
 
     move-result v10
 
-    if-eqz v10, :cond_32a
+    if-eqz v10, :cond_318
 
     move-object v8, v7
 
-    .line 622
-    :cond_32a
+    .line 623
+    :cond_318
     invoke-virtual {v8}, Ljava/lang/String;->isEmpty()Z
 
     move-result v10
-    :try_end_32e
-    .catchall {:try_start_2dd .. :try_end_32e} :catchall_4a6
+    :try_end_31c
+    .catchall {:try_start_2cb .. :try_end_31c} :catchall_49d
 
     const-string v14, "mediaId"
 
-    if-eqz v10, :cond_336
+    if-eqz v10, :cond_324
 
-    :try_start_332
-    invoke-virtual {v4, v14, v6}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    :try_start_320
+    invoke-virtual {v5, v14, v1}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v8
 
-    .line 624
-    :cond_336
-    if-lez v11, :cond_360
+    .line 625
+    :cond_324
+    if-lez v11, :cond_34e
 
-    if-lez v13, :cond_360
+    if-lez v13, :cond_34e
 
     move-object/from16 v10, v16
 
@@ -4865,9 +4923,9 @@
 
     move-result v15
 
-    if-nez v15, :cond_362
+    if-nez v15, :cond_350
 
-    .line 625
+    .line 626
     new-instance v8, Ljava/lang/StringBuilder;
 
     invoke-direct {v8}, Ljava/lang/StringBuilder;-><init>()V
@@ -4896,20 +4954,20 @@
 
     move-result-object v8
 
-    goto :goto_362
+    goto :goto_350
 
-    .line 624
-    :cond_360
+    .line 625
+    :cond_34e
     move-object/from16 v10, v16
 
-    .line 628
-    :cond_362
-    :goto_362
+    .line 629
+    :cond_350
+    :goto_350
     invoke-virtual {v8}, Ljava/lang/String;->isEmpty()Z
 
     move-result v7
 
-    if-nez v7, :cond_47b
+    if-nez v7, :cond_46c
 
     move-object/from16 v7, p1
 
@@ -4917,426 +4975,470 @@
 
     move-result v11
 
-    if-eqz v11, :cond_37e
+    if-eqz v11, :cond_36b
 
-    .line 629
-    move-object/from16 p0, v0
+    .line 630
+    move-object/from16 p3, v0
 
-    move-object/from16 v18, v1
+    move-object/from16 v17, v1
 
-    move-object/from16 v17, v5
+    move-object/from16 v19, v4
 
-    move-object/from16 v19, v6
+    move-object/from16 v11, v23
 
-    move-object/from16 v11, v22
+    const/16 v18, 0x0
 
-    const/4 v1, 0x0
+    move-object v4, v3
 
-    move-object v5, v3
+    goto/16 :goto_479
 
-    goto/16 :goto_489
-
-    .line 631
-    :cond_37e
+    .line 632
+    :cond_36b
     invoke-interface {v7, v8}, Ljava/util/Set;->add(Ljava/lang/Object;)Z
 
-    .line 633
-    move-object/from16 p0, v0
-
-    move-object/from16 v18, v1
-
-    const-wide/16 v0, 0x0
-
-    move-object/from16 v11, v22
-
-    invoke-virtual {v4, v11, v0, v1}, Lorg/json/JSONObject;->optLong(Ljava/lang/String;J)J
-
-    move-result-wide v15
-    :try_end_38d
-    .catchall {:try_start_332 .. :try_end_38d} :catchall_4a6
-
     .line 634
-    const-string v13, "positionMs"
+    move-object/from16 v19, v4
 
-    cmp-long v17, v15, v0
+    const-wide/16 v3, 0x0
 
-    if-nez v17, :cond_397
+    move-object/from16 v11, v23
 
-    :try_start_393
-    invoke-virtual {v4, v13, v0, v1}, Lorg/json/JSONObject;->optLong(Ljava/lang/String;J)J
+    invoke-virtual {v5, v11, v3, v4}, Lorg/json/JSONObject;->optLong(Ljava/lang/String;J)J
 
     move-result-wide v15
+    :try_end_378
+    .catchall {:try_start_320 .. :try_end_378} :catchall_49d
 
     .line 635
-    :cond_397
-    cmp-long v17, v15, v0
+    const-string v13, "positionMs"
 
-    if-lez v17, :cond_3a5
+    cmp-long v17, v15, v3
 
-    const-wide/16 v19, 0x2710
+    if-nez v17, :cond_382
 
-    cmp-long v17, v15, v19
+    :try_start_37e
+    invoke-virtual {v5, v13, v3, v4}, Lorg/json/JSONObject;->optLong(Ljava/lang/String;J)J
 
-    if-gez v17, :cond_3a5
-
-    const-wide/16 v19, 0x3e8
-
-    mul-long v15, v15, v19
+    move-result-wide v15
 
     .line 636
-    :cond_3a5
-    cmp-long v17, v15, v0
+    :cond_382
+    cmp-long v17, v15, v3
 
-    if-gtz v17, :cond_3ac
+    if-lez v17, :cond_390
+
+    const-wide/16 v20, 0x2710
+
+    cmp-long v17, v15, v20
+
+    if-gez v17, :cond_390
+
+    const-wide/16 v20, 0x3e8
+
+    mul-long v15, v15, v20
+
+    .line 637
+    :cond_390
+    cmp-long v17, v15, v3
+
+    if-gtz v17, :cond_397
 
     const-wide/32 v15, 0xea60
 
-    .line 638
-    :cond_3ac
+    .line 639
+    :cond_397
     const-string v3, "duration"
 
-    invoke-virtual {v4, v3, v0, v1}, Lorg/json/JSONObject;->optLong(Ljava/lang/String;J)J
+    move-object/from16 p3, v0
 
-    move-result-wide v19
+    move-object v4, v1
 
-    .line 639
-    cmp-long v3, v19, v0
+    const-wide/16 v0, 0x0
 
-    if-nez v3, :cond_3bc
+    invoke-virtual {v5, v3, v0, v1}, Lorg/json/JSONObject;->optLong(Ljava/lang/String;J)J
+
+    move-result-wide v20
+
+    .line 640
+    cmp-long v3, v20, v0
+
+    if-nez v3, :cond_3ac
 
     const-string v3, "durationMs"
 
-    invoke-virtual {v4, v3, v0, v1}, Lorg/json/JSONObject;->optLong(Ljava/lang/String;J)J
+    invoke-virtual {v5, v3, v0, v1}, Lorg/json/JSONObject;->optLong(Ljava/lang/String;J)J
 
-    move-result-wide v19
-    :try_end_3bc
-    .catchall {:try_start_393 .. :try_end_3bc} :catchall_4a6
-
-    .line 640
-    :cond_3bc
-    cmp-long v3, v19, v0
-
-    if-lez v3, :cond_3cd
-
-    const-wide/16 v21, 0x2710
-
-    cmp-long v3, v19, v21
-
-    if-gez v3, :cond_3cd
-
-    const-wide/16 v21, 0x3e8
-
-    mul-long v19, v19, v21
-
-    move-wide/from16 v0, v19
-
-    goto :goto_3cf
+    move-result-wide v20
+    :try_end_3ac
+    .catchall {:try_start_37e .. :try_end_3ac} :catchall_49d
 
     .line 641
-    :cond_3cd
-    move-wide/from16 v0, v19
+    :cond_3ac
+    cmp-long v3, v20, v0
 
-    :goto_3cf
+    if-lez v3, :cond_3bd
+
+    const-wide/16 v0, 0x2710
+
+    cmp-long v3, v20, v0
+
+    if-gez v3, :cond_3bd
+
+    const-wide/16 v0, 0x3e8
+
+    mul-long v20, v20, v0
+
+    move-wide/from16 v0, v20
+
+    goto :goto_3bf
+
+    .line 642
+    :cond_3bd
+    move-wide/from16 v0, v20
+
+    :goto_3bf
     cmp-long v3, v0, v15
 
-    if-lez v3, :cond_3e8
+    if-lez v3, :cond_3d6
 
-    move-object/from16 v17, v5
+    move-object/from16 v17, v4
 
-    move-object/from16 v19, v6
-
-    long-to-double v5, v0
+    long-to-double v3, v0
 
     const-wide v20, 0x3fef0a3d70a3d70aL    # 0.97
 
-    invoke-static {v5, v6}, Ljava/lang/Double;->isNaN(D)Z
+    invoke-static {v3, v4}, Ljava/lang/Double;->isNaN(D)Z
 
-    mul-double v5, v5, v20
+    mul-double v3, v3, v20
 
-    double-to-long v5, v5
+    double-to-long v3, v3
 
-    cmp-long v3, v15, v5
+    cmp-long v20, v15, v3
 
-    if-ltz v3, :cond_3f8
+    if-ltz v20, :cond_3e4
 
-    goto :goto_3ec
+    goto :goto_3d8
 
-    :cond_3e8
-    move-object/from16 v17, v5
+    :cond_3d6
+    move-object/from16 v17, v4
 
-    move-object/from16 v19, v6
-
-    .line 642
-    :goto_3ec
+    .line 643
+    :goto_3d8
     const-wide/16 v0, 0x2
 
     mul-long v0, v0, v15
 
-    const-wide/32 v5, 0x493e0
+    const-wide/32 v3, 0x493e0
 
-    add-long/2addr v5, v15
+    add-long/2addr v3, v15
 
-    :try_start_3f4
-    invoke-static {v0, v1, v5, v6}, Ljava/lang/Math;->max(JJ)J
+    :try_start_3e0
+    invoke-static {v0, v1, v3, v4}, Ljava/lang/Math;->max(JJ)J
 
     move-result-wide v0
 
-    .line 645
-    :cond_3f8
+    .line 646
+    :cond_3e4
     const-string v3, "last_watched"
 
-    const-wide/16 v5, 0x0
+    move-wide/from16 v20, v0
 
-    invoke-virtual {v4, v3, v5, v6}, Lorg/json/JSONObject;->optLong(Ljava/lang/String;J)J
+    const-wide/16 v0, 0x0
 
-    move-result-wide v20
+    invoke-virtual {v5, v3, v0, v1}, Lorg/json/JSONObject;->optLong(Ljava/lang/String;J)J
 
-    .line 646
-    cmp-long v3, v20, v5
+    move-result-wide v3
 
-    if-nez v3, :cond_40a
+    .line 647
+    cmp-long v22, v3, v0
+
+    if-nez v22, :cond_3f8
 
     const-string v3, "lastWatched"
 
-    invoke-virtual {v4, v3, v5, v6}, Lorg/json/JSONObject;->optLong(Ljava/lang/String;J)J
+    invoke-virtual {v5, v3, v0, v1}, Lorg/json/JSONObject;->optLong(Ljava/lang/String;J)J
 
-    move-result-wide v20
+    move-result-wide v3
 
-    .line 647
-    :cond_40a
-    cmp-long v3, v20, v5
+    .line 648
+    :cond_3f8
+    cmp-long v22, v3, v0
 
-    if-nez v3, :cond_414
+    if-nez v22, :cond_402
 
     const-string v3, "watched_at"
 
-    invoke-virtual {v4, v3, v5, v6}, Lorg/json/JSONObject;->optLong(Ljava/lang/String;J)J
+    invoke-virtual {v5, v3, v0, v1}, Lorg/json/JSONObject;->optLong(Ljava/lang/String;J)J
 
-    move-result-wide v20
+    move-result-wide v3
 
-    .line 648
-    :cond_414
-    cmp-long v3, v20, v5
+    .line 649
+    :cond_402
+    cmp-long v22, v3, v0
 
-    if-nez v3, :cond_422
+    if-nez v22, :cond_410
 
-    const-string v3, "updatedAtEpochMs"
+    const-string v0, "updatedAtEpochMs"
 
     invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
 
-    move-result-wide v5
+    move-result-wide v3
 
-    invoke-virtual {v4, v3, v5, v6}, Lorg/json/JSONObject;->optLong(Ljava/lang/String;J)J
+    invoke-virtual {v5, v0, v3, v4}, Lorg/json/JSONObject;->optLong(Ljava/lang/String;J)J
 
-    move-result-wide v20
-
-    .line 650
-    :cond_422
-    new-instance v3, Landroid/content/ContentValues;
-
-    invoke-direct {v3}, Landroid/content/ContentValues;-><init>()V
+    move-result-wide v3
 
     .line 651
-    invoke-virtual {v3, v14, v8}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
+    :cond_410
+    new-instance v0, Landroid/content/ContentValues;
+
+    invoke-direct {v0}, Landroid/content/ContentValues;-><init>()V
 
     .line 652
-    invoke-static/range {v15 .. v16}, Ljava/lang/Long;->valueOf(J)Ljava/lang/Long;
-
-    move-result-object v4
-
-    invoke-virtual {v3, v13, v4}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/Long;)V
+    invoke-virtual {v0, v14, v8}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
 
     .line 653
-    const-string v4, "durationMs"
-
-    invoke-static {v0, v1}, Ljava/lang/Long;->valueOf(J)Ljava/lang/Long;
-
-    move-result-object v0
-
-    invoke-virtual {v3, v4, v0}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/Long;)V
-
-    .line 654
-    const-string v0, "updatedAtEpochMs"
-
-    invoke-static/range {v20 .. v21}, Ljava/lang/Long;->valueOf(J)Ljava/lang/Long;
+    invoke-static/range {v15 .. v16}, Ljava/lang/Long;->valueOf(J)Ljava/lang/Long;
 
     move-result-object v1
 
-    invoke-virtual {v3, v0, v1}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/Long;)V
+    invoke-virtual {v0, v13, v1}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/Long;)V
+
+    .line 654
+    const-string v1, "durationMs"
+
+    invoke-static/range {v20 .. v21}, Ljava/lang/Long;->valueOf(J)Ljava/lang/Long;
+
+    move-result-object v5
+
+    invoke-virtual {v0, v1, v5}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/Long;)V
 
     .line 655
-    const-string v0, "deviceId"
+    const-string v1, "updatedAtEpochMs"
 
-    const-string v1, "streamsync"
+    invoke-static {v3, v4}, Ljava/lang/Long;->valueOf(J)Ljava/lang/Long;
 
-    invoke-virtual {v3, v0, v1}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
+    move-result-object v3
+
+    invoke-virtual {v0, v1, v3}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/Long;)V
 
     .line 656
-    const-string v0, "pendingSync"
+    const-string v1, "deviceId"
 
-    const/4 v1, 0x0
+    const-string v3, "streamsync"
 
-    invoke-static {v1}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
-
-    move-result-object v4
-
-    invoke-virtual {v3, v0, v4}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/Integer;)V
+    invoke-virtual {v0, v1, v3}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
 
     .line 657
-    const-string v0, "streamUrl"
+    const-string v1, "pendingSync"
 
-    invoke-virtual {v3, v0}, Landroid/content/ContentValues;->putNull(Ljava/lang/String;)V
+    const/16 v18, 0x0
+
+    invoke-static/range {v18 .. v18}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+
+    move-result-object v3
+
+    invoke-virtual {v0, v1, v3}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/Integer;)V
 
     .line 658
-    const-string v0, "addonId"
+    const-string v1, "streamUrl"
 
-    invoke-virtual {v3, v0}, Landroid/content/ContentValues;->putNull(Ljava/lang/String;)V
+    invoke-virtual {v0, v1}, Landroid/content/ContentValues;->putNull(Ljava/lang/String;)V
 
     .line 659
-    const-string v0, "addonName"
+    const-string v1, "addonId"
 
-    invoke-virtual {v3, v0}, Landroid/content/ContentValues;->putNull(Ljava/lang/String;)V
+    invoke-virtual {v0, v1}, Landroid/content/ContentValues;->putNull(Ljava/lang/String;)V
 
-    .line 661
-    const-string v0, "watch_progress"
+    .line 660
+    const-string v1, "addonName"
 
-    const/4 v4, 0x5
-
-    const/4 v5, 0x0
-
-    invoke-virtual {v2, v0, v5, v3, v4}, Landroid/database/sqlite/SQLiteDatabase;->insertWithOnConflict(Ljava/lang/String;Ljava/lang/String;Landroid/content/ContentValues;I)J
+    invoke-virtual {v0, v1}, Landroid/content/ContentValues;->putNull(Ljava/lang/String;)V
 
     .line 662
-    add-int/lit8 v12, v12, 0x1
+    const-string v1, "watch_progress"
+
+    const/4 v3, 0x5
+
+    const/4 v4, 0x0
+
+    invoke-virtual {v2, v1, v4, v0, v3}, Landroid/database/sqlite/SQLiteDatabase;->insertWithOnConflict(Ljava/lang/String;Ljava/lang/String;Landroid/content/ContentValues;I)J
 
     .line 663
-    move-object/from16 v0, p0
-
-    move-object v3, v5
-
-    move-object/from16 p1, v7
-
-    move-object/from16 v16, v10
-
-    move-object/from16 v22, v11
-
-    move-object/from16 v1, v18
-
-    move-object/from16 v6, v19
-
-    goto/16 :goto_2dd
-
-    .line 628
-    :cond_47b
-    move-object/from16 v7, p1
-
-    move-object/from16 p0, v0
-
-    move-object/from16 v18, v1
-
-    move-object/from16 v17, v5
-
-    move-object/from16 v19, v6
-
-    move-object/from16 v11, v22
-
-    const/4 v1, 0x0
-
-    move-object v5, v3
-
-    .line 609
-    :goto_489
-    move-object/from16 v0, p0
-
-    move-object v3, v5
-
-    move-object/from16 p1, v7
-
-    move-object/from16 v16, v10
-
-    move-object/from16 v22, v11
-
-    move-object/from16 v1, v18
-
-    move-object/from16 v6, v19
-
-    goto/16 :goto_2dd
+    add-int/lit8 v12, v12, 0x1
 
     .line 664
-    :cond_498
-    invoke-virtual {v2}, Landroid/database/sqlite/SQLiteDatabase;->setTransactionSuccessful()V
-    :try_end_49b
-    .catchall {:try_start_3f4 .. :try_end_49b} :catchall_4a6
+    move-object/from16 v0, p3
 
-    .line 666
-    :try_start_49b
-    invoke-virtual {v2}, Landroid/database/sqlite/SQLiteDatabase;->endTransaction()V
+    move-object v3, v4
+
+    move-object/from16 p1, v7
+
+    move-object/from16 v16, v10
+
+    move-object/from16 v23, v11
+
+    move-object/from16 v1, v17
+
+    move-object/from16 v4, v19
+
+    move-object/from16 v17, v6
+
+    goto/16 :goto_2cb
+
+    .line 629
+    :cond_46c
+    move-object/from16 v7, p1
+
+    move-object/from16 p3, v0
+
+    move-object/from16 v17, v1
+
+    move-object/from16 v19, v4
+
+    move-object/from16 v11, v23
+
+    const/16 v18, 0x0
+
+    move-object v4, v3
+
+    .line 610
+    :goto_479
+    move-object/from16 v0, p3
+
+    move-object v3, v4
+
+    move-object/from16 p1, v7
+
+    move-object/from16 v16, v10
+
+    move-object/from16 v23, v11
+
+    move-object/from16 v1, v17
+
+    move-object/from16 v4, v19
+
+    move-object/from16 v17, v6
+
+    goto/16 :goto_2cb
+
+    .line 665
+    :cond_48a
+    invoke-virtual {v2}, Landroid/database/sqlite/SQLiteDatabase;->setTransactionSuccessful()V
+    :try_end_48d
+    .catchall {:try_start_3e0 .. :try_end_48d} :catchall_49d
 
     .line 667
-    invoke-virtual {v2}, Landroid/database/sqlite/SQLiteDatabase;->close()V
-    :try_end_4a1
-    .catchall {:try_start_49b .. :try_end_4a1} :catchall_4a3
+    :try_start_48d
+    invoke-virtual {v2}, Landroid/database/sqlite/SQLiteDatabase;->endTransaction()V
+    :try_end_490
+    .catchall {:try_start_48d .. :try_end_490} :catchall_49a
 
     .line 668
     nop
 
-    .line 669
-    goto :goto_4b9
+    .line 670
+    :try_start_491
+    invoke-virtual {v2}, Landroid/database/sqlite/SQLiteDatabase;->close()V
+    :try_end_494
+    .catchall {:try_start_491 .. :try_end_494} :catchall_497
 
-    :catchall_4a3
+    .line 671
+    nop
+
+    .line 672
+    move v5, v12
+
+    goto :goto_4b8
+
+    :catchall_497
     move-exception v0
 
     move v5, v12
 
     goto :goto_4b8
 
-    .line 666
-    :catchall_4a6
+    .line 670
+    :catchall_49a
     move-exception v0
 
     move v5, v12
 
-    goto :goto_4ac
+    goto :goto_4ae
 
-    :catchall_4a9
+    .line 667
+    :catchall_49d
     move-exception v0
 
-    const/4 v1, 0x0
+    move v5, v12
+
+    goto :goto_4a4
+
+    :catchall_4a0
+    move-exception v0
+
+    const/16 v18, 0x0
 
     const/4 v5, 0x0
 
-    :goto_4ac
-    :try_start_4ac
+    :goto_4a4
+    :try_start_4a4
     invoke-virtual {v2}, Landroid/database/sqlite/SQLiteDatabase;->endTransaction()V
-
-    .line 667
-    invoke-virtual {v2}, Landroid/database/sqlite/SQLiteDatabase;->close()V
 
     .line 668
     throw v0
-    :try_end_4b3
-    .catchall {:try_start_4ac .. :try_end_4b3} :catchall_4b3
+    :try_end_4a8
+    .catchall {:try_start_4a4 .. :try_end_4a8} :catchall_4a8
 
-    .line 669
-    :catchall_4b3
+    .line 670
+    :catchall_4a8
+    move-exception v0
+
+    goto :goto_4ae
+
+    :catchall_4aa
+    move-exception v0
+
+    const/16 v18, 0x0
+
+    const/4 v5, 0x0
+
+    :goto_4ae
+    :try_start_4ae
+    invoke-virtual {v2}, Landroid/database/sqlite/SQLiteDatabase;->close()V
+
+    .line 671
+    throw v0
+    :try_end_4b2
+    .catchall {:try_start_4ae .. :try_end_4b2} :catchall_4b2
+
+    .line 672
+    :catchall_4b2
     move-exception v0
 
     goto :goto_4b8
 
-    :catchall_4b5
+    :catchall_4b4
     move-exception v0
 
-    const/4 v1, 0x0
+    const/16 v18, 0x0
 
-    :goto_4b7
     const/4 v5, 0x0
 
+    .line 673
     :goto_4b8
-    move v12, v5
+    goto :goto_4bd
 
-    .line 670
-    :goto_4b9
-    return v12
+    :catchall_4b9
+    move-exception v0
+
+    const/16 v18, 0x0
+
+    const/4 v5, 0x0
+
+    .line 674
+    :goto_4bd
+    return v5
 .end method
 
 .method private static readStream(Ljava/io/InputStream;)Ljava/lang/String;
@@ -5347,7 +5449,7 @@
         }
     .end annotation
 
-    .line 1027
+    .line 1048
     new-instance v0, Ljava/io/BufferedReader;
 
     new-instance v1, Ljava/io/InputStreamReader;
@@ -5358,12 +5460,12 @@
 
     invoke-direct {v0, v1}, Ljava/io/BufferedReader;-><init>(Ljava/io/Reader;)V
 
-    .line 1028
+    .line 1049
     new-instance p0, Ljava/lang/StringBuilder;
 
     invoke-direct {p0}, Ljava/lang/StringBuilder;-><init>()V
 
-    .line 1030
+    .line 1051
     :goto_11
     invoke-virtual {v0}, Ljava/io/BufferedReader;->readLine()Ljava/lang/String;
 
@@ -5371,7 +5473,7 @@
 
     if-eqz v1, :cond_21
 
-    .line 1031
+    .line 1052
     invoke-virtual {p0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v1
@@ -5382,11 +5484,11 @@
 
     goto :goto_11
 
-    .line 1033
+    .line 1054
     :cond_21
     invoke-virtual {v0}, Ljava/io/BufferedReader;->close()V
 
-    .line 1034
+    .line 1055
     invoke-virtual {p0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
 
     move-result-object p0
@@ -5401,7 +5503,7 @@
 .method public static refreshRoom(Landroid/content/Context;)V
     .registers 8
 
-    .line 1011
+    .line 1032
     :try_start_0
     const-string v0, "com.streamsync.app.data.local.AppDatabase"
 
@@ -5409,7 +5511,7 @@
 
     move-result-object v0
 
-    .line 1012
+    .line 1033
     const-string v1, "Companion"
 
     invoke-virtual {v0, v1}, Ljava/lang/Class;->getField(Ljava/lang/String;)Ljava/lang/reflect/Field;
@@ -5422,7 +5524,7 @@
 
     move-result-object v0
 
-    .line 1013
+    .line 1034
     invoke-virtual {v0}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
 
     move-result-object v1
@@ -5443,7 +5545,7 @@
 
     move-result-object v1
 
-    .line 1014
+    .line 1035
     invoke-virtual {p0}, Landroid/content/Context;->getApplicationContext()Landroid/content/Context;
 
     move-result-object p0
@@ -5456,10 +5558,10 @@
 
     move-result-object p0
 
-    .line 1015
+    .line 1036
     if-eqz p0, :cond_58
 
-    .line 1016
+    .line 1037
     invoke-virtual {p0}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
 
     move-result-object v0
@@ -5472,17 +5574,17 @@
 
     move-result-object v0
 
-    .line 1017
+    .line 1038
     new-array v1, v6, [Ljava/lang/Object;
 
     invoke-virtual {v0, p0, v1}, Ljava/lang/reflect/Method;->invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
 
     move-result-object p0
 
-    .line 1018
+    .line 1039
     if-eqz p0, :cond_58
 
-    .line 1019
+    .line 1040
     invoke-virtual {p0}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
 
     move-result-object v0
@@ -5495,7 +5597,7 @@
 
     move-result-object v0
 
-    .line 1020
+    .line 1041
     new-array v1, v6, [Ljava/lang/Object;
 
     invoke-virtual {v0, p0, v1}, Ljava/lang/reflect/Method;->invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
@@ -5504,7 +5606,7 @@
 
     goto :goto_58
 
-    .line 1023
+    .line 1044
     :catchall_57
     move-exception p0
 
@@ -5512,7 +5614,7 @@
     :goto_58
     nop
 
-    .line 1024
+    .line 1045
     return-void
 .end method
 

@@ -43,7 +43,7 @@
         }
     .end annotation
 
-    .line 308
+    .line 312
     iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$1$1;->this$1:Lcom/streamsync/app/auth/SupabaseAccountManager$4$1;
 
     iput-object p2, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$1$1;->val$bmp:Landroid/graphics/Bitmap;
@@ -58,7 +58,7 @@
 .method public run()V
     .registers 3
 
-    .line 311
+    .line 315
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$1$1;->this$1:Lcom/streamsync/app/auth/SupabaseAccountManager$4$1;
 
     iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$1;->val$isCancelled:[Z
@@ -85,7 +85,7 @@
 
     if-eqz v0, :cond_22
 
-    .line 312
+    .line 316
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$1$1;->this$1:Lcom/streamsync/app/auth/SupabaseAccountManager$4$1;
 
     iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$1;->val$ivQr:Landroid/widget/ImageView;
@@ -94,7 +94,7 @@
 
     invoke-virtual {v0, v1}, Landroid/widget/ImageView;->setImageBitmap(Landroid/graphics/Bitmap;)V
 
-    .line 314
+    .line 318
     :cond_22
     return-void
 .end method

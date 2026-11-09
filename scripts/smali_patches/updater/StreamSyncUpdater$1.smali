@@ -106,7 +106,7 @@
     .line 66
     const/16 v5, 0xc8
 
-    if-ne v4, v5, :cond_141
+    if-ne v4, v5, :cond_13f
 
     .line 67
     invoke-virtual {v3}, Ljava/net/HttpURLConnection;->getInputStream()Ljava/io/InputStream;
@@ -157,7 +157,7 @@
     .line 78
     sget-object v4, Landroid/os/Build;->SUPPORTED_ABIS:[Ljava/lang/String;
     :try_end_63
-    .catchall {:try_start_6 .. :try_end_63} :catchall_14e
+    .catchall {:try_start_6 .. :try_end_63} :catchall_14f
 
     const-string v5, "universal"
 
@@ -240,7 +240,7 @@
 
     move-result v4
     :try_end_97
-    .catchall {:try_start_68 .. :try_end_97} :catchall_14e
+    .catchall {:try_start_68 .. :try_end_97} :catchall_14f
 
     const-string v9, "browser_download_url"
 
@@ -432,24 +432,19 @@
 
     move-result v0
 
-    if-eqz v0, :cond_11e
+    if-eqz v0, :cond_11c
 
-    const-string v0, "StreamSync-update.apk"
+    const-string v2, "StreamSync-update.apk"
 
-    move-object v9, v0
-
-    goto :goto_11f
-
-    :cond_11e
+    :cond_11c
     move-object v9, v2
 
     .line 130
-    :goto_11f
     invoke-static {v6, v7}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$smisNewerVersion(Ljava/lang/String;Ljava/lang/String;)Z
 
     move-result v0
 
-    if-eqz v0, :cond_132
+    if-eqz v0, :cond_131
 
     .line 131
     invoke-static {}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$sfgetsMainHandler()Landroid/os/Handler;
@@ -462,30 +457,35 @@
 
     invoke-virtual {v0, v1}, Landroid/os/Handler;->post(Ljava/lang/Runnable;)Z
 
-    goto :goto_140
+    move-object v5, p0
+
+    goto :goto_13e
 
     .line 138
-    :cond_132
+    :cond_131
     invoke-static {}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$sfgetsMainHandler()Landroid/os/Handler;
 
     move-result-object v0
 
-    new-instance v1, Lcom/streamsync/app/updater/StreamSyncUpdater$1$2;
-
-    move-object v4, v1
+    new-instance v4, Lcom/streamsync/app/updater/StreamSyncUpdater$1$2;
+    :try_end_137
+    .catchall {:try_start_9f .. :try_end_137} :catchall_14f
 
     move-object v5, p0
 
+    :try_start_138
     invoke-direct/range {v4 .. v9}, Lcom/streamsync/app/updater/StreamSyncUpdater$1$2;-><init>(Lcom/streamsync/app/updater/StreamSyncUpdater$1;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
 
-    invoke-virtual {v0, v1}, Landroid/os/Handler;->post(Ljava/lang/Runnable;)Z
+    invoke-virtual {v0, v4}, Landroid/os/Handler;->post(Ljava/lang/Runnable;)Z
 
     .line 145
-    :goto_140
-    goto :goto_14d
+    :goto_13e
+    goto :goto_14c
 
     .line 146
-    :cond_141
+    :cond_13f
+    move-object v5, p0
+
     invoke-static {}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$sfgetsMainHandler()Landroid/os/Handler;
 
     move-result-object v0
@@ -495,18 +495,26 @@
     invoke-direct {v1, p0}, Lcom/streamsync/app/updater/StreamSyncUpdater$1$3;-><init>(Lcom/streamsync/app/updater/StreamSyncUpdater$1;)V
 
     invoke-virtual {v0, v1}, Landroid/os/Handler;->post(Ljava/lang/Runnable;)Z
-    :try_end_14d
-    .catchall {:try_start_9f .. :try_end_14d} :catchall_14e
+    :try_end_14c
+    .catchall {:try_start_138 .. :try_end_14c} :catchall_14d
 
     .line 160
-    :goto_14d
-    goto :goto_15b
+    :goto_14c
+    goto :goto_15d
 
     .line 153
-    :catchall_14e
+    :catchall_14d
     move-exception v0
 
+    goto :goto_151
+
+    :catchall_14f
+    move-exception v0
+
+    move-object v5, p0
+
     .line 154
+    :goto_151
     invoke-static {}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$sfgetsMainHandler()Landroid/os/Handler;
 
     move-result-object v0
@@ -518,6 +526,6 @@
     invoke-virtual {v0, v1}, Landroid/os/Handler;->post(Ljava/lang/Runnable;)Z
 
     .line 161
-    :goto_15b
+    :goto_15d
     return-void
 .end method

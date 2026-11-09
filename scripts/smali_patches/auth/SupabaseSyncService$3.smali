@@ -189,13 +189,13 @@
 
     move-result-object v3
     :try_end_8c
-    .catch Ljava/lang/Exception; {:try_start_2 .. :try_end_8c} :catch_117
+    .catch Ljava/lang/Exception; {:try_start_2 .. :try_end_8c} :catch_121
 
     .line 221
     :try_start_8c
     invoke-virtual {v3, v2}, Ljava/io/OutputStream;->write([B)V
     :try_end_8f
-    .catchall {:try_start_8c .. :try_end_8f} :catchall_10b
+    .catchall {:try_start_8c .. :try_end_8f} :catchall_111
 
     .line 222
     if-eqz v3, :cond_94
@@ -229,7 +229,7 @@
 
     move-result-object v1
     :try_end_a9
-    .catch Ljava/lang/Exception; {:try_start_91 .. :try_end_a9} :catch_117
+    .catch Ljava/lang/Exception; {:try_start_91 .. :try_end_a9} :catch_121
 
     .line 226
     :goto_a9
@@ -249,7 +249,7 @@
 
     .line 228
     :goto_b3
-    if-ne v2, v3, :cond_e9
+    if-ne v2, v3, :cond_ee
 
     .line 229
     new-instance v3, Lorg/json/JSONArray;
@@ -261,7 +261,7 @@
 
     move-result v1
 
-    if-lez v1, :cond_e9
+    if-lez v1, :cond_ec
 
     .line 231
     const/4 v1, 0x0
@@ -301,28 +301,52 @@
     move-result v8
 
     .line 237
-    new-instance v0, Lcom/streamsync/app/auth/SupabaseSyncService$3$1;
-
-    move-object v2, v0
+    new-instance v2, Lcom/streamsync/app/auth/SupabaseSyncService$3$1;
+    :try_end_e0
+    .catch Ljava/lang/Exception; {:try_start_ad .. :try_end_e0} :catch_121
 
     move-object v3, p0
 
+    :try_start_e1
     invoke-direct/range {v2 .. v8}, Lcom/streamsync/app/auth/SupabaseSyncService$3$1;-><init>(Lcom/streamsync/app/auth/SupabaseSyncService$3;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V
+    :try_end_e4
+    .catch Ljava/lang/Exception; {:try_start_e1 .. :try_end_e4} :catch_e9
 
-    invoke-static {v0}, Lcom/streamsync/app/auth/SupabaseSyncService;->runOnMain(Ljava/lang/Runnable;)V
+    move-object v1, v3
+
+    :try_start_e5
+    invoke-static {v2}, Lcom/streamsync/app/auth/SupabaseSyncService;->runOnMain(Ljava/lang/Runnable;)V
 
     .line 245
     return-void
 
+    .line 256
+    :catch_e9
+    move-exception v0
+
+    move-object v1, v3
+
+    goto :goto_123
+
+    .line 230
+    :cond_ec
+    move-object v1, p0
+
+    goto :goto_ef
+
+    .line 228
+    :cond_ee
+    move-object v1, p0
+
     .line 249
-    :cond_e9
+    :goto_ef
     new-instance v0, Ljava/lang/StringBuilder;
 
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
 
-    const-string v1, "Kh\u00f4ng th\u1ec3 t\u1ea1o phi\u00ean li\u00ean k\u1ebft ("
+    const-string v3, "Kh\u00f4ng th\u1ec3 t\u1ea1o phi\u00ean li\u00ean k\u1ebft ("
 
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v0, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v0
 
@@ -330,9 +354,9 @@
 
     move-result-object v0
 
-    const-string v1, ")"
+    const-string v2, ")"
 
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v0
 
@@ -341,54 +365,66 @@
     move-result-object v0
 
     .line 250
-    new-instance v1, Lcom/streamsync/app/auth/SupabaseSyncService$3$2;
+    new-instance v2, Lcom/streamsync/app/auth/SupabaseSyncService$3$2;
 
-    invoke-direct {v1, p0, v0}, Lcom/streamsync/app/auth/SupabaseSyncService$3$2;-><init>(Lcom/streamsync/app/auth/SupabaseSyncService$3;Ljava/lang/String;)V
+    invoke-direct {v2, p0, v0}, Lcom/streamsync/app/auth/SupabaseSyncService$3$2;-><init>(Lcom/streamsync/app/auth/SupabaseSyncService$3;Ljava/lang/String;)V
 
-    invoke-static {v1}, Lcom/streamsync/app/auth/SupabaseSyncService;->runOnMain(Ljava/lang/Runnable;)V
-    :try_end_10a
-    .catch Ljava/lang/Exception; {:try_start_ad .. :try_end_10a} :catch_117
+    invoke-static {v2}, Lcom/streamsync/app/auth/SupabaseSyncService;->runOnMain(Ljava/lang/Runnable;)V
+    :try_end_110
+    .catch Ljava/lang/Exception; {:try_start_e5 .. :try_end_110} :catch_11f
 
     .line 263
-    goto :goto_120
+    goto :goto_12b
 
     .line 220
-    :catchall_10b
+    :catchall_111
     move-exception v0
 
-    if-eqz v3, :cond_116
+    move-object v1, p0
 
-    :try_start_10e
+    move-object v2, v0
+
+    if-eqz v3, :cond_11e
+
+    :try_start_116
     invoke-virtual {v3}, Ljava/io/OutputStream;->close()V
-    :try_end_111
-    .catchall {:try_start_10e .. :try_end_111} :catchall_112
+    :try_end_119
+    .catchall {:try_start_116 .. :try_end_119} :catchall_11a
 
-    goto :goto_116
+    goto :goto_11e
 
-    :catchall_112
-    move-exception v1
+    :catchall_11a
+    move-exception v0
 
-    :try_start_113
-    invoke-static {v0, v1}, Lcom/streamsync/app/auth/SupabaseSyncService$$ExternalSyntheticBackport0;->m(Ljava/lang/Throwable;Ljava/lang/Throwable;)V
+    :try_start_11b
+    invoke-static {v2, v0}, Lcom/streamsync/app/auth/SupabaseSyncService$$ExternalSyntheticBackport0;->m(Ljava/lang/Throwable;Ljava/lang/Throwable;)V
 
-    :cond_116
-    :goto_116
-    throw v0
-    :try_end_117
-    .catch Ljava/lang/Exception; {:try_start_113 .. :try_end_117} :catch_117
+    :cond_11e
+    :goto_11e
+    throw v2
+    :try_end_11f
+    .catch Ljava/lang/Exception; {:try_start_11b .. :try_end_11f} :catch_11f
 
     .line 256
-    :catch_117
+    :catch_11f
     move-exception v0
 
+    goto :goto_123
+
+    :catch_121
+    move-exception v0
+
+    move-object v1, p0
+
     .line 257
-    new-instance v1, Lcom/streamsync/app/auth/SupabaseSyncService$3$3;
+    :goto_123
+    new-instance v2, Lcom/streamsync/app/auth/SupabaseSyncService$3$3;
 
-    invoke-direct {v1, p0, v0}, Lcom/streamsync/app/auth/SupabaseSyncService$3$3;-><init>(Lcom/streamsync/app/auth/SupabaseSyncService$3;Ljava/lang/Exception;)V
+    invoke-direct {v2, p0, v0}, Lcom/streamsync/app/auth/SupabaseSyncService$3$3;-><init>(Lcom/streamsync/app/auth/SupabaseSyncService$3;Ljava/lang/Exception;)V
 
-    invoke-static {v1}, Lcom/streamsync/app/auth/SupabaseSyncService;->runOnMain(Ljava/lang/Runnable;)V
+    invoke-static {v2}, Lcom/streamsync/app/auth/SupabaseSyncService;->runOnMain(Ljava/lang/Runnable;)V
 
     .line 264
-    :goto_120
+    :goto_12b
     return-void
 .end method

@@ -33,7 +33,7 @@
         }
     .end annotation
 
-    .line 404
+    .line 408
     iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$5$2;->this$1:Lcom/streamsync/app/auth/SupabaseAccountManager$4$5;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
@@ -46,7 +46,7 @@
 .method public run()V
     .registers 4
 
-    .line 407
+    .line 411
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$5$2;->this$1:Lcom/streamsync/app/auth/SupabaseAccountManager$4$5;
 
     iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$5;->val$isCancelled:[Z
@@ -69,7 +69,7 @@
 
     if-eqz v0, :cond_2e
 
-    .line 409
+    .line 413
     :try_start_15
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$5$2;->this$1:Lcom/streamsync/app/auth/SupabaseAccountManager$4$5;
 
@@ -81,14 +81,14 @@
 
     goto :goto_1e
 
-    .line 410
+    .line 414
     :catchall_1d
     move-exception v0
 
     :goto_1e
     nop
 
-    .line 411
+    .line 415
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$5$2;->this$1:Lcom/streamsync/app/auth/SupabaseAccountManager$4$5;
 
     iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$5;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$4;
@@ -103,7 +103,7 @@
 
     invoke-virtual {v0}, Landroid/widget/Toast;->show()V
 
-    .line 413
+    .line 417
     :cond_2e
     return-void
 .end method

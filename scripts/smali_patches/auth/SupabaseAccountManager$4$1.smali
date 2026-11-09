@@ -51,7 +51,7 @@
         }
     .end annotation
 
-    .line 295
+    .line 299
     iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$1;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$4;
 
     iput-object p2, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$1;->val$verificationUrl:Ljava/lang/String;
@@ -70,7 +70,7 @@
 .method public run()V
     .registers 4
 
-    .line 299
+    .line 303
     :try_start_0
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$1;->val$verificationUrl:Ljava/lang/String;
 
@@ -98,27 +98,27 @@
 
     move-result-object v0
 
-    .line 300
+    .line 304
     new-instance v1, Ljava/net/URL;
 
     invoke-direct {v1, v0}, Ljava/net/URL;-><init>(Ljava/lang/String;)V
 
-    .line 301
+    .line 305
     invoke-virtual {v1}, Ljava/net/URL;->openConnection()Ljava/net/URLConnection;
 
     move-result-object v0
 
     check-cast v0, Ljava/net/HttpURLConnection;
 
-    .line 302
+    .line 306
     const/16 v1, 0x1f40
 
     invoke-virtual {v0, v1}, Ljava/net/HttpURLConnection;->setConnectTimeout(I)V
 
-    .line 303
+    .line 307
     invoke-virtual {v0, v1}, Ljava/net/HttpURLConnection;->setReadTimeout(I)V
 
-    .line 304
+    .line 308
     invoke-virtual {v0}, Ljava/net/HttpURLConnection;->getResponseCode()I
 
     move-result v1
@@ -127,20 +127,20 @@
 
     if-ne v1, v2, :cond_4b
 
-    .line 305
+    .line 309
     invoke-virtual {v0}, Ljava/net/HttpURLConnection;->getInputStream()Ljava/io/InputStream;
 
     move-result-object v0
 
-    .line 306
+    .line 310
     invoke-static {v0}, Landroid/graphics/BitmapFactory;->decodeStream(Ljava/io/InputStream;)Landroid/graphics/Bitmap;
 
     move-result-object v1
 
-    .line 307
+    .line 311
     invoke-virtual {v0}, Ljava/io/InputStream;->close()V
 
-    .line 308
+    .line 312
     new-instance v0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$1$1;
 
     invoke-direct {v0, p0, v1}, Lcom/streamsync/app/auth/SupabaseAccountManager$4$1$1;-><init>(Lcom/streamsync/app/auth/SupabaseAccountManager$4$1;Landroid/graphics/Bitmap;)V
@@ -151,7 +151,7 @@
 
     goto :goto_4b
 
-    .line 317
+    .line 321
     :catchall_4a
     move-exception v0
 
@@ -159,6 +159,6 @@
     :goto_4b
     nop
 
-    .line 318
+    .line 322
     return-void
 .end method

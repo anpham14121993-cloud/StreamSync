@@ -32,7 +32,7 @@
         }
     .end annotation
 
-    .line 227
+    .line 229
     iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$3;->val$dialog:Landroid/app/AlertDialog;
 
     iput-object p2, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$3;->val$context:Landroid/content/Context;
@@ -47,7 +47,7 @@
 .method public onClick(Landroid/view/View;)V
     .registers 2
 
-    .line 231
+    .line 233
     :try_start_0
     iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$3;->val$dialog:Landroid/app/AlertDialog;
 
@@ -57,18 +57,18 @@
 
     goto :goto_7
 
-    .line 232
+    .line 234
     :catchall_6
     move-exception p1
 
     :goto_7
     nop
 
-    .line 233
+    .line 235
     iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$3;->val$context:Landroid/content/Context;
 
     invoke-static {p1}, Lcom/streamsync/app/auth/SupabaseAccountManager;->-$$Nest$smshowDeviceLinkDialog(Landroid/content/Context;)V
 
-    .line 234
+    .line 236
     return-void
 .end method

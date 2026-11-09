@@ -20,7 +20,7 @@
 .end method
 
 .method public static getConfigUrl(Ljava/lang/String;)Ljava/lang/String;
-    .registers 6
+    .registers 5
 
     .line 38
     if-eqz p0, :cond_67
@@ -81,25 +81,25 @@
     if-eqz v2, :cond_4e
 
     .line 45
-    new-instance v2, Ljava/lang/StringBuilder;
-
-    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
-
     invoke-virtual {p0}, Ljava/lang/String;->length()I
 
-    move-result v4
+    move-result v2
 
     invoke-virtual {v0}, Ljava/lang/String;->length()I
 
     move-result v0
 
-    sub-int/2addr v4, v0
+    sub-int/2addr v2, v0
 
-    invoke-virtual {p0, v1, v4}, Ljava/lang/String;->substring(II)Ljava/lang/String;
+    invoke-virtual {p0, v1, v2}, Ljava/lang/String;->substring(II)Ljava/lang/String;
 
     move-result-object p0
 
-    invoke-virtual {v2, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    new-instance v0, Ljava/lang/StringBuilder;
+
+    invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
+
+    invoke-virtual {v0, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object p0
 

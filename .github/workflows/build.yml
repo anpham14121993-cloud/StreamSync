@@ -125,23 +125,21 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG="v1.9.3"
+          TAG="v1.9.4"
           echo "=== Publishing Release $TAG ==="
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" output-apks/StreamSync-arm64-v8a.apk output-apks/StreamSync-armeabi-v7a.apk output-apks/StreamSync-universal.apk --clobber
           else
             gh release create "$TAG" output-apks/StreamSync-arm64-v8a.apk output-apks/StreamSync-armeabi-v7a.apk output-apks/StreamSync-universal.apk \
-              --title "AioStream v1.9.3 (Fix Android TV Login Crash & Sync Stability)" \
-              --notes "Bản phát hành chính thức AioStream v1.9.3:
+              --title "AioStream v1.9.4 (Fix ART VerifyError in Lambdas & SQLite Lock Contention)" \
+              --notes "Bản phát hành chính thức AioStream v1.9.4:
               - Chuẩn 3 phiên bản duy nhất: arm64-v8a, armeabi-v7a và universal.
-              - Khắc phục triệt để lỗi crash trên Android TV sau khi đăng nhập và đồng bộ tài khoản:
-                + Chuẩn hóa tài nguyên addon (resources) thành AddonResourceDef object, loại bỏ hoàn toàn lỗi ClassCastException khi Room nạp danh sách addon.
-                + Chuẩn hóa danh mục (catalogs) và kiểm tra id hợp lệ.
-                + Loại bỏ lệnh khởi động lại MainActivity (restartIntent), cập nhật UI mượt mà qua Room InvalidationTracker không làm treo giao diện TV.
-                + Khắc phục vòng lặp đồng bộ vô hạn trong hộp thoại tài khoản.
-                + Bảo toàn toàn vẹn cơ sở dữ liệu Room (room_master_table và PRAGMA user_version = 7).
-                + Tối ưu D-pad remote Android TV: hỗ trợ focus điều hướng cho các nút và ô nhập liệu trong hộp thoại tài khoản.
-              - Cập nhật OTA trực tiếp trong ứng dụng cho phiên bản v1.9.3.
+              - Khắc phục triệt để lỗi crash trên Mobile và Android TV:
+                + Sửa lỗi Dalvik/ART bytecode verification failure (VerifyError) trong các lớp lambda (AccountClickLambda, UpdaterClickLambda, AddonToggleClickLambda, AddonConfigClickLambda) bằng cách bổ sung lệnh 'move-exception' chuẩn xác ở đầu khối catchall.
+                + Sửa lỗi SQLiteDatabaseLockedException khi đồng bộ tài khoản: tách toàn bộ tác vụ tải manifest qua mạng ra khỏi transaction, đồng thời kích hoạt Write-Ahead Logging (WAL) để Room và UI thread không bị nghẽn (starvation).
+                + Loại bỏ hoàn toàn AlertDialog.THEME_DEVICE_DEFAULT_DARK gây crash trên Android TV / Leanback ROMs.
+                + Bọc toàn bộ các lời gọi dialog.show() trong try-catch chống sập ứng dụng khi Activity chuyển trạng thái.
+              - Cập nhật OTA trực tiếp trong ứng dụng cho phiên bản v1.9.4.
               - Keystore cố định hỗ trợ cài đè trực tiếp lên phiên bản cũ không mất dữ liệu." \
               --latest
           fi

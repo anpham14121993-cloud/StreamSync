@@ -597,75 +597,79 @@ public class SupabaseSyncService {
 
             ensureRoomDatabase(context);
 
-            SQLiteDatabase db = SQLiteDatabase.openDatabase(dbFile.getAbsolutePath(), null, SQLiteDatabase.OPEN_READWRITE | SQLiteDatabase.CREATE_IF_NECESSARY);
             try {
-                db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-                db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4201b4cf7d52e2b03ff5e210c14b7a60')");
-                db.execSQL("PRAGMA user_version = 7");
+                SQLiteDatabase db = SQLiteDatabase.openDatabase(dbFile.getAbsolutePath(), null, SQLiteDatabase.OPEN_READWRITE | SQLiteDatabase.ENABLE_WRITE_AHEAD_LOGGING);
+                try {
+                    db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
+                    db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4201b4cf7d52e2b03ff5e210c14b7a60')");
+                    db.execSQL("PRAGMA user_version = 7");
+                    db.execSQL("CREATE TABLE IF NOT EXISTS `watch_progress` (`mediaId` TEXT NOT NULL, `positionMs` INTEGER NOT NULL, `durationMs` INTEGER NOT NULL, `updatedAtEpochMs` INTEGER NOT NULL, `deviceId` TEXT NOT NULL, `pendingSync` INTEGER NOT NULL, `streamUrl` TEXT, `addonId` TEXT, `addonName` TEXT, PRIMARY KEY(`mediaId`));");
 
-                db.execSQL("CREATE TABLE IF NOT EXISTS `watch_progress` (`mediaId` TEXT NOT NULL, `positionMs` INTEGER NOT NULL, `durationMs` INTEGER NOT NULL, `updatedAtEpochMs` INTEGER NOT NULL, `deviceId` TEXT NOT NULL, `pendingSync` INTEGER NOT NULL, `streamUrl` TEXT, `addonId` TEXT, `addonName` TEXT, PRIMARY KEY(`mediaId`));");
+                    db.beginTransaction();
+                    try {
+                        for (JSONObject obj : progressList) {
+                            String contentId = obj.optString("content_id", "");
+                            if (contentId.isEmpty()) contentId = obj.optString("contentId", "");
 
-                db.beginTransaction();
-                for (JSONObject obj : progressList) {
-                    String contentId = obj.optString("content_id", "");
-                    if (contentId.isEmpty()) contentId = obj.optString("contentId", "");
+                            String videoId = obj.optString("video_id", "");
+                            if (videoId.isEmpty()) videoId = obj.optString("videoId", "");
 
-                    String videoId = obj.optString("video_id", "");
-                    if (videoId.isEmpty()) videoId = obj.optString("videoId", "");
+                            int season = obj.optInt("season", 0);
+                            int episode = obj.optInt("episode", 0);
 
-                    int season = obj.optInt("season", 0);
-                    int episode = obj.optInt("episode", 0);
+                            String mediaId = videoId;
+                            if (mediaId.isEmpty()) mediaId = obj.optString("progress_key", "");
+                            if (mediaId.isEmpty()) mediaId = contentId;
+                            if (mediaId.isEmpty()) mediaId = obj.optString("mediaId", "");
 
-                    String mediaId = videoId;
-                    if (mediaId.isEmpty()) mediaId = obj.optString("progress_key", "");
-                    if (mediaId.isEmpty()) mediaId = contentId;
-                    if (mediaId.isEmpty()) mediaId = obj.optString("mediaId", "");
+                            if (season > 0 && episode > 0 && !mediaId.contains(":")) {
+                                mediaId = contentId + ":" + season + ":" + episode;
+                            }
 
-                    if (season > 0 && episode > 0 && !mediaId.contains(":")) {
-                        mediaId = contentId + ":" + season + ":" + episode;
+                            if (mediaId.isEmpty() || seenMediaIds.contains(mediaId)) {
+                                continue;
+                            }
+                            seenMediaIds.add(mediaId);
+
+                            long pos = obj.optLong("position", 0);
+                            if (pos == 0) pos = obj.optLong("positionMs", 0);
+                            if (pos > 0 && pos < 10000) pos = pos * 1000L;
+                            if (pos <= 0) pos = 60000L;
+
+                            long dur = obj.optLong("duration", 0);
+                            if (dur == 0) dur = obj.optLong("durationMs", 0);
+                            if (dur > 0 && dur < 10000) dur = dur * 1000L;
+                            if (dur <= pos || pos >= (long)(dur * 0.97)) {
+                                dur = Math.max(pos * 2L, pos + 300000L);
+                            }
+
+                            long lastWatched = obj.optLong("last_watched", 0);
+                            if (lastWatched == 0) lastWatched = obj.optLong("lastWatched", 0);
+                            if (lastWatched == 0) lastWatched = obj.optLong("watched_at", 0);
+                            if (lastWatched == 0) lastWatched = obj.optLong("updatedAtEpochMs", System.currentTimeMillis());
+
+                            ContentValues cv = new ContentValues();
+                            cv.put("mediaId", mediaId);
+                            cv.put("positionMs", pos);
+                            cv.put("durationMs", dur);
+                            cv.put("updatedAtEpochMs", lastWatched);
+                            cv.put("deviceId", "streamsync");
+                            cv.put("pendingSync", 0);
+                            cv.putNull("streamUrl");
+                            cv.putNull("addonId");
+                            cv.putNull("addonName");
+
+                            db.insertWithOnConflict("watch_progress", null, cv, SQLiteDatabase.CONFLICT_REPLACE);
+                            count++;
+                        }
+                        db.setTransactionSuccessful();
+                    } finally {
+                        db.endTransaction();
                     }
-
-                    if (mediaId.isEmpty() || seenMediaIds.contains(mediaId)) {
-                        continue;
-                    }
-                    seenMediaIds.add(mediaId);
-
-                    long pos = obj.optLong("position", 0);
-                    if (pos == 0) pos = obj.optLong("positionMs", 0);
-                    if (pos > 0 && pos < 10000) pos = pos * 1000L;
-                    if (pos <= 0) pos = 60000L;
-
-                    long dur = obj.optLong("duration", 0);
-                    if (dur == 0) dur = obj.optLong("durationMs", 0);
-                    if (dur > 0 && dur < 10000) dur = dur * 1000L;
-                    if (dur <= pos || pos >= (long)(dur * 0.97)) {
-                        dur = Math.max(pos * 2L, pos + 300000L);
-                    }
-
-                    long lastWatched = obj.optLong("last_watched", 0);
-                    if (lastWatched == 0) lastWatched = obj.optLong("lastWatched", 0);
-                    if (lastWatched == 0) lastWatched = obj.optLong("watched_at", 0);
-                    if (lastWatched == 0) lastWatched = obj.optLong("updatedAtEpochMs", System.currentTimeMillis());
-
-                    ContentValues cv = new ContentValues();
-                    cv.put("mediaId", mediaId);
-                    cv.put("positionMs", pos);
-                    cv.put("durationMs", dur);
-                    cv.put("updatedAtEpochMs", lastWatched);
-                    cv.put("deviceId", "streamsync");
-                    cv.put("pendingSync", 0);
-                    cv.putNull("streamUrl");
-                    cv.putNull("addonId");
-                    cv.putNull("addonName");
-
-                    db.insertWithOnConflict("watch_progress", null, cv, SQLiteDatabase.CONFLICT_REPLACE);
-                    count++;
+                } finally {
+                    db.close();
                 }
-                db.setTransactionSuccessful();
-            } finally {
-                db.endTransaction();
-                db.close();
-            }
+            } catch (Throwable ignored) {}
         } catch (Throwable ignored) {}
         return count;
     }
@@ -701,237 +705,254 @@ public class SupabaseSyncService {
 
                 ensureRoomDatabase(context);
 
-                SQLiteDatabase db = SQLiteDatabase.openDatabase(dbFile.getAbsolutePath(), null, SQLiteDatabase.OPEN_READWRITE);
                 try {
-                    db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-                    db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4201b4cf7d52e2b03ff5e210c14b7a60')");
-                    db.execSQL("PRAGMA user_version = 7");
+                    SQLiteDatabase db = SQLiteDatabase.openDatabase(dbFile.getAbsolutePath(), null, SQLiteDatabase.OPEN_READWRITE | SQLiteDatabase.ENABLE_WRITE_AHEAD_LOGGING);
+                    try {
+                        db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
+                        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4201b4cf7d52e2b03ff5e210c14b7a60')");
+                        db.execSQL("PRAGMA user_version = 7");
+                        db.execSQL("CREATE TABLE IF NOT EXISTS `library_items` (`mediaId` TEXT NOT NULL, `title` TEXT NOT NULL, `posterUrl` TEXT, `backgroundUrl` TEXT, `description` TEXT, `type` TEXT NOT NULL, `releaseInfo` TEXT, `imdbRating` TEXT, `genresJson` TEXT NOT NULL, `season` INTEGER, `episode` INTEGER, `addedAtEpochMs` INTEGER NOT NULL, PRIMARY KEY(`mediaId`));");
 
-                    db.execSQL("CREATE TABLE IF NOT EXISTS `library_items` (`mediaId` TEXT NOT NULL, `title` TEXT NOT NULL, `posterUrl` TEXT, `backgroundUrl` TEXT, `description` TEXT, `type` TEXT NOT NULL, `releaseInfo` TEXT, `imdbRating` TEXT, `genresJson` TEXT NOT NULL, `season` INTEGER, `episode` INTEGER, `addedAtEpochMs` INTEGER NOT NULL, PRIMARY KEY(`mediaId`));");
+                        db.beginTransaction();
+                        try {
+                            for (int i = 0; i < arr.length(); i++) {
+                                JSONObject item = arr.getJSONObject(i);
+                                String mediaId = item.optString("content_id", "");
+                                if (mediaId.isEmpty()) continue;
 
-                    db.beginTransaction();
-                    for (int i = 0; i < arr.length(); i++) {
-                        JSONObject item = arr.getJSONObject(i);
-                        String mediaId = item.optString("content_id", "");
-                        if (mediaId.isEmpty()) continue;
+                                ContentValues cv = new ContentValues();
+                                cv.put("mediaId", mediaId);
+                                cv.put("title", item.optString("name", ""));
+                                cv.put("posterUrl", item.optString("poster", null));
+                                cv.put("backgroundUrl", item.optString("background", null));
+                                cv.put("description", item.optString("description", null));
+                                cv.put("type", item.optString("content_type", "movie"));
+                                cv.put("releaseInfo", item.optString("release_info", null));
+                                cv.put("imdbRating", item.has("imdb_rating") ? String.valueOf(item.opt("imdb_rating")) : null);
 
-                        ContentValues cv = new ContentValues();
-                        cv.put("mediaId", mediaId);
-                        cv.put("title", item.optString("name", ""));
-                        cv.put("posterUrl", item.optString("poster", null));
-                        cv.put("backgroundUrl", item.optString("background", null));
-                        cv.put("description", item.optString("description", null));
-                        cv.put("type", item.optString("content_type", "movie"));
-                        cv.put("releaseInfo", item.optString("release_info", null));
-                        cv.put("imdbRating", item.has("imdb_rating") ? String.valueOf(item.opt("imdb_rating")) : null);
+                                JSONArray genresArr = item.optJSONArray("genres");
+                                cv.put("genresJson", (genresArr != null) ? genresArr.toString() : "[]");
 
-                        JSONArray genresArr = item.optJSONArray("genres");
-                        cv.put("genresJson", (genresArr != null) ? genresArr.toString() : "[]");
+                                cv.putNull("season");
+                                cv.putNull("episode");
+                                cv.put("addedAtEpochMs", item.optLong("added_at", System.currentTimeMillis()));
 
-                        cv.putNull("season");
-                        cv.putNull("episode");
-                        cv.put("addedAtEpochMs", item.optLong("added_at", System.currentTimeMillis()));
-
-                        db.insertWithOnConflict("library_items", null, cv, SQLiteDatabase.CONFLICT_REPLACE);
+                                db.insertWithOnConflict("library_items", null, cv, SQLiteDatabase.CONFLICT_REPLACE);
+                            }
+                            db.setTransactionSuccessful();
+                        } finally {
+                            db.endTransaction();
+                        }
+                    } finally {
+                        db.close();
                     }
-                    db.setTransactionSuccessful();
-                } finally {
-                    db.endTransaction();
-                    db.close();
-                }
+                } catch (Throwable ignored) {}
             }
         } catch (Throwable ignored) {}
     }
 
     public static int installAddonsDirectly(Context context, List<String> urls) {
+        if (context == null || urls == null || urls.isEmpty()) return 0;
+
+        List<ContentValues> itemsToInsert = new ArrayList<>();
         int installed = 0;
+
+        for (String rawUrl : urls) {
+            try {
+                String manifestUrl = rawUrl.trim();
+                if (manifestUrl.isEmpty()) continue;
+
+                String fetchUrl = manifestUrl.endsWith("/manifest.json") ? manifestUrl : (manifestUrl.replaceAll("/+$", "") + "/manifest.json");
+                String baseUrl = fetchUrl;
+                int mIdx = baseUrl.indexOf("/manifest.json");
+                if (mIdx != -1) {
+                    baseUrl = baseUrl.substring(0, mIdx);
+                }
+                baseUrl = baseUrl.replaceAll("/+$", "");
+
+                JSONObject manifest = null;
+                try {
+                    URL u = new URL(fetchUrl);
+                    HttpURLConnection conn = (HttpURLConnection) u.openConnection();
+                    conn.setRequestMethod("GET");
+                    conn.setRequestProperty("User-Agent", "Mozilla/5.0 StreamSync");
+                    conn.setConnectTimeout(6000);
+                    conn.setReadTimeout(6000);
+                    if (conn.getResponseCode() == 200) {
+                        String jsonStr = readStream(conn.getInputStream());
+                        manifest = new JSONObject(jsonStr);
+                    }
+                } catch (Throwable ignored) {}
+
+                if (manifest == null) {
+                    manifest = getDefaultManifestFallback(baseUrl);
+                }
+
+                if (manifest == null) continue;
+
+                String id = manifest.optString("id", "");
+                if (id.isEmpty()) continue;
+
+                String name = manifest.optString("name", id);
+                String version = manifest.optString("version", "1.0.0");
+                String description = manifest.optString("description", "");
+                String logoUrl = manifest.optString("logo", manifest.optString("icon", ""));
+
+                String typesCsv = "movie,series";
+                JSONArray defaultTypesArr = new JSONArray("[\"movie\",\"series\"]");
+                if (manifest.has("types")) {
+                    JSONArray tArr = manifest.optJSONArray("types");
+                    if (tArr != null && tArr.length() > 0) {
+                        defaultTypesArr = tArr;
+                        StringBuilder sb = new StringBuilder();
+                        for (int j = 0; j < tArr.length(); j++) {
+                            if (j > 0) sb.append(",");
+                            sb.append(tArr.optString(j));
+                        }
+                        typesCsv = sb.toString();
+                    }
+                }
+
+                JSONArray defaultPrefixesArr = new JSONArray("[\"tt\"]");
+                String idPrefixesCsv = "tt";
+                if (manifest.has("idPrefixes")) {
+                    JSONArray pArr = manifest.optJSONArray("idPrefixes");
+                    if (pArr != null && pArr.length() > 0) {
+                        defaultPrefixesArr = pArr;
+                        StringBuilder sb = new StringBuilder();
+                        for (int j = 0; j < pArr.length(); j++) {
+                            if (j > 0) sb.append(",");
+                            sb.append(pArr.optString(j));
+                        }
+                        idPrefixesCsv = sb.toString();
+                    }
+                }
+
+                // 1. Normalize catalogs to valid AddonCatalogDef JSONObjects
+                JSONArray normCatalogs = new JSONArray();
+                if (manifest.has("catalogs")) {
+                    Object cObj = manifest.opt("catalogs");
+                    if (cObj instanceof JSONArray) {
+                        JSONArray cArr = (JSONArray) cObj;
+                        for (int ci = 0; ci < cArr.length(); ci++) {
+                            Object cItem = cArr.opt(ci);
+                            if (cItem instanceof JSONObject) {
+                                JSONObject cDef = (JSONObject) cItem;
+                                String cId = cDef.optString("id", "").trim();
+                                String cType = cDef.optString("type", "").trim();
+                                if (!cId.isEmpty()) {
+                                    if (cType.isEmpty()) cDef.put("type", "movie");
+                                    if (!cDef.has("name") || cDef.optString("name", "").isEmpty()) {
+                                        cDef.put("name", cId);
+                                    }
+                                    if (!cDef.has("extra") || !(cDef.opt("extra") instanceof JSONArray)) {
+                                        cDef.put("extra", new JSONArray("[]"));
+                                    }
+                                    if (!cDef.has("extraSupported") || !(cDef.opt("extraSupported") instanceof JSONArray)) {
+                                        cDef.put("extraSupported", new JSONArray("[]"));
+                                    }
+                                    if (!cDef.has("extraRequired") || !(cDef.opt("extraRequired") instanceof JSONArray)) {
+                                        cDef.put("extraRequired", new JSONArray("[]"));
+                                    }
+                                    normCatalogs.put(cDef);
+                                }
+                            }
+                        }
+                    }
+                }
+                String catalogsJson = normCatalogs.toString();
+
+                // 2. Normalize resources to valid AddonResourceDef JSONObjects
+                // Prevents ClassCastException: String cannot be cast to AddonResourceDef
+                JSONArray normResources = new JSONArray();
+                if (manifest.has("resources")) {
+                    Object rObj = manifest.opt("resources");
+                    if (rObj instanceof JSONArray) {
+                        JSONArray rArr = (JSONArray) rObj;
+                        for (int ri = 0; ri < rArr.length(); ri++) {
+                            Object rItem = rArr.opt(ri);
+                            if (rItem instanceof String) {
+                                String rName = (String) rItem;
+                                if (!rName.trim().isEmpty()) {
+                                    JSONObject rDef = new JSONObject();
+                                    rDef.put("name", rName.trim());
+                                    rDef.put("types", defaultTypesArr);
+                                    rDef.put("idPrefixes", defaultPrefixesArr);
+                                    normResources.put(rDef);
+                                }
+                            } else if (rItem instanceof JSONObject) {
+                                JSONObject rDef = (JSONObject) rItem;
+                                String rName = rDef.optString("name", "").trim();
+                                if (!rName.isEmpty()) {
+                                    if (!rDef.has("types") || !(rDef.opt("types") instanceof JSONArray)) {
+                                        rDef.put("types", defaultTypesArr);
+                                    }
+                                    if (!rDef.has("idPrefixes") || !(rDef.opt("idPrefixes") instanceof JSONArray)) {
+                                        rDef.put("idPrefixes", defaultPrefixesArr);
+                                    }
+                                    normResources.put(rDef);
+                                }
+                            }
+                        }
+                    }
+                }
+                if (normResources.length() == 0) {
+                    normResources = new JSONArray("[{\"name\":\"catalog\",\"types\":[\"movie\",\"series\"],\"idPrefixes\":[\"tt\"]},{\"name\":\"meta\",\"types\":[\"movie\",\"series\"],\"idPrefixes\":[\"tt\"]},{\"name\":\"stream\",\"types\":[\"movie\",\"series\"],\"idPrefixes\":[\"tt\"]}]");
+                }
+                String resourcesJson = normResources.toString();
+
+                ContentValues cv = new ContentValues();
+                cv.put("baseUrl", baseUrl);
+                cv.put("id", id);
+                cv.put("name", name);
+                cv.put("version", version);
+                cv.put("description", description);
+                cv.put("typesCsv", typesCsv);
+                cv.put("catalogsJson", catalogsJson);
+                cv.put("resourcesJson", resourcesJson);
+                cv.put("idPrefixesCsv", idPrefixesCsv);
+                if (!logoUrl.isEmpty()) {
+                    cv.put("logoUrl", logoUrl);
+                } else {
+                    cv.putNull("logoUrl");
+                }
+                cv.put("sortOrder", installed);
+
+                itemsToInsert.add(cv);
+                installed++;
+            } catch (Throwable ignored) {}
+        }
+
+        if (itemsToInsert.isEmpty()) return 0;
+
         File dbFile = context.getDatabasePath("streamsync.db");
         if (!dbFile.getParentFile().exists()) {
             dbFile.getParentFile().mkdirs();
         }
-        if (urls == null || urls.isEmpty()) return 0;
 
         ensureRoomDatabase(context);
 
-        SQLiteDatabase db = SQLiteDatabase.openDatabase(dbFile.getAbsolutePath(), null, SQLiteDatabase.OPEN_READWRITE | SQLiteDatabase.CREATE_IF_NECESSARY);
         try {
-            db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-            db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4201b4cf7d52e2b03ff5e210c14b7a60')");
-            db.execSQL("PRAGMA user_version = 7");
+            SQLiteDatabase db = SQLiteDatabase.openDatabase(dbFile.getAbsolutePath(), null, SQLiteDatabase.OPEN_READWRITE | SQLiteDatabase.ENABLE_WRITE_AHEAD_LOGGING);
+            try {
+                db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
+                db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4201b4cf7d52e2b03ff5e210c14b7a60')");
+                db.execSQL("PRAGMA user_version = 7");
+                db.execSQL("CREATE TABLE IF NOT EXISTS `installed_addons` (`baseUrl` TEXT NOT NULL, `id` TEXT NOT NULL, `name` TEXT NOT NULL, `version` TEXT NOT NULL, `description` TEXT, `typesCsv` TEXT NOT NULL, `catalogsJson` TEXT NOT NULL, `resourcesJson` TEXT NOT NULL, `idPrefixesCsv` TEXT NOT NULL, `logoUrl` TEXT, `sortOrder` INTEGER NOT NULL, PRIMARY KEY(`baseUrl`));");
 
-            db.execSQL("CREATE TABLE IF NOT EXISTS `installed_addons` (`baseUrl` TEXT NOT NULL, `id` TEXT NOT NULL, `name` TEXT NOT NULL, `version` TEXT NOT NULL, `description` TEXT, `typesCsv` TEXT NOT NULL, `catalogsJson` TEXT NOT NULL, `resourcesJson` TEXT NOT NULL, `idPrefixesCsv` TEXT NOT NULL, `logoUrl` TEXT, `sortOrder` INTEGER NOT NULL, PRIMARY KEY(`baseUrl`));");
-
-            db.beginTransaction();
-            for (String rawUrl : urls) {
+                db.beginTransaction();
                 try {
-                    String manifestUrl = rawUrl.trim();
-                    if (manifestUrl.isEmpty()) continue;
-
-                    String fetchUrl = manifestUrl.endsWith("/manifest.json") ? manifestUrl : (manifestUrl.replaceAll("/+$", "") + "/manifest.json");
-                    String baseUrl = fetchUrl;
-                    int mIdx = baseUrl.indexOf("/manifest.json");
-                    if (mIdx != -1) {
-                        baseUrl = baseUrl.substring(0, mIdx);
+                    for (ContentValues cv : itemsToInsert) {
+                        db.insertWithOnConflict("installed_addons", null, cv, SQLiteDatabase.CONFLICT_REPLACE);
                     }
-                    baseUrl = baseUrl.replaceAll("/+$", "");
-
-                    JSONObject manifest = null;
-                    try {
-                        URL u = new URL(fetchUrl);
-                        HttpURLConnection conn = (HttpURLConnection) u.openConnection();
-                        conn.setRequestMethod("GET");
-                        conn.setRequestProperty("User-Agent", "Mozilla/5.0 StreamSync");
-                        conn.setConnectTimeout(8000);
-                        conn.setReadTimeout(8000);
-                        if (conn.getResponseCode() == 200) {
-                            String jsonStr = readStream(conn.getInputStream());
-                            manifest = new JSONObject(jsonStr);
-                        }
-                    } catch (Throwable ignored) {}
-
-                    if (manifest == null) {
-                        manifest = getDefaultManifestFallback(baseUrl);
-                    }
-
-                    if (manifest == null) continue;
-
-                    String id = manifest.optString("id", "");
-                    if (id.isEmpty()) continue;
-
-                    String name = manifest.optString("name", id);
-                    String version = manifest.optString("version", "1.0.0");
-                    String description = manifest.optString("description", "");
-                    String logoUrl = manifest.optString("logo", manifest.optString("icon", ""));
-
-                    String typesCsv = "movie,series";
-                    JSONArray defaultTypesArr = new JSONArray("[\"movie\",\"series\"]");
-                    if (manifest.has("types")) {
-                        JSONArray tArr = manifest.optJSONArray("types");
-                        if (tArr != null && tArr.length() > 0) {
-                            defaultTypesArr = tArr;
-                            StringBuilder sb = new StringBuilder();
-                            for (int j = 0; j < tArr.length(); j++) {
-                                if (j > 0) sb.append(",");
-                                sb.append(tArr.optString(j));
-                            }
-                            typesCsv = sb.toString();
-                        }
-                    }
-
-                    JSONArray defaultPrefixesArr = new JSONArray("[\"tt\"]");
-                    String idPrefixesCsv = "tt";
-                    if (manifest.has("idPrefixes")) {
-                        JSONArray pArr = manifest.optJSONArray("idPrefixes");
-                        if (pArr != null && pArr.length() > 0) {
-                            defaultPrefixesArr = pArr;
-                            StringBuilder sb = new StringBuilder();
-                            for (int j = 0; j < pArr.length(); j++) {
-                                if (j > 0) sb.append(",");
-                                sb.append(pArr.optString(j));
-                            }
-                            idPrefixesCsv = sb.toString();
-                        }
-                    }
-
-                    // 1. Normalize catalogs to valid AddonCatalogDef JSONObjects
-                    JSONArray normCatalogs = new JSONArray();
-                    if (manifest.has("catalogs")) {
-                        Object cObj = manifest.opt("catalogs");
-                        if (cObj instanceof JSONArray) {
-                            JSONArray cArr = (JSONArray) cObj;
-                            for (int ci = 0; ci < cArr.length(); ci++) {
-                                Object cItem = cArr.opt(ci);
-                                if (cItem instanceof JSONObject) {
-                                    JSONObject cDef = (JSONObject) cItem;
-                                    String cId = cDef.optString("id", "").trim();
-                                    String cType = cDef.optString("type", "").trim();
-                                    if (!cId.isEmpty()) {
-                                        if (cType.isEmpty()) cDef.put("type", "movie");
-                                        if (!cDef.has("name") || cDef.optString("name", "").isEmpty()) {
-                                            cDef.put("name", cId);
-                                        }
-                                        if (!cDef.has("extra") || !(cDef.opt("extra") instanceof JSONArray)) {
-                                            cDef.put("extra", new JSONArray("[]"));
-                                        }
-                                        if (!cDef.has("extraSupported") || !(cDef.opt("extraSupported") instanceof JSONArray)) {
-                                            cDef.put("extraSupported", new JSONArray("[]"));
-                                        }
-                                        if (!cDef.has("extraRequired") || !(cDef.opt("extraRequired") instanceof JSONArray)) {
-                                            cDef.put("extraRequired", new JSONArray("[]"));
-                                        }
-                                        normCatalogs.put(cDef);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    String catalogsJson = normCatalogs.toString();
-
-                    // 2. Normalize resources to valid AddonResourceDef JSONObjects
-                    // Prevents ClassCastException: String cannot be cast to AddonResourceDef
-                    JSONArray normResources = new JSONArray();
-                    if (manifest.has("resources")) {
-                        Object rObj = manifest.opt("resources");
-                        if (rObj instanceof JSONArray) {
-                            JSONArray rArr = (JSONArray) rObj;
-                            for (int ri = 0; ri < rArr.length(); ri++) {
-                                Object rItem = rArr.opt(ri);
-                                if (rItem instanceof String) {
-                                    String rName = (String) rItem;
-                                    if (!rName.trim().isEmpty()) {
-                                        JSONObject rDef = new JSONObject();
-                                        rDef.put("name", rName.trim());
-                                        rDef.put("types", defaultTypesArr);
-                                        rDef.put("idPrefixes", defaultPrefixesArr);
-                                        normResources.put(rDef);
-                                    }
-                                } else if (rItem instanceof JSONObject) {
-                                    JSONObject rDef = (JSONObject) rItem;
-                                    String rName = rDef.optString("name", "").trim();
-                                    if (!rName.isEmpty()) {
-                                        if (!rDef.has("types") || !(rDef.opt("types") instanceof JSONArray)) {
-                                            rDef.put("types", defaultTypesArr);
-                                        }
-                                        if (!rDef.has("idPrefixes") || !(rDef.opt("idPrefixes") instanceof JSONArray)) {
-                                            rDef.put("idPrefixes", defaultPrefixesArr);
-                                        }
-                                        normResources.put(rDef);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (normResources.length() == 0) {
-                        normResources = new JSONArray("[{\"name\":\"catalog\",\"types\":[\"movie\",\"series\"],\"idPrefixes\":[\"tt\"]},{\"name\":\"meta\",\"types\":[\"movie\",\"series\"],\"idPrefixes\":[\"tt\"]},{\"name\":\"stream\",\"types\":[\"movie\",\"series\"],\"idPrefixes\":[\"tt\"]}]");
-                    }
-                    String resourcesJson = normResources.toString();
-
-                    ContentValues cv = new ContentValues();
-                    cv.put("baseUrl", baseUrl);
-                    cv.put("id", id);
-                    cv.put("name", name);
-                    cv.put("version", version);
-                    cv.put("description", description);
-                    cv.put("typesCsv", typesCsv);
-                    cv.put("catalogsJson", catalogsJson);
-                    cv.put("resourcesJson", resourcesJson);
-                    cv.put("idPrefixesCsv", idPrefixesCsv);
-                    if (!logoUrl.isEmpty()) {
-                        cv.put("logoUrl", logoUrl);
-                    } else {
-                        cv.putNull("logoUrl");
-                    }
-                    cv.put("sortOrder", installed);
-
-                    db.insertWithOnConflict("installed_addons", null, cv, SQLiteDatabase.CONFLICT_REPLACE);
-                    installed++;
-                } catch (Throwable ignored) {}
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+            } finally {
+                db.close();
             }
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-            db.close();
-        }
+        } catch (Throwable ignored) {}
         return installed;
     }
 
