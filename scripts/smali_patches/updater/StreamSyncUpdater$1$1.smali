@@ -83,8 +83,7 @@
 
     const/4 v4, 0x0
 
-    # invokes: Lcom/streamsync/app/updater/StreamSyncUpdater;->showUpdatePrompt(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V
-    invoke-static {v0, v1, v2, v3, v4}, Lcom/streamsync/app/updater/StreamSyncUpdater;->access$300(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V
+    invoke-static {v0, v1, v2, v3, v4}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$smshowUpdatePrompt(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V
 
     .line 135
     return-void

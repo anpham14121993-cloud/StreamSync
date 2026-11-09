@@ -30,7 +30,7 @@
         }
     .end annotation
 
-    .line 220
+    .line 246
     iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$context:Landroid/content/Context;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
@@ -43,7 +43,7 @@
 .method public onError(Ljava/lang/String;)V
     .registers 5
 
-    .line 391
+    .line 428
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$context:Landroid/content/Context;
 
     new-instance v1, Ljava/lang/StringBuilder;
@@ -72,19 +72,41 @@
 
     invoke-virtual {p1}, Landroid/widget/Toast;->show()V
 
-    .line 392
+    .line 429
+    iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$context:Landroid/content/Context;
+
+    invoke-static {p1}, Lcom/streamsync/app/auth/SupabaseAccountManager;->isActivityValid(Landroid/content/Context;)Z
+
+    move-result p1
+
+    if-eqz p1, :cond_2a
+
+    .line 430
     iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$context:Landroid/content/Context;
 
     invoke-static {p1}, Lcom/streamsync/app/auth/SupabaseAccountManager;->-$$Nest$smshowLoginDialog(Landroid/content/Context;)V
 
-    .line 393
+    .line 432
+    :cond_2a
     return-void
 .end method
 
 .method public onSuccess(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V
     .registers 14
 
-    .line 223
+    .line 249
+    iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$context:Landroid/content/Context;
+
+    invoke-static {v0}, Lcom/streamsync/app/auth/SupabaseAccountManager;->isActivityValid(Landroid/content/Context;)Z
+
+    move-result v0
+
+    if-nez v0, :cond_9
+
+    return-void
+
+    .line 250
+    :cond_9
     const/4 v0, 0x1
 
     new-array v4, v0, [Z
@@ -93,56 +115,56 @@
 
     aput-boolean v1, v4, v1
 
-    .line 225
+    .line 252
     new-instance v1, Landroid/widget/ScrollView;
 
     iget-object v2, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$context:Landroid/content/Context;
 
     invoke-direct {v1, v2}, Landroid/widget/ScrollView;-><init>(Landroid/content/Context;)V
 
-    .line 226
+    .line 253
     new-instance v2, Landroid/widget/LinearLayout;
 
     iget-object v3, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$context:Landroid/content/Context;
 
     invoke-direct {v2, v3}, Landroid/widget/LinearLayout;-><init>(Landroid/content/Context;)V
 
-    .line 227
+    .line 254
     invoke-virtual {v2, v0}, Landroid/widget/LinearLayout;->setOrientation(I)V
 
-    .line 228
+    .line 255
     const/16 v3, 0x28
 
     const/16 v5, 0x20
 
     invoke-virtual {v2, v3, v5, v3, v5}, Landroid/widget/LinearLayout;->setPadding(IIII)V
 
-    .line 229
+    .line 256
     invoke-virtual {v2, v0}, Landroid/widget/LinearLayout;->setGravity(I)V
 
-    .line 231
+    .line 258
     new-instance v3, Landroid/widget/TextView;
 
     iget-object v5, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$context:Landroid/content/Context;
 
     invoke-direct {v3, v5}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
 
-    .line 232
+    .line 259
     const-string v5, "LI\u00caN K\u1ebeT THI\u1ebeT B\u1eca NUVIO"
 
     invoke-virtual {v3, v5}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
 
-    .line 233
+    .line 260
     const/high16 v5, 0x41900000    # 18.0f
 
     invoke-virtual {v3, v5}, Landroid/widget/TextView;->setTextSize(F)V
 
-    .line 234
+    .line 261
     const/4 v5, 0x0
 
     invoke-virtual {v3, v5, v0}, Landroid/widget/TextView;->setTypeface(Landroid/graphics/Typeface;I)V
 
-    .line 235
+    .line 262
     const-string v5, "#4CAF50"
 
     invoke-static {v5}, Landroid/graphics/Color;->parseColor(Ljava/lang/String;)I
@@ -151,63 +173,63 @@
 
     invoke-virtual {v3, v5}, Landroid/widget/TextView;->setTextColor(I)V
 
-    .line 236
+    .line 263
     const/16 v5, 0x11
 
     invoke-virtual {v3, v5}, Landroid/widget/TextView;->setGravity(I)V
 
-    .line 237
+    .line 264
     invoke-virtual {v2, v3}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
 
-    .line 239
+    .line 266
     new-instance v3, Landroid/widget/TextView;
 
     iget-object v6, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$context:Landroid/content/Context;
 
     invoke-direct {v3, v6}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
 
-    .line 240
+    .line 267
     const-string v6, "\n1. Qu\u00e9t m\u00e3 QR b\u00ean d\u01b0\u1edbi ho\u1eb7c truy c\u1eadp: nuvio.tv/link\n2. Nh\u1eadp m\u00e3 li\u00ean k\u1ebft \u0111\u1ec3 ho\u00e0n t\u1ea5t \u0111\u0103ng nh\u1eadp:\n"
 
     invoke-virtual {v3, v6}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
 
-    .line 241
+    .line 268
     const/high16 v6, 0x41500000    # 13.0f
 
     invoke-virtual {v3, v6}, Landroid/widget/TextView;->setTextSize(F)V
 
-    .line 242
+    .line 269
     const v6, -0x333334
 
     invoke-virtual {v3, v6}, Landroid/widget/TextView;->setTextColor(I)V
 
-    .line 243
+    .line 270
     invoke-virtual {v3, v5}, Landroid/widget/TextView;->setGravity(I)V
 
-    .line 244
+    .line 271
     invoke-virtual {v2, v3}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
 
-    .line 247
+    .line 274
     new-instance v3, Landroid/widget/TextView;
 
     iget-object v6, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$context:Landroid/content/Context;
 
     invoke-direct {v3, v6}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
 
-    .line 248
+    .line 275
     invoke-virtual {v3, p1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
 
-    .line 249
+    .line 276
     const/high16 p1, 0x41e00000    # 28.0f
 
     invoke-virtual {v3, p1}, Landroid/widget/TextView;->setTextSize(F)V
 
-    .line 250
+    .line 277
     sget-object p1, Landroid/graphics/Typeface;->MONOSPACE:Landroid/graphics/Typeface;
 
     invoke-virtual {v3, p1, v0}, Landroid/widget/TextView;->setTypeface(Landroid/graphics/Typeface;I)V
 
-    .line 251
+    .line 278
     const-string p1, "#FFD54F"
 
     invoke-static {p1}, Landroid/graphics/Color;->parseColor(Ljava/lang/String;)I
@@ -216,10 +238,10 @@
 
     invoke-virtual {v3, p1}, Landroid/widget/TextView;->setTextColor(I)V
 
-    .line 252
+    .line 279
     invoke-virtual {v3, v5}, Landroid/widget/TextView;->setGravity(I)V
 
-    .line 253
+    .line 280
     const-string p1, "#263238"
 
     invoke-static {p1}, Landroid/graphics/Color;->parseColor(Ljava/lang/String;)I
@@ -228,63 +250,63 @@
 
     invoke-virtual {v3, p1}, Landroid/widget/TextView;->setBackgroundColor(I)V
 
-    .line 254
-    const/16 p1, 0x10
+    .line 281
+    const/16 p1, 0x18
 
-    const/16 v5, 0x18
+    const/16 v5, 0x10
 
-    invoke-virtual {v3, v5, p1, v5, p1}, Landroid/widget/TextView;->setPadding(IIII)V
+    invoke-virtual {v3, p1, v5, p1, v5}, Landroid/widget/TextView;->setPadding(IIII)V
 
-    .line 255
+    .line 282
     invoke-virtual {v2, v3}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
 
-    .line 258
-    new-instance p1, Landroid/widget/ImageView;
+    .line 285
+    new-instance v3, Landroid/widget/ImageView;
 
-    iget-object v3, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$context:Landroid/content/Context;
+    iget-object v5, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$context:Landroid/content/Context;
 
-    invoke-direct {p1, v3}, Landroid/widget/ImageView;-><init>(Landroid/content/Context;)V
+    invoke-direct {v3, v5}, Landroid/widget/ImageView;-><init>(Landroid/content/Context;)V
 
-    .line 259
-    new-instance v3, Landroid/widget/LinearLayout$LayoutParams;
+    .line 286
+    new-instance v5, Landroid/widget/LinearLayout$LayoutParams;
 
     const/16 v6, 0x190
 
-    invoke-direct {v3, v6, v6}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
+    invoke-direct {v5, v6, v6}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
 
-    .line 260
-    iput v0, v3, Landroid/widget/LinearLayout$LayoutParams;->gravity:I
+    .line 287
+    iput v0, v5, Landroid/widget/LinearLayout$LayoutParams;->gravity:I
 
-    .line 261
-    iput v5, v3, Landroid/widget/LinearLayout$LayoutParams;->topMargin:I
+    .line 288
+    iput p1, v5, Landroid/widget/LinearLayout$LayoutParams;->topMargin:I
 
-    .line 262
-    iput v5, v3, Landroid/widget/LinearLayout$LayoutParams;->bottomMargin:I
+    .line 289
+    iput p1, v5, Landroid/widget/LinearLayout$LayoutParams;->bottomMargin:I
 
-    .line 263
-    invoke-virtual {p1, v3}, Landroid/widget/ImageView;->setLayoutParams(Landroid/view/ViewGroup$LayoutParams;)V
+    .line 290
+    invoke-virtual {v3, v5}, Landroid/widget/ImageView;->setLayoutParams(Landroid/view/ViewGroup$LayoutParams;)V
 
-    .line 264
-    const/4 v0, -0x1
+    .line 291
+    const/4 p1, -0x1
 
-    invoke-virtual {p1, v0}, Landroid/widget/ImageView;->setBackgroundColor(I)V
-
-    .line 265
-    invoke-virtual {v2, p1}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
-
-    .line 268
-    new-instance v0, Ljava/lang/Thread;
-
-    new-instance v3, Lcom/streamsync/app/auth/SupabaseAccountManager$4$1;
-
-    invoke-direct {v3, p0, p3, v4, p1}, Lcom/streamsync/app/auth/SupabaseAccountManager$4$1;-><init>(Lcom/streamsync/app/auth/SupabaseAccountManager$4;Ljava/lang/String;[ZLandroid/widget/ImageView;)V
-
-    invoke-direct {v0, v3}, Ljava/lang/Thread;-><init>(Ljava/lang/Runnable;)V
+    invoke-virtual {v3, p1}, Landroid/widget/ImageView;->setBackgroundColor(I)V
 
     .line 292
-    invoke-virtual {v0}, Ljava/lang/Thread;->start()V
+    invoke-virtual {v2, v3}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
 
     .line 295
+    new-instance p1, Ljava/lang/Thread;
+
+    new-instance v0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$1;
+
+    invoke-direct {v0, p0, p3, v4, v3}, Lcom/streamsync/app/auth/SupabaseAccountManager$4$1;-><init>(Lcom/streamsync/app/auth/SupabaseAccountManager$4;Ljava/lang/String;[ZLandroid/widget/ImageView;)V
+
+    invoke-direct {p1, v0}, Ljava/lang/Thread;-><init>(Ljava/lang/Runnable;)V
+
+    .line 319
+    invoke-virtual {p1}, Ljava/lang/Thread;->start()V
+
+    .line 322
     iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$context:Landroid/content/Context;
 
     const-string v0, "M\u1edf tr\u00ecnh duy\u1ec7t (nuvio.tv/link)"
@@ -295,20 +317,20 @@
 
     move-result-object p1
 
-    .line 296
+    .line 323
     new-instance v0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$2;
 
     invoke-direct {v0, p0, p3}, Lcom/streamsync/app/auth/SupabaseAccountManager$4$2;-><init>(Lcom/streamsync/app/auth/SupabaseAccountManager$4;Ljava/lang/String;)V
 
     invoke-virtual {p1, v0}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
 
-    .line 308
+    .line 335
     invoke-virtual {v2, p1}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
 
-    .line 310
+    .line 337
     invoke-virtual {v1, v2}, Landroid/widget/ScrollView;->addView(Landroid/view/View;)V
 
-    .line 312
+    .line 339
     new-instance p1, Landroid/app/AlertDialog$Builder;
 
     iget-object p3, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$context:Landroid/content/Context;
@@ -317,10 +339,10 @@
 
     invoke-direct {p1, p3, v0}, Landroid/app/AlertDialog$Builder;-><init>(Landroid/content/Context;I)V
 
-    .line 313
+    .line 340
     invoke-virtual {p1, v1}, Landroid/app/AlertDialog$Builder;->setView(Landroid/view/View;)Landroid/app/AlertDialog$Builder;
 
-    .line 314
+    .line 341
     new-instance p3, Lcom/streamsync/app/auth/SupabaseAccountManager$4$3;
 
     invoke-direct {p3, p0, v4}, Lcom/streamsync/app/auth/SupabaseAccountManager$4$3;-><init>(Lcom/streamsync/app/auth/SupabaseAccountManager$4;[Z)V
@@ -329,19 +351,19 @@
 
     invoke-virtual {p1, v0, p3}, Landroid/app/AlertDialog$Builder;->setNegativeButton(Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
 
-    .line 320
+    .line 347
     new-instance p3, Lcom/streamsync/app/auth/SupabaseAccountManager$4$4;
 
     invoke-direct {p3, p0, v4}, Lcom/streamsync/app/auth/SupabaseAccountManager$4$4;-><init>(Lcom/streamsync/app/auth/SupabaseAccountManager$4;[Z)V
 
     invoke-virtual {p1, p3}, Landroid/app/AlertDialog$Builder;->setOnCancelListener(Landroid/content/DialogInterface$OnCancelListener;)Landroid/app/AlertDialog$Builder;
 
-    .line 326
+    .line 353
     invoke-virtual {p1}, Landroid/app/AlertDialog$Builder;->create()Landroid/app/AlertDialog;
 
     move-result-object p1
 
-    .line 329
+    .line 356
     new-instance p3, Ljava/lang/Thread;
 
     new-instance v0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$5;
@@ -362,12 +384,22 @@
 
     invoke-direct {p3, v0}, Ljava/lang/Thread;-><init>(Ljava/lang/Runnable;)V
 
-    .line 384
+    .line 419
     invoke-virtual {p3}, Ljava/lang/Thread;->start()V
 
-    .line 386
+    .line 421
+    iget-object p2, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$context:Landroid/content/Context;
+
+    invoke-static {p2}, Lcom/streamsync/app/auth/SupabaseAccountManager;->isActivityValid(Landroid/content/Context;)Z
+
+    move-result p2
+
+    if-eqz p2, :cond_122
+
+    .line 422
     invoke-virtual {p1}, Landroid/app/AlertDialog;->show()V
 
-    .line 387
+    .line 424
+    :cond_122
     return-void
 .end method

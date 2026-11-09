@@ -1,5 +1,6 @@
 package com.streamsync.app.auth;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -32,6 +33,15 @@ public class SupabaseAccountManager {
 
     private static final String PREFS_NAME = "nuvio_supabase_auth";
 
+    public static boolean isActivityValid(Context context) {
+        if (context == null) return false;
+        if (context instanceof Activity) {
+            Activity a = (Activity) context;
+            return !a.isFinishing() && !a.isDestroyed();
+        }
+        return true;
+    }
+
     public static boolean isLoggedIn(Context context) {
         if (context == null) return false;
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
@@ -41,7 +51,7 @@ public class SupabaseAccountManager {
     }
 
     public static void show(final Context context) {
-        if (context == null) return;
+        if (!isActivityValid(context)) return;
         if (isLoggedIn(context)) {
             showLoggedInDialog(context);
         } else {
@@ -50,10 +60,9 @@ public class SupabaseAccountManager {
     }
 
     private static void showLoggedInDialog(final Context context) {
+        if (!isActivityValid(context)) return;
         final SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         String email = prefs.getString("auth_email", "Tài khoản Nuvio");
-        int syncedAddons = prefs.getInt("synced_addons", 0);
-        int syncedProgress = prefs.getInt("synced_progress", 0);
 
         ScrollView scrollView = new ScrollView(context);
         LinearLayout layout = new LinearLayout(context);
@@ -91,19 +100,20 @@ public class SupabaseAccountManager {
             public void onClick(View v) {
                 prefs.edit().clear().apply();
                 Toast.makeText(context, "Đã đăng xuất tài khoản", Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
+                try {
+                    dialog.dismiss();
+                } catch (Throwable ignored) {}
                 showLoginDialog(context);
             }
         });
 
-        if (syncedAddons == 0 && syncedProgress == 0) {
-            SupabaseSyncService.syncLive(context, null);
+        if (isActivityValid(context)) {
+            dialog.show();
         }
-
-        dialog.show();
     }
 
     private static void showLoginDialog(final Context context) {
+        if (!isActivityValid(context)) return;
         final SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         String savedEmail = prefs.getString("auth_email", "");
 
@@ -138,6 +148,8 @@ public class SupabaseAccountManager {
         etEmail.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
         etEmail.setTextColor(Color.WHITE);
         etEmail.setSingleLine(true);
+        etEmail.setFocusable(true);
+        etEmail.setFocusableInTouchMode(true);
         layout.addView(etEmail);
 
         TextView lblPass = new TextView(context);
@@ -150,6 +162,8 @@ public class SupabaseAccountManager {
         etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         etPassword.setTextColor(Color.WHITE);
         etPassword.setSingleLine(true);
+        etPassword.setFocusable(true);
+        etPassword.setFocusableInTouchMode(true);
         layout.addView(etPassword);
 
         Button btnLogin = createStyledButton(context, "ĐĂNG NHẬP", "#4CAF50");
@@ -180,17 +194,24 @@ public class SupabaseAccountManager {
                 SupabaseSyncService.login(context, SupabaseSyncService.DEFAULT_SERVER_URL, email, pass, new SupabaseSyncService.AuthCallback() {
                     @Override
                     public void onSuccess(String email, String token) {
-                        dialog.dismiss();
+                        try {
+                            dialog.dismiss();
+                        } catch (Throwable ignored) {}
+
                         // Automatically sync silently upon login
                         SupabaseSyncService.syncLive(context, new SupabaseSyncService.SyncCallback() {
                             @Override
                             public void onSuccess(int addonsCount, int progressCount) {
-                                showLoggedInDialog(context);
+                                if (isActivityValid(context)) {
+                                    showLoggedInDialog(context);
+                                }
                             }
 
                             @Override
                             public void onError(String message) {
-                                showLoggedInDialog(context);
+                                if (isActivityValid(context)) {
+                                    showLoggedInDialog(context);
+                                }
                             }
                         });
                     }
@@ -206,20 +227,26 @@ public class SupabaseAccountManager {
         btnQrLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.dismiss();
+                try {
+                    dialog.dismiss();
+                } catch (Throwable ignored) {}
                 showDeviceLinkDialog(context);
             }
         });
 
-        dialog.show();
+        if (isActivityValid(context)) {
+            dialog.show();
+        }
     }
 
     private static void showDeviceLinkDialog(final Context context) {
+        if (!isActivityValid(context)) return;
         Toast.makeText(context, "Đang khởi tạo liên kết thiết bị...", Toast.LENGTH_SHORT).show();
 
         SupabaseSyncService.startDeviceLink(context, new SupabaseSyncService.DeviceLinkStartCallback() {
             @Override
             public void onSuccess(final String userCode, final String deviceCode, final String verificationUrl, final String nonce, final int pollInterval) {
+                if (!isActivityValid(context)) return;
                 final boolean[] isCancelled = new boolean[]{false};
 
                 ScrollView scrollView = new ScrollView(context);
@@ -281,7 +308,7 @@ public class SupabaseAccountManager {
                                 SupabaseSyncService.runOnMain(new Runnable() {
                                     @Override
                                     public void run() {
-                                        if (!isCancelled[0] && bmp != null) {
+                                        if (!isCancelled[0] && bmp != null && isActivityValid(context)) {
                                             ivQr.setImageBitmap(bmp);
                                         }
                                     }
@@ -337,7 +364,7 @@ public class SupabaseAccountManager {
                             } catch (InterruptedException e) {
                                 break;
                             }
-                            if (isCancelled[0]) break;
+                            if (isCancelled[0] || !isActivityValid(context)) break;
 
                             attempts++;
                             String status = SupabaseSyncService.pollDeviceStatus(deviceCode, nonce);
@@ -347,19 +374,25 @@ public class SupabaseAccountManager {
                                     SupabaseSyncService.runOnMain(new Runnable() {
                                         @Override
                                         public void run() {
-                                            if (!isCancelled[0]) {
-                                                qrDialog.dismiss();
+                                            if (!isCancelled[0] && isActivityValid(context)) {
+                                                try {
+                                                    qrDialog.dismiss();
+                                                } catch (Throwable ignored) {}
                                                 Toast.makeText(context, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
                                                 // Trigger auto sync
                                                 SupabaseSyncService.syncLive(context, new SupabaseSyncService.SyncCallback() {
                                                     @Override
                                                     public void onSuccess(int addonsCount, int progressCount) {
-                                                        showLoggedInDialog(context);
+                                                        if (isActivityValid(context)) {
+                                                            showLoggedInDialog(context);
+                                                        }
                                                     }
 
                                                     @Override
                                                     public void onError(String message) {
-                                                        showLoggedInDialog(context);
+                                                        if (isActivityValid(context)) {
+                                                            showLoggedInDialog(context);
+                                                        }
                                                     }
                                                 });
                                             }
@@ -371,8 +404,10 @@ public class SupabaseAccountManager {
                                 SupabaseSyncService.runOnMain(new Runnable() {
                                     @Override
                                     public void run() {
-                                        if (!isCancelled[0]) {
-                                            qrDialog.dismiss();
+                                        if (!isCancelled[0] && isActivityValid(context)) {
+                                            try {
+                                                qrDialog.dismiss();
+                                            } catch (Throwable ignored) {}
                                             Toast.makeText(context, "Mã liên kết đã hết hạn", Toast.LENGTH_SHORT).show();
                                         }
                                     }
@@ -383,13 +418,17 @@ public class SupabaseAccountManager {
                     }
                 }).start();
 
-                qrDialog.show();
+                if (isActivityValid(context)) {
+                    qrDialog.show();
+                }
             }
 
             @Override
             public void onError(String message) {
                 Toast.makeText(context, "Lỗi tạo phiên liên kết: " + message, Toast.LENGTH_LONG).show();
-                showLoginDialog(context);
+                if (isActivityValid(context)) {
+                    showLoginDialog(context);
+                }
             }
         });
     }
@@ -400,6 +439,8 @@ public class SupabaseAccountManager {
         btn.setTextColor(Color.WHITE);
         btn.setTextSize(13);
         btn.setBackgroundColor(Color.parseColor(hexColor));
+        btn.setFocusable(true);
+        btn.setFocusableInTouchMode(true);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT

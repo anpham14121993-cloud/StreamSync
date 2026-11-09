@@ -34,7 +34,7 @@
         }
     .end annotation
 
-    .line 89
+    .line 98
     iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$1;->val$prefs:Landroid/content/SharedPreferences;
 
     iput-object p2, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$1;->val$context:Landroid/content/Context;
@@ -51,7 +51,7 @@
 .method public onClick(Landroid/view/View;)V
     .registers 4
 
-    .line 92
+    .line 101
     iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$1;->val$prefs:Landroid/content/SharedPreferences;
 
     invoke-interface {p1}, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
@@ -64,7 +64,7 @@
 
     invoke-interface {p1}, Landroid/content/SharedPreferences$Editor;->apply()V
 
-    .line 93
+    .line 102
     iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$1;->val$context:Landroid/content/Context;
 
     const-string v0, "\u0110\u00e3 \u0111\u0103ng xu\u1ea5t t\u00e0i kho\u1ea3n"
@@ -77,16 +77,28 @@
 
     invoke-virtual {p1}, Landroid/widget/Toast;->show()V
 
-    .line 94
+    .line 104
+    :try_start_19
     iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$1;->val$dialog:Landroid/app/AlertDialog;
 
     invoke-virtual {p1}, Landroid/app/AlertDialog;->dismiss()V
+    :try_end_1e
+    .catchall {:try_start_19 .. :try_end_1e} :catchall_1f
 
-    .line 95
+    goto :goto_20
+
+    .line 105
+    :catchall_1f
+    move-exception p1
+
+    :goto_20
+    nop
+
+    .line 106
     iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$1;->val$context:Landroid/content/Context;
 
     invoke-static {p1}, Lcom/streamsync/app/auth/SupabaseAccountManager;->-$$Nest$smshowLoginDialog(Landroid/content/Context;)V
 
-    .line 96
+    .line 107
     return-void
 .end method

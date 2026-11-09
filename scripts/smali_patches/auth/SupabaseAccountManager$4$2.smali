@@ -43,7 +43,7 @@
         }
     .end annotation
 
-    .line 296
+    .line 323
     iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$2;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$4;
 
     iput-object p2, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$2;->val$verificationUrl:Ljava/lang/String;
@@ -58,7 +58,7 @@
 .method public onClick(Landroid/view/View;)V
     .registers 5
 
-    .line 300
+    .line 327
     :try_start_0
     new-instance p1, Landroid/content/Intent;
 
@@ -72,12 +72,12 @@
 
     invoke-direct {p1, v0, v1}, Landroid/content/Intent;-><init>(Ljava/lang/String;Landroid/net/Uri;)V
 
-    .line 301
+    .line 328
     const/high16 v0, 0x10000000
 
     invoke-virtual {p1, v0}, Landroid/content/Intent;->addFlags(I)Landroid/content/Intent;
 
-    .line 302
+    .line 329
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$2;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$4;
 
     iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$context:Landroid/content/Context;
@@ -86,14 +86,14 @@
     :try_end_19
     .catchall {:try_start_0 .. :try_end_19} :catchall_1a
 
-    .line 305
+    .line 332
     goto :goto_3e
 
-    .line 303
+    .line 330
     :catchall_1a
     move-exception p1
 
-    .line 304
+    .line 331
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$2;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$4;
 
     iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$context:Landroid/content/Context;
@@ -128,7 +128,7 @@
 
     invoke-virtual {p1}, Landroid/widget/Toast;->show()V
 
-    .line 306
+    .line 333
     :goto_3e
     return-void
 .end method

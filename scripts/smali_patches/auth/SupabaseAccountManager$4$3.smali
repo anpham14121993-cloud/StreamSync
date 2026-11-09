@@ -41,7 +41,7 @@
         }
     .end annotation
 
-    .line 314
+    .line 341
     iput-object p2, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$3;->val$isCancelled:[Z
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
@@ -54,7 +54,7 @@
 .method public onClick(Landroid/content/DialogInterface;I)V
     .registers 4
 
-    .line 317
+    .line 344
     iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$3;->val$isCancelled:[Z
 
     const/4 p2, 0x0
@@ -63,6 +63,6 @@
 
     aput-boolean v0, p1, p2
 
-    .line 318
+    .line 345
     return-void
 .end method

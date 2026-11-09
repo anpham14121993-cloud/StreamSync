@@ -235,8 +235,7 @@
     long-to-int v8, v7
 
     .line 261
-    # getter for: Lcom/streamsync/app/updater/StreamSyncUpdater;->sMainHandler:Landroid/os/Handler;
-    invoke-static {}, Lcom/streamsync/app/updater/StreamSyncUpdater;->access$400()Landroid/os/Handler;
+    invoke-static {}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$sfgetsMainHandler()Landroid/os/Handler;
 
     move-result-object v7
 
@@ -263,8 +262,7 @@
     nop
 
     .line 275
-    # getter for: Lcom/streamsync/app/updater/StreamSyncUpdater;->sMainHandler:Landroid/os/Handler;
-    invoke-static {}, Lcom/streamsync/app/updater/StreamSyncUpdater;->access$400()Landroid/os/Handler;
+    invoke-static {}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$sfgetsMainHandler()Landroid/os/Handler;
 
     move-result-object v0
 
@@ -305,8 +303,7 @@
 
     .line 287
     :cond_c5
-    # getter for: Lcom/streamsync/app/updater/StreamSyncUpdater;->sMainHandler:Landroid/os/Handler;
-    invoke-static {}, Lcom/streamsync/app/updater/StreamSyncUpdater;->access$400()Landroid/os/Handler;
+    invoke-static {}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$sfgetsMainHandler()Landroid/os/Handler;
 
     move-result-object v0
 

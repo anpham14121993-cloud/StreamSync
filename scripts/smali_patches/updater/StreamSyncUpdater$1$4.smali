@@ -51,8 +51,7 @@
 
     iget-object v0, v0, Lcom/streamsync/app/updater/StreamSyncUpdater$1;->val$context:Landroid/content/Context;
 
-    # invokes: Lcom/streamsync/app/updater/StreamSyncUpdater;->showErrorDialog(Landroid/content/Context;)V
-    invoke-static {v0}, Lcom/streamsync/app/updater/StreamSyncUpdater;->access$500(Landroid/content/Context;)V
+    invoke-static {v0}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$smshowErrorDialog(Landroid/content/Context;)V
 
     .line 158
     return-void

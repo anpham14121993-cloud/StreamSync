@@ -125,21 +125,23 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG="v1.9.2"
+          TAG="v1.9.3"
           echo "=== Publishing Release $TAG ==="
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" output-apks/StreamSync-arm64-v8a.apk output-apks/StreamSync-armeabi-v7a.apk output-apks/StreamSync-universal.apk --clobber
           else
             gh release create "$TAG" output-apks/StreamSync-arm64-v8a.apk output-apks/StreamSync-armeabi-v7a.apk output-apks/StreamSync-universal.apk \
-              --title "AioStream v1.9.2 (Addon Toggle & Config, In-App Trailer, Catalog Series Episodes, Uncapped Native Memory)" \
-              --notes "Bản phát hành chính thức AioStream v1.9.2:
+              --title "AioStream v1.9.3 (Fix Android TV Login Crash & Sync Stability)" \
+              --notes "Bản phát hành chính thức AioStream v1.9.3:
               - Chuẩn 3 phiên bản duy nhất: arm64-v8a, armeabi-v7a và universal.
-              - Sửa lỗi addon catalog phim bộ (Cyberflix...) không lấy được meta tập (tự động làm giàu danh sách tập và thông tin từ Cinemeta).
-              - Sửa chân trang Cài đặt căn chính giữa đúng chuẩn 1 hàng duy nhất: AioStream v1.9.2.
-              - Hỗ trợ nút Xem trailer cho cả phim lẻ và phim bộ, phát trailer trực tiếp trong ứng dụng (in-app fullscreen WebView) không còn mở web bên ngoài.
-              - Mục Cài đặt - Tiện ích (Addon): Thêm nút bật/tắt (Toggle) riêng cho từng addon và nút mở Cấu hình (Configure) addon giống Nuvio. Khi tắt addon, các catalog và tài nguyên của addon đó sẽ được vô hiệu hóa hoàn toàn.
-              - Mở khóa giới hạn bộ nhớ đệm ExoPlayer native theo kiến trúc Nuvio (thang RAM vật lý lên đến 2000MB/2500MB, không bị khóa ở 256MB).
-              - Cập nhật OTA trực tiếp trong ứng dụng cho phiên bản v1.9.2.
-              - Keystore cố định hỗ trợ cài đè trực tiếp lên phiên bản cũ." \
+              - Khắc phục triệt để lỗi crash trên Android TV sau khi đăng nhập và đồng bộ tài khoản:
+                + Chuẩn hóa tài nguyên addon (resources) thành AddonResourceDef object, loại bỏ hoàn toàn lỗi ClassCastException khi Room nạp danh sách addon.
+                + Chuẩn hóa danh mục (catalogs) và kiểm tra id hợp lệ.
+                + Loại bỏ lệnh khởi động lại MainActivity (restartIntent), cập nhật UI mượt mà qua Room InvalidationTracker không làm treo giao diện TV.
+                + Khắc phục vòng lặp đồng bộ vô hạn trong hộp thoại tài khoản.
+                + Bảo toàn toàn vẹn cơ sở dữ liệu Room (room_master_table và PRAGMA user_version = 7).
+                + Tối ưu D-pad remote Android TV: hỗ trợ focus điều hướng cho các nút và ô nhập liệu trong hộp thoại tài khoản.
+              - Cập nhật OTA trực tiếp trong ứng dụng cho phiên bản v1.9.3.
+              - Keystore cố định hỗ trợ cài đè trực tiếp lên phiên bản cũ không mất dữ liệu." \
               --latest
           fi

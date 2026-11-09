@@ -72,8 +72,7 @@
 
     iget-object v1, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$3$2;->val$finalFile:Ljava/io/File;
 
-    # invokes: Lcom/streamsync/app/updater/StreamSyncUpdater;->launchPackageInstaller(Landroid/app/Activity;Ljava/io/File;)V
-    invoke-static {v0, v1}, Lcom/streamsync/app/updater/StreamSyncUpdater;->access$700(Landroid/app/Activity;Ljava/io/File;)V
+    invoke-static {v0, v1}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$smlaunchPackageInstaller(Landroid/app/Activity;Ljava/io/File;)V
 
     .line 280
     return-void

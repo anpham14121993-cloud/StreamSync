@@ -33,7 +33,7 @@
         }
     .end annotation
 
-    .line 180
+    .line 194
     iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$2$1;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$2;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
@@ -46,7 +46,7 @@
 .method public onError(Ljava/lang/String;)V
     .registers 5
 
-    .line 200
+    .line 221
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$2$1;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$2;
 
     iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseAccountManager$2;->val$context:Landroid/content/Context;
@@ -77,21 +77,33 @@
 
     invoke-virtual {p1}, Landroid/widget/Toast;->show()V
 
-    .line 201
+    .line 222
     return-void
 .end method
 
 .method public onSuccess(Ljava/lang/String;Ljava/lang/String;)V
     .registers 3
 
-    .line 183
+    .line 198
+    :try_start_0
     iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$2$1;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$2;
 
     iget-object p1, p1, Lcom/streamsync/app/auth/SupabaseAccountManager$2;->val$dialog:Landroid/app/AlertDialog;
 
     invoke-virtual {p1}, Landroid/app/AlertDialog;->dismiss()V
+    :try_end_7
+    .catchall {:try_start_0 .. :try_end_7} :catchall_8
 
-    .line 185
+    goto :goto_9
+
+    .line 199
+    :catchall_8
+    move-exception p1
+
+    :goto_9
+    nop
+
+    .line 202
     iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$2$1;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$2;
 
     iget-object p1, p1, Lcom/streamsync/app/auth/SupabaseAccountManager$2;->val$context:Landroid/content/Context;
@@ -102,6 +114,6 @@
 
     invoke-static {p1, p2}, Lcom/streamsync/app/auth/SupabaseSyncService;->syncLive(Landroid/content/Context;Lcom/streamsync/app/auth/SupabaseSyncService$SyncCallback;)V
 
-    .line 196
+    .line 217
     return-void
 .end method

@@ -43,7 +43,7 @@
         }
     .end annotation
 
-    .line 253
+    .line 250
     iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseSyncService$3$2;->this$0:Lcom/streamsync/app/auth/SupabaseSyncService$3;
 
     iput-object p2, p0, Lcom/streamsync/app/auth/SupabaseSyncService$3$2;->val$err:Ljava/lang/String;
@@ -58,7 +58,7 @@
 .method public run()V
     .registers 3
 
-    .line 256
+    .line 253
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseSyncService$3$2;->this$0:Lcom/streamsync/app/auth/SupabaseSyncService$3;
 
     iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseSyncService$3;->val$callback:Lcom/streamsync/app/auth/SupabaseSyncService$DeviceLinkStartCallback;
@@ -73,7 +73,7 @@
 
     invoke-interface {v0, v1}, Lcom/streamsync/app/auth/SupabaseSyncService$DeviceLinkStartCallback;->onError(Ljava/lang/String;)V
 
-    .line 257
+    .line 254
     :cond_f
     return-void
 .end method
