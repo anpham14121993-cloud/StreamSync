@@ -205,9 +205,31 @@ def patch_manifest_and_resources(unpack_dir):
         log("Added android:banner=@drawable/tv_banner to application tag.")
         changed = True
 
+    # 4. Fix "Gói có vẻ không hợp lệ":
+    # If extractNativeLibs="false", Android rejects compressed .so files with INSTALL_PARSE_FAILED_BAD_MANIFEST.
+    # Set extractNativeLibs="true" so PackageManager can install on all Android versions (phones & TVs).
+    if 'android:extractNativeLibs="false"' in manifest:
+        manifest = manifest.replace('android:extractNativeLibs="false"', 'android:extractNativeLibs="true"')
+        log("Changed extractNativeLibs from false to true to fix package parsing failure.")
+        changed = True
+
     if changed:
         with open(manifest_path, 'w', encoding='utf-8') as f:
             f.write(manifest)
+
+    # 5. Update apktool.yml so that all native libraries are stored uncompressed (ZIP_STORED)
+    apktool_yml_path = os.path.join(unpack_dir, "apktool.yml")
+    if os.path.exists(apktool_yml_path):
+        with open(apktool_yml_path, 'r', encoding='utf-8') as yf:
+            yml_content = yf.read()
+        if "doNotCompress:" in yml_content and "- so" not in yml_content:
+            yml_content = yml_content.replace(
+                "doNotCompress:\n",
+                "doNotCompress:\n- so\n- lib/arm64-v8a/libffmpegJNI.so\n- lib/arm64-v8a/libtranslate_jni.so\n- lib/arm64-v8a/liblanguage_id_l2c_jni.so\n"
+            )
+            with open(apktool_yml_path, 'w', encoding='utf-8') as yf:
+                yf.write(yml_content)
+            log("Added shared libraries to doNotCompress in apktool.yml")
 
     # 4. Generate tv_banner.png and copy tv_banner.xml into res/drawable
     drawable_dir = os.path.join(unpack_dir, "res", "drawable")

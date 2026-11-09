@@ -8,3 +8,6 @@
 .externalNativeBuild
 .cxx
 *.dex
+
+*.pyc
+__pycache__/
