@@ -59,7 +59,7 @@
         }
     .end annotation
 
-    .line 234
+    .line 235
     iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseSyncService$3$1;->this$0:Lcom/streamsync/app/auth/SupabaseSyncService$3;
 
     iput-object p2, p0, Lcom/streamsync/app/auth/SupabaseSyncService$3$1;->val$userCode:Ljava/lang/String;
@@ -82,14 +82,14 @@
 .method public run()V
     .registers 8
 
-    .line 237
+    .line 238
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseSyncService$3$1;->this$0:Lcom/streamsync/app/auth/SupabaseSyncService$3;
 
     iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseSyncService$3;->val$callback:Lcom/streamsync/app/auth/SupabaseSyncService$DeviceLinkStartCallback;
 
     if-eqz v0, :cond_17
 
-    .line 238
+    .line 239
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseSyncService$3$1;->this$0:Lcom/streamsync/app/auth/SupabaseSyncService$3;
 
     iget-object v1, v0, Lcom/streamsync/app/auth/SupabaseSyncService$3;->val$callback:Lcom/streamsync/app/auth/SupabaseSyncService$DeviceLinkStartCallback;
@@ -106,7 +106,7 @@
 
     invoke-interface/range {v1 .. v6}, Lcom/streamsync/app/auth/SupabaseSyncService$DeviceLinkStartCallback;->onSuccess(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V
 
-    .line 240
+    .line 241
     :cond_17
     return-void
 .end method

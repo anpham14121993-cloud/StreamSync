@@ -1,14 +1,14 @@
-.class Lcom/streamsync/app/auth/SupabaseAccountManager$4$4;
+.class Lcom/streamsync/app/auth/SupabaseAccountManager$5$3;
 .super Ljava/lang/Object;
 .source "SupabaseAccountManager.java"
 
 # interfaces
-.implements Landroid/content/DialogInterface$OnCancelListener;
+.implements Landroid/content/DialogInterface$OnClickListener;
 
 
 # annotations
 .annotation system Ldalvik/annotation/EnclosingMethod;
-    value = Lcom/streamsync/app/auth/SupabaseAccountManager$4;->onSuccess(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V
+    value = Lcom/streamsync/app/auth/SupabaseAccountManager$5;->onSuccess(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V
 .end annotation
 
 .annotation system Ldalvik/annotation/InnerClass;
@@ -22,7 +22,7 @@
 
 
 # direct methods
-.method constructor <init>(Lcom/streamsync/app/auth/SupabaseAccountManager$4;[Z)V
+.method constructor <init>(Lcom/streamsync/app/auth/SupabaseAccountManager$5;[Z)V
     .registers 3
     .annotation system Ldalvik/annotation/MethodParameters;
         accessFlags = {
@@ -41,8 +41,8 @@
         }
     .end annotation
 
-    .line 318
-    iput-object p2, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$4;->val$isCancelled:[Z
+    .line 338
+    iput-object p2, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$5$3;->val$isCancelled:[Z
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
@@ -51,18 +51,18 @@
 
 
 # virtual methods
-.method public onCancel(Landroid/content/DialogInterface;)V
+.method public onClick(Landroid/content/DialogInterface;I)V
     .registers 4
 
-    .line 321
-    iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$4;->val$isCancelled:[Z
+    .line 341
+    iget-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$5$3;->val$isCancelled:[Z
 
-    const/4 v0, 0x0
+    const/4 p2, 0x0
 
-    const/4 v1, 0x1
+    const/4 v0, 0x1
 
-    aput-boolean v1, p1, v0
+    aput-boolean v0, p1, p2
 
-    .line 322
+    .line 342
     return-void
 .end method

@@ -1,4 +1,4 @@
-.class Lcom/streamsync/app/auth/SupabaseAccountManager$4$2;
+.class Lcom/streamsync/app/auth/SupabaseAccountManager$5$2;
 .super Ljava/lang/Object;
 .source "SupabaseAccountManager.java"
 
@@ -8,7 +8,7 @@
 
 # annotations
 .annotation system Ldalvik/annotation/EnclosingMethod;
-    value = Lcom/streamsync/app/auth/SupabaseAccountManager$4;->onSuccess(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V
+    value = Lcom/streamsync/app/auth/SupabaseAccountManager$5;->onSuccess(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V
 .end annotation
 
 .annotation system Ldalvik/annotation/InnerClass;
@@ -18,13 +18,13 @@
 
 
 # instance fields
-.field final synthetic this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$4;
+.field final synthetic this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$5;
 
 .field final synthetic val$verificationUrl:Ljava/lang/String;
 
 
 # direct methods
-.method constructor <init>(Lcom/streamsync/app/auth/SupabaseAccountManager$4;Ljava/lang/String;)V
+.method constructor <init>(Lcom/streamsync/app/auth/SupabaseAccountManager$5;Ljava/lang/String;)V
     .registers 3
     .annotation system Ldalvik/annotation/MethodParameters;
         accessFlags = {
@@ -43,10 +43,10 @@
         }
     .end annotation
 
-    .line 294
-    iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$2;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$4;
+    .line 320
+    iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$5$2;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$5;
 
-    iput-object p2, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$2;->val$verificationUrl:Ljava/lang/String;
+    iput-object p2, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$5$2;->val$verificationUrl:Ljava/lang/String;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
@@ -58,13 +58,13 @@
 .method public onClick(Landroid/view/View;)V
     .registers 5
 
-    .line 298
+    .line 324
     :try_start_0
     new-instance p1, Landroid/content/Intent;
 
     const-string v0, "android.intent.action.VIEW"
 
-    iget-object v1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$2;->val$verificationUrl:Ljava/lang/String;
+    iget-object v1, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$5$2;->val$verificationUrl:Ljava/lang/String;
 
     invoke-static {v1}, Landroid/net/Uri;->parse(Ljava/lang/String;)Landroid/net/Uri;
 
@@ -72,31 +72,31 @@
 
     invoke-direct {p1, v0, v1}, Landroid/content/Intent;-><init>(Ljava/lang/String;Landroid/net/Uri;)V
 
-    .line 299
+    .line 325
     const/high16 v0, 0x10000000
 
     invoke-virtual {p1, v0}, Landroid/content/Intent;->addFlags(I)Landroid/content/Intent;
 
-    .line 300
-    iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$2;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$4;
+    .line 326
+    iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$5$2;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$5;
 
-    iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$context:Landroid/content/Context;
+    iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseAccountManager$5;->val$context:Landroid/content/Context;
 
     invoke-virtual {v0, p1}, Landroid/content/Context;->startActivity(Landroid/content/Intent;)V
     :try_end_19
     .catchall {:try_start_0 .. :try_end_19} :catchall_1a
 
-    .line 303
+    .line 329
     goto :goto_3e
 
-    .line 301
+    .line 327
     :catchall_1a
     move-exception p1
 
-    .line 302
-    iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$4$2;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$4;
+    .line 328
+    iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseAccountManager$5$2;->this$0:Lcom/streamsync/app/auth/SupabaseAccountManager$5;
 
-    iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseAccountManager$4;->val$context:Landroid/content/Context;
+    iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseAccountManager$5;->val$context:Landroid/content/Context;
 
     invoke-virtual {p1}, Ljava/lang/Throwable;->getMessage()Ljava/lang/String;
 
@@ -128,7 +128,7 @@
 
     invoke-virtual {p1}, Landroid/widget/Toast;->show()V
 
-    .line 304
+    .line 330
     :goto_3e
     return-void
 .end method

@@ -47,7 +47,7 @@
         }
     .end annotation
 
-    .line 405
+    .line 406
     iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseSyncService$4$2;->this$0:Lcom/streamsync/app/auth/SupabaseSyncService$4;
 
     iput p2, p0, Lcom/streamsync/app/auth/SupabaseSyncService$4$2;->val$finalAddons:I
@@ -64,14 +64,14 @@
 .method public run()V
     .registers 6
 
-    .line 408
+    .line 409
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseSyncService$4$2;->this$0:Lcom/streamsync/app/auth/SupabaseSyncService$4;
 
     iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseSyncService$4;->val$callback:Lcom/streamsync/app/auth/SupabaseSyncService$SyncCallback;
 
     if-eqz v0, :cond_11
 
-    .line 409
+    .line 410
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseSyncService$4$2;->this$0:Lcom/streamsync/app/auth/SupabaseSyncService$4;
 
     iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseSyncService$4;->val$callback:Lcom/streamsync/app/auth/SupabaseSyncService$SyncCallback;
@@ -82,7 +82,7 @@
 
     invoke-interface {v0, v1, v2}, Lcom/streamsync/app/auth/SupabaseSyncService$SyncCallback;->onSuccess(II)V
 
-    .line 411
+    .line 412
     :cond_11
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseSyncService$4$2;->this$0:Lcom/streamsync/app/auth/SupabaseSyncService$4;
 
@@ -134,6 +134,6 @@
 
     invoke-virtual {v0}, Landroid/widget/Toast;->show()V
 
-    .line 412
+    .line 413
     return-void
 .end method
