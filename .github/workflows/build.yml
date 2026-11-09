@@ -83,18 +83,19 @@ jobs:
 
             zipalign -v -p 4 nuvio-unsigned.apk nuvio-aligned.apk
 
-            keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
-            apksigner sign --ks debug.keystore --ks-pass pass:android --key-pass pass:android --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled true --out StreamSync-v188-nuvio-arm64-v8a.apk nuvio-aligned.apk
-            apksigner verify --verbose StreamSync-v188-nuvio-arm64-v8a.apk
-            cp StreamSync-v188-nuvio-arm64-v8a.apk StreamSync-Original-TV-v8a.apk
-            cp StreamSync-v188-nuvio-arm64-v8a.apk StreamSync-original-arm64-v8a.apk
+            apksigner sign --ks signing/streamsync.keystore --ks-pass pass:streamsync --key-pass pass:streamsync --ks-key-alias streamsync --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled true --out StreamSync-v189-nuvio-arm64-v8a.apk nuvio-aligned.apk
+            apksigner verify --verbose StreamSync-v189-nuvio-arm64-v8a.apk
+            cp StreamSync-v189-nuvio-arm64-v8a.apk StreamSync-v188-nuvio-arm64-v8a.apk
+            cp StreamSync-v189-nuvio-arm64-v8a.apk StreamSync-Original-TV-v8a.apk
+            cp StreamSync-v189-nuvio-arm64-v8a.apk StreamSync-original-arm64-v8a.apk
           fi
 
       - name: Collect Output APKs
         run: |
           mkdir -p output-apks
           find app/build/outputs/apk/debug/ -name "*.apk" -exec cp {} output-apks/ \;
-          if [ -f StreamSync-v188-nuvio-arm64-v8a.apk ]; then
+          if [ -f StreamSync-v189-nuvio-arm64-v8a.apk ]; then
+            cp StreamSync-v189-nuvio-arm64-v8a.apk output-apks/
             cp StreamSync-v188-nuvio-arm64-v8a.apk output-apks/
             cp StreamSync-Original-TV-v8a.apk output-apks/
             cp StreamSync-original-arm64-v8a.apk output-apks/
@@ -108,3 +109,25 @@ jobs:
           name: StreamSync-Debug-APKs
           path: output-apks/*.apk
           if-no-files-found: error
+
+      - name: Create or Update GitHub Release
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="v1.8.9"
+          echo "=== Publishing Release $TAG ==="
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" output-apks/StreamSync-v189-nuvio-arm64-v8a.apk output-apks/StreamSync-original-arm64-v8a.apk output-apks/StreamSync-Original-TV-v8a.apk --clobber
+          else
+            gh release create "$TAG" output-apks/StreamSync-v189-nuvio-arm64-v8a.apk output-apks/StreamSync-original-arm64-v8a.apk output-apks/StreamSync-Original-TV-v8a.apk \
+              --title "StreamSync v1.8.9 (Nuvio Smooth UI & Full Codecs)" \
+              --notes "Bản phát hành StreamSync v1.8.9:
+              - Sửa lỗi cử chỉ vuốt quay lại: chỉ hiện hộp thoại xác nhận thoát ở màn hình Home (catalog), các màn hình khác quay lại trang trước bình thường.
+              - Cài đặt Trình phát: mặc định ưu tiên bộ giải mã thiết bị (PREFER_DEVICE).
+              - Tích hợp mục Tài khoản & Đồng bộ Supabase từ Nuvio Mobile.
+              - Gộp DNS và ByeDPI vào mục Tích hợp.
+              - Bổ sung cơ chế Cập nhật ứng dụng tự động kết nối Repo StreamSync.
+              - Sử dụng Keystore cố định hỗ trợ cài đè lên các bản cũ mà không bị lỗi gói xung đột." \
+              --latest
+          fi

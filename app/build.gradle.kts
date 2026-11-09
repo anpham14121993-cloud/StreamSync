@@ -11,8 +11,8 @@ android {
         applicationId = "com.streamsync.app"
         minSdk = 21
         targetSdk = 35
-        versionCode = 188
-        versionName = "1.8.8"
+        versionCode = 189
+        versionName = "1.8.9"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -26,9 +26,19 @@ android {
         }
     }
 
+    signingConfigs {
+        create("streamsync") {
+            storeFile = file("${rootDir}/signing/streamsync.keystore")
+            storePassword = "streamsync"
+            keyAlias = "streamsync"
+            keyPassword = "streamsync"
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("streamsync")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -37,6 +47,7 @@ android {
         debug {
             applicationIdSuffix = ""
             isDebuggable = true
+            signingConfig = signingConfigs.getByName("streamsync")
         }
     }
 
