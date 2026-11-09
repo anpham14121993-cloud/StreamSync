@@ -211,7 +211,7 @@ def patch_single_swipe_and_exit_dialog(unpack_dir):
     invoke-virtual {v0, p0, v1}, Landroidx/activity/OnBackPressedDispatcher;->addCallback(Landroidx/lifecycle/LifecycleOwner;Landroidx/activity/OnBackPressedCallback;)V
 """
         onCreate_pattern = re.compile(r"(invoke-super\s*\{p0,\s*p1\},\s*Landroidx/activity/ComponentActivity;->onCreate\(Landroid/os/Bundle;\)V)", re.MULTILINE)
-        content = onCreate_pattern.sub(r"\1" + callback_inject, content)
+        content = onCreate_pattern.sub(lambda m: m.group(1) + callback_inject, content)
         log("Injected HomeBackCallback and sInstance into MainActivity.onCreate().")
         changed = True
 
@@ -255,7 +255,7 @@ def patch_single_swipe_and_exit_dialog(unpack_dir):
 .end method
 """
     if "onBackPressed()V" in content:
-        content = re.sub(r"\.method public onBackPressed\(\)V[\s\S]*?\.end method", on_back_pressed_smali.strip(), content)
+        content = re.sub(r"\.method public onBackPressed\(\)V[\s\S]*?\.end method", lambda _: on_back_pressed_smali.strip(), content)
         changed = True
     else:
         content += "\n" + on_back_pressed_smali
@@ -272,8 +272,7 @@ def patch_single_swipe_and_exit_dialog(unpack_dir):
             kt_content = f.read()
         if "sput-object p0, Lcom/streamsync/app/MainActivity;->sNavController" not in kt_content:
             target_method = r"(\.method public static final StreamSyncNavHost\(Landroidx/navigation/NavHostController;Landroidx/compose/runtime/Composer;I\)V[\s\S]*?\.registers\s+\d+[\s\S]*?)(const-string v0, \"navController\")"
-            replacement = r"\1sput-object p0, Lcom/streamsync/app/MainActivity;->sNavController:Landroidx/navigation/NavHostController;\n    \2"
-            kt_content_patched = re.sub(target_method, replacement, kt_content, count=1)
+            kt_content_patched = re.sub(target_method, lambda m: m.group(1) + "sput-object p0, Lcom/streamsync/app/MainActivity;->sNavController:Landroidx/navigation/NavHostController;\n    " + m.group(2), kt_content, count=1)
             if kt_content_patched != kt_content:
                 with open(main_kt_targets[0], 'w', encoding='utf-8') as f:
                     f.write(kt_content_patched)
@@ -491,7 +490,7 @@ def patch_settings_integrations_and_account_and_updater(unpack_dir):
         )
         if pattern_dns_group.search(s2_content):
             s2_content = pattern_dns_group.sub(
-                r"sput-object v49, Lcom/streamsync/app/ui/settings/CombinedIntegrationsLambda;->sDnsLambda:Lkotlin/jvm/functions/Function2;\n    # [NUVIO PATCH] Merged into Tích hợp card\n    # \2",
+                lambda m: "sput-object v49, Lcom/streamsync/app/ui/settings/CombinedIntegrationsLambda;->sDnsLambda:Lkotlin/jvm/functions/Function2;\n    # [NUVIO PATCH] Merged into Tích hợp card\n    # " + m.group(2),
                 s2_content
             )
             log("Merged DNS-ByPassDPI group into CombinedIntegrationsLambda.")
@@ -502,7 +501,7 @@ def patch_settings_integrations_and_account_and_updater(unpack_dir):
             re.MULTILINE
         )
         s2_content = pattern_int_group.sub(
-            r"\g<1>DNS-over-HTTPS, ByeDPI, huy hi\\u1ec7u ch\\u1ea5t l\\u01b0\\u1ee3ng v\\u00e0 nh\\u00e3n addon\2",
+            lambda m: m.group(1) + "DNS-over-HTTPS, ByeDPI, huy hi\\u1ec7u ch\\u1ea5t l\\u01b0\\u1ee3ng v\\u00e0 nh\\u00e3n addon" + m.group(2),
             s2_content
         )
 
@@ -512,7 +511,7 @@ def patch_settings_integrations_and_account_and_updater(unpack_dir):
         )
         if pattern_int_invoke.search(s2_content):
             s2_content = pattern_int_invoke.sub(
-                r"\1\n    sput-object v49, Lcom/streamsync/app/ui/settings/CombinedIntegrationsLambda;->sIntegrationsLambda:Lkotlin/jvm/functions/Function2;\n    new-instance v0, Lcom/streamsync/app/ui/settings/CombinedIntegrationsLambda;\n    invoke-direct {v0}, Lcom/streamsync/app/ui/settings/CombinedIntegrationsLambda;-><init>()V\n    move-object/from16 v49, v0",
+                lambda m: m.group(1) + "\n    sput-object v49, Lcom/streamsync/app/ui/settings/CombinedIntegrationsLambda;->sIntegrationsLambda:Lkotlin/jvm/functions/Function2;\n    new-instance v0, Lcom/streamsync/app/ui/settings/CombinedIntegrationsLambda;\n    invoke-direct {v0}, Lcom/streamsync/app/ui/settings/CombinedIntegrationsLambda;-><init>()V\n    move-object/from16 v49, v0",
                 s2_content
             )
 
@@ -556,7 +555,7 @@ def patch_settings_integrations_and_account_and_updater(unpack_dir):
     invoke-static/range {v1 .. v6}, Lcom/streamsync/app/ui/settings/SettingsScreenKt;->access$SettingsNavRow(Landroidx/compose/ui/graphics/vector/ImageVector;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;I)V
 """
             pattern_clear_cache = re.compile(r"(const-string\s+v2,\s*\"Xo\\u00e1 b\\u1ed9 \\u0111\\u1ec7m\"[\s\S]*?invoke-static/range\s*\{[^\}]+\},\s*Lcom/streamsync/app/ui/settings/SettingsScreenKt;->access\$SettingsNavRow[^\n]+)", re.MULTILINE)
-            s4_content = pattern_clear_cache.sub(r"\1\n" + updater_row, s4_content)
+            s4_content = pattern_clear_cache.sub(lambda m: m.group(1) + "\n" + updater_row, s4_content)
             log("Injected 'Cập nhật ứng dụng' row into settings.")
 
         with open(s4_path, 'w', encoding='utf-8') as f:
