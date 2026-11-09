@@ -496,21 +496,23 @@ def patch_settings_integrations_and_account_and_updater(unpack_dir, script_dir):
             r'(const-string\s+v52,\s*"StreamSync[^\n]+")([\s\S]*?)(const/16\s+v64,\s*0x0)([\s\S]*?Text--4IGK_g)'
         )
         if pattern_disclaimer.search(s2_content):
-            disclaimer_rep = (
-                r"""sget-object v0, Landroidx/compose/ui/Modifier;->Companion:Landroidx/compose/ui/Modifier$Companion;
-    check-cast v0, Landroidx/compose/ui/Modifier;
-    const/4 v1, 0x1
-    const/4 v6, 0x0
-    const/high16 v8, 0x3f800000    # 1.0f
-    invoke-static {v0, v8, v1, v6}, Landroidx/compose/foundation/layout/SizeKt;->fillMaxWidth$default(Landroidx/compose/ui/Modifier;FILjava/lang/Object;)Landroidx/compose/ui/Modifier;
-    move-result-object v53
-    const-string v52, "AioStream\nv1.9.1"\2sget-object v64, Landroidx/compose/ui/text/style/TextAlign;->Companion:Landroidx/compose/ui/text/style/TextAlign$Companion;
-    invoke-virtual/range {v64 .. v64}, Landroidx/compose/ui/text/style/TextAlign$Companion;->getCenter-e0LSkKk()I
-    move-result v64
-    invoke-static/range {v64 .. v64}, Landroidx/compose/ui/text/style/TextAlign;->box-impl(I)Landroidx/compose/ui/text/style/TextAlign;
-    move-result-object v64\4"""
-            )
-            s2_content = pattern_disclaimer.sub(disclaimer_rep, s2_content, count=1)
+            def repl_disclaimer(m):
+                return (
+                    "sget-object v0, Landroidx/compose/ui/Modifier;->Companion:Landroidx/compose/ui/Modifier$Companion;\n"
+                    "    check-cast v0, Landroidx/compose/ui/Modifier;\n"
+                    "    const/4 v1, 0x1\n"
+                    "    const/4 v6, 0x0\n"
+                    "    const/high16 v8, 0x3f800000    # 1.0f\n"
+                    "    invoke-static {v0, v8, v1, v6}, Landroidx/compose/foundation/layout/SizeKt;->fillMaxWidth$default(Landroidx/compose/ui/Modifier;FILjava/lang/Object;)Landroidx/compose/ui/Modifier;\n"
+                    "    move-result-object v53\n"
+                    "    const-string v52, \"AioStream\\nv1.9.1\"" + m.group(2) +
+                    "sget-object v0, Landroidx/compose/ui/text/style/TextAlign;->Companion:Landroidx/compose/ui/text/style/TextAlign$Companion;\n"
+                    "    invoke-virtual {v0}, Landroidx/compose/ui/text/style/TextAlign$Companion;->getCenter-e0LSkKk()I\n"
+                    "    move-result v0\n"
+                    "    invoke-static {v0}, Landroidx/compose/ui/text/style/TextAlign;->box-impl(I)Landroidx/compose/ui/text/style/TextAlign;\n"
+                    "    move-result-object v64" + m.group(4)
+                )
+            s2_content = pattern_disclaimer.sub(repl_disclaimer, s2_content, count=1)
             log("Replaced settings disclaimer note with centered AioStream v1.9.1.")
 
         with open(s2_path, 'w', encoding='utf-8') as f:
