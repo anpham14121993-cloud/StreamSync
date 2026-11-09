@@ -125,18 +125,19 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG="v1.9.5"
+          TAG="v1.9.6"
           echo "=== Publishing Release $TAG ==="
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" output-apks/StreamSync-arm64-v8a.apk output-apks/StreamSync-armeabi-v7a.apk output-apks/StreamSync-universal.apk --clobber
           else
             gh release create "$TAG" output-apks/StreamSync-arm64-v8a.apk output-apks/StreamSync-armeabi-v7a.apk output-apks/StreamSync-universal.apk \
-              --title "AioStream v1.9.5 (Fix Native SIGSEGV/SIGABRT on Large Video Playback)" \
-              --notes "Bản phát hành chính thức AioStream v1.9.5:
+              --title "AioStream v1.9.6 (Fix Native SIGSEGV/SIGABRT on Large Movies via Standard Media3 FFmpeg Libs)" \
+              --notes "Bản phát hành chính thức AioStream v1.9.6:
               - Chuẩn 3 phiên bản duy nhất: arm64-v8a, armeabi-v7a và universal.
               - Khắc phục triệt để lỗi sập native (SIGSEGV/SIGABRT trong thư viện .so) khi mở phim dung lượng lớn:
-                + Khôi phục cơ chế tính toán BufferCeiling an toàn theo Java Heap và RAM thiết bị. Loại bỏ việc ép bộ đệm lên 2500MB vốn làm tràn heap của DefaultAllocator (do StreamSync cấp phát byte[] trong heap chứ không dùng off-heap C++ allocator như Nuvio).
-                + Đảm bảo các thư viện giải mã native (libffmpegJNI.so, MediaCodec) luôn có đủ vùng nhớ hoạt động cho các phim 4K/Remux bitrate cao.
+                + Thay thế thư viện libffmpegJNI.so trên arm64-v8a và armeabi-v7a bằng bản chuẩn AndroidX Media3 (ExoPlayer) 16KB page-aligned từ Jellyfin.
+                + Sửa tận gốc nguyên nhân gây sập native SIGSEGV: thư viện libffmpegJNI.so arm64 cũ lấy từ nhánh Nuvio có chữ ký JNI C++ (ffmpegInitialize 8 tham số, ffmpegDecode 9 tham số) không tương thích với mã Java của StreamSync (5 tham số và 6 tham số), dẫn đến lỗi đọc sai vùng nhớ và sập native khi phát các phim dung lượng lớn dùng định dạng âm thanh TrueHD, DTS, DTS-HD MA, EAC3-JOC.
+                + Bản thư viện mới tương thích 100% với mã smali Media3, hỗ trợ đầy đủ giải mã DTS, TrueHD, AC3, EAC3, FLAC, Opus mượt mà không crash.
               - Bảo toàn đầy đủ tất cả các tính năng đã hoàn thiện:
                 + Sửa triệt để VerifyError trong các lambda (AccountClickLambda, UpdaterClickLambda, AddonToggle, AddonConfig).
                 + Tự động đồng bộ tài khoản ngầm mượt mà không khóa SQLite (WAL mode).
@@ -144,8 +145,8 @@ jobs:
                 + Nút bật/tắt và cấu hình riêng cho từng addon.
                 + Xem trailer phim bộ & phim lẻ in-app (TrailerPlayerActivity).
                 + Lấy đầy đủ danh sách tập phim bộ catalog.
-                + Căn giữa 1 hàng tên app 'AioStream v1.9.5' ở chân trang cài đặt.
-                + Cập nhật OTA trực tiếp trong ứng dụng cho phiên bản v1.9.5.
+                + Căn giữa 1 hàng tên app 'AioStream v1.9.6' ở chân trang cài đặt.
+                + Cập nhật OTA trực tiếp trong ứng dụng cho phiên bản v1.9.6.
               - Keystore cố định hỗ trợ cài đè trực tiếp lên phiên bản cũ không mất dữ liệu." \
               --latest
           fi
