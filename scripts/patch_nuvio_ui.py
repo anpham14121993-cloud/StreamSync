@@ -505,7 +505,7 @@ def patch_settings_integrations_and_account_and_updater(unpack_dir, script_dir):
                     "    const/high16 v8, 0x3f800000    # 1.0f\n"
                     "    invoke-static {v0, v8, v1, v6}, Landroidx/compose/foundation/layout/SizeKt;->fillMaxWidth$default(Landroidx/compose/ui/Modifier;FILjava/lang/Object;)Landroidx/compose/ui/Modifier;\n"
                     "    move-result-object v53\n"
-                    "    const-string v52, \"AioStream v1.9.8\"" + m.group(2) +
+                    "    const-string v52, \"AioStream v1.9.9\"" + m.group(2) +
                     "sget-object v0, Landroidx/compose/ui/text/style/TextAlign;->Companion:Landroidx/compose/ui/text/style/TextAlign$Companion;\n"
                     "    invoke-virtual {v0}, Landroidx/compose/ui/text/style/TextAlign$Companion;->getCenter-e0LSkKk()I\n"
                     "    move-result v0\n"
@@ -514,7 +514,7 @@ def patch_settings_integrations_and_account_and_updater(unpack_dir, script_dir):
                     "const v76, 0xfef8" + m.group(6)
                 )
             s2_content = pattern_disclaimer.sub(repl_disclaimer, s2_content, count=1)
-            log("Replaced settings disclaimer note with centered single-line AioStream v1.9.8.")
+            log("Replaced settings disclaimer note with centered single-line AioStream v1.9.9.")
 
         with open(s2_path, 'w', encoding='utf-8') as f:
             f.write(s2_content)
@@ -556,7 +556,7 @@ def patch_settings_integrations_and_account_and_updater(unpack_dir, script_dir):
     invoke-static {v0}, Landroidx/compose/material/icons/filled/SystemUpdateKt;->getSystemUpdate(Landroidx/compose/material/icons/Icons$Filled;)Landroidx/compose/ui/graphics/vector/ImageVector;
     move-result-object v1
     const-string v2, "C\\u1eadp nh\\u1eadt \\u1ee9ng d\\u1ee5ng"
-    const-string v3, "B\\u1ea3n v1.9.8 \\u2022 Ki\\u1ec3m tra & c\\u1eadp nh\\u1eadt tr\\u1ef1c ti\\u1ebfp (OTA)"
+    const-string v3, "B\\u1ea3n v1.9.9 \\u2022 Ki\\u1ec3m tra & c\\u1eadp nh\\u1eadt tr\\u1ef1c ti\\u1ebfp (OTA)"
     new-instance v4, Lcom/streamsync/app/updater/UpdaterClickLambda;
     invoke-direct {v4}, Lcom/streamsync/app/updater/UpdaterClickLambda;-><init>()V
     const/16 v6, 0x1b0
@@ -1154,15 +1154,19 @@ def patch_player_speed_and_cleanups(unpack_dir):
     if ui_targets:
         with open(ui_targets[0], 'r', encoding='utf-8', errors='ignore') as f:
             c = f.read()
+        # Only remove the LabeledSlider for initial bandwidth estimation, preserving parallel & chunk sliders
         c = re.sub(
-            r'invoke-static/range\s*\{v1\s*\.\.\s*v13\},\s*Lcom/streamsync/app/ui/components/SettingComponentsKt;->LabeledSlider-VRxQTpk[^\n]+',
-            '# [PATCH] Removed LabeledSlider for initial bandwidth estimation',
-            c
+            r'(const-string\s+v1,\s*"[^"]*(?:b\\u0103ng\s+th\\u00f4ng|băng\s+thông)[^"]*"[\s\S]*?)invoke-static/range\s*\{v1\s*\.\.\s*v13\},\s*Lcom/streamsync/app/ui/components/SettingComponentsKt;->LabeledSlider-VRxQTpk[^\n]+',
+            r'\g<1># [PATCH] Removed LabeledSlider for initial bandwidth estimation',
+            c,
+            count=1
         )
+        # Only remove the SwitchSettingRow for HTTP/2
         c = re.sub(
-            r'invoke-static/range\s*\{v1\s*\.\.\s*v9\},\s*Lcom/streamsync/app/ui/components/SettingComponentsKt;->SwitchSettingRow-FV1VA1c[^\n]+',
-            '# [PATCH] Removed SwitchSettingRow for HTTP/2',
-            c
+            r'(const-string\s+v1,\s*"[^"]*HTTP/2[^"]*"[\s\S]*?)invoke-static/range\s*\{v1\s*\.\.\s*v9\},\s*Lcom/streamsync/app/ui/components/SettingComponentsKt;->SwitchSettingRow-FV1VA1c[^\n]+',
+            r'\g<1># [PATCH] Removed SwitchSettingRow for HTTP/2',
+            c,
+            count=1
         )
         with open(ui_targets[0], 'w', encoding='utf-8') as f:
             f.write(c)
@@ -1316,14 +1320,14 @@ def patch_manifest_and_resources(unpack_dir):
         log("Registered TrailerPlayerActivity in AndroidManifest.")
         changed = True
 
-    # 4. Bump versionCode to 198 and versionName to 1.9.8 for overwrite/update support
+    # 4. Bump versionCode to 199 and versionName to 1.9.9 for overwrite/update support
     if 'android:versionCode=' in manifest:
-        manifest = re.sub(r'android:versionCode="[^"]*"', 'android:versionCode="198"', manifest)
-        manifest = re.sub(r'android:versionName="[^"]*"', 'android:versionName="1.9.8"', manifest)
-        log("Updated AndroidManifest versionCode to 198 and versionName to 1.9.8.")
+        manifest = re.sub(r'android:versionCode="[^"]*"', 'android:versionCode="199"', manifest)
+        manifest = re.sub(r'android:versionName="[^"]*"', 'android:versionName="1.9.9"', manifest)
+        log("Updated AndroidManifest versionCode to 199 and versionName to 1.9.9.")
         changed = True
     else:
-        manifest = re.sub(r'<manifest\s+', '<manifest android:versionCode="198" android:versionName="1.9.8" ', manifest)
+        manifest = re.sub(r'<manifest\s+', '<manifest android:versionCode="199" android:versionName="1.9.9" ', manifest)
         log("Inserted android:versionCode and versionName into AndroidManifest.")
         changed = True
 
@@ -1370,8 +1374,8 @@ def patch_manifest_and_resources(unpack_dir):
         with open(apktool_yml_path, 'r', encoding='utf-8') as yf:
             yml_content = yf.read()
         
-        yml_content = re.sub(r"versionCode:\s*[^\r\n]+", lambda m: "versionCode: '198'", yml_content)
-        yml_content = re.sub(r"versionName:\s*[^\r\n]+", lambda m: "versionName: '1.9.8'", yml_content)
+        yml_content = re.sub(r"versionCode:\s*[^\r\n]+", lambda m: "versionCode: '199'", yml_content)
+        yml_content = re.sub(r"versionName:\s*[^\r\n]+", lambda m: "versionName: '1.9.9'", yml_content)
 
         if "doNotCompress:" in yml_content and "- so" not in yml_content:
             yml_content = yml_content.replace(
@@ -1380,7 +1384,7 @@ def patch_manifest_and_resources(unpack_dir):
             )
         with open(apktool_yml_path, 'w', encoding='utf-8') as yf:
             yf.write(yml_content)
-        log("Updated apktool.yml with version 198 (1.9.8) and uncompressed shared libraries.")
+        log("Updated apktool.yml with version 199 (1.9.9) and uncompressed shared libraries.")
 
     # 8. Generate tv_banner.png and copy tv_banner.xml into res/drawable
     drawable_dir = os.path.join(unpack_dir, "res", "drawable")

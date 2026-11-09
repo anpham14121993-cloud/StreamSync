@@ -125,29 +125,26 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG="v1.9.8"
+          TAG="v1.9.9"
           echo "=== Publishing Release $TAG ==="
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" output-apks/StreamSync-arm64-v8a.apk output-apks/StreamSync-armeabi-v7a.apk output-apks/StreamSync-universal.apk --clobber
           else
             gh release create "$TAG" output-apks/StreamSync-arm64-v8a.apk output-apks/StreamSync-armeabi-v7a.apk output-apks/StreamSync-universal.apk \
-              --title "AioStream v1.9.8 (Instant 1s Playback & Seek Buffer, Full Landscape Trailer, Removed Bandwidth Estimate & HTTP2)" \
-              --notes "Bản phát hành chính thức AioStream v1.9.8:
+              --title "AioStream v1.9.9 (Restore Parallel Connections & Chunk Settings, Instant Buffer & Full Landscape Trailer)" \
+              --notes "Bản phát hành chính thức AioStream v1.9.9:
+              - Khôi phục đầy đủ các mục trong Cài đặt - Trình phát:
+                + 'Số kết nối song song' (Parallel connections) và 'Số chunk tải cùng lúc' (Chunk count) cùng 'Kích thước chunk' đã được hiển thị đầy đủ và điều chỉnh bình thường (bị ẩn nhầm ở bản v1.9.8 do regex UI).
+                + Giữ nguyên việc loại bỏ hoàn toàn mục 'Ước lượng băng thông ban đầu' và 'HTTP/2' theo đúng yêu cầu.
               - Khắc phục triệt để độ trễ khi mở phim và tua phim:
                 + Sửa logic buildLoadControl để LUÔN LUÔN áp dụng cấu hình thời gian bắt đầu phát và sau khi tua của người dùng (mặc định 1 giây), không còn bị kẹt vào cấu hình mặc định cũ 2.5s / 5s.
                 + Tối ưu AdjustableLoadControl.stock và cơ chế rebuffering trong shouldStartPlayback từ 2500ms - 5000ms xuống còn 1000ms (1 giây), giúp bấm phát ngay và tua phát tiếp tức thì.
-              - Loại bỏ hoàn toàn mục 'Ước lượng băng thông ban đầu' và 'HTTP/2' trong Cài đặt - Trình phát:
-                + Gỡ bỏ việc gán setBandwidthMeter với ước lượng bitrate ban đầu gây trễ phân giải luồng phát của ExoPlayer.
-                + Vô hiệu hóa phân nhánh HTTP/2 trong OkHttpVideoDataSource, sử dụng HTTP/1.1 tối ưu chuẩn giúp loại bỏ hiện tượng treo stream khi bắt đầu phát.
-                + Ẩn hoàn toàn các nút gạt/thanh trượt này khỏi giao diện cài đặt trình phát.
               - Nâng cấp tính năng xem Trailer chuẩn như xem phim:
                 + Tự động mở toàn màn hình và tự động xoay ngang (sensorLandscape) ngay khi bấm vào xem trailer.
                 + Tích hợp nút đóng nổi góc phải tiện lợi và tối ưu WebView tự giải phóng bộ nhớ khi đóng.
-              - Kiểm tra và xác nhận tính năng hâm kết nối (PlaybackPrewarmer):
-                + Cơ chế hâm trước dữ liệu đầu (pre-warm byte 0-256KB) vẫn đang hoạt động tốt. Việc chậm trước đó do ExoPlayer phải chờ tích lũy đủ 2.5s đệm và đo bitrate, nay với đệm 1s mới video sẽ phát cực nhanh.
               - Tiếp tục duy trì công thức quản lý bộ đệm RAM an toàn theo RAM thiết bị chia cho 4 (RAM / 4) và largeHeap=true.
               - Đầy đủ 3 phiên bản: arm64-v8a, armeabi-v7a và universal.
-              - Cập nhật OTA trực tiếp trong ứng dụng cho phiên bản v1.9.8.
+              - Cập nhật OTA trực tiếp trong ứng dụng cho phiên bản v1.9.9.
               - Keystore cố định hỗ trợ cài đè trực tiếp lên phiên bản cũ không mất dữ liệu." \
               --latest
           fi
