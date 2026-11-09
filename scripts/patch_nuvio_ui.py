@@ -511,7 +511,7 @@ def patch_settings_integrations_and_account_and_updater(unpack_dir, script_dir):
                     "    move-result v0\n"
                     "    invoke-static {v0}, Landroidx/compose/ui/text/style/TextAlign;->box-impl(I)Landroidx/compose/ui/text/style/TextAlign;\n"
                     "    move-result-object v64" + m.group(4) +
-                    "const v76, 0xfef8" + m.group(6) + "Text--4IGK_g"
+                    "const v76, 0xfef8" + m.group(6)
                 )
             s2_content = pattern_disclaimer.sub(repl_disclaimer, s2_content, count=1)
             log("Replaced settings disclaimer note with centered single-line AioStream v1.9.2.")
@@ -790,9 +790,9 @@ def patch_addons_screen(unpack_dir):
     move-result v0
     if-nez v0, :cond_addon_enabled
     invoke-static {}, Ljava/util/Collections;->emptyList()Ljava/util/List;
-    move-result-object v6
-    invoke-static {}, Ljava/util/Collections;->emptyList()Ljava/util/List;
     move-result-object v7
+    invoke-static {}, Ljava/util/Collections;->emptyList()Ljava/util/List;
+    move-result-object v8
     :cond_addon_enabled
     """
             repo_content = p_manifest_init.sub(lambda m: m.group(1) + toggle_hook + m.group(2), repo_content, count=1)
@@ -832,6 +832,9 @@ def patch_addons_screen(unpack_dir):
     move-object/from16 v82, v3
     invoke-static/range {v76 .. v84}, Landroidx/compose/material3/IconButtonKt;->IconButton(Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;ZLandroidx/compose/material3/IconButtonColors;Landroidx/compose/foundation/interaction/MutableInteractionSource;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
 
+    # Restore delete lambda in v76 for the original Delete button
+    move-object/from16 v76, v1
+
     # [NUVIO PATCH] Toggle IconButton
     new-instance v2, Lcom/streamsync/app/data/addon/AddonToggleClickLambda;
     invoke-direct {v2, v5}, Lcom/streamsync/app/data/addon/AddonToggleClickLambda;-><init>(Lcom/streamsync/app/data/addon/AddonManifest;)V
@@ -844,6 +847,9 @@ def patch_addons_screen(unpack_dir):
     move-result-object v81
     check-cast v81, Lkotlin/jvm/functions/Function2;
     invoke-static/range {v76 .. v84}, Landroidx/compose/material3/IconButtonKt;->IconButton(Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;ZLandroidx/compose/material3/IconButtonColors;Landroidx/compose/foundation/interaction/MutableInteractionSource;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
+
+    # Restore delete lambda in v76 for the original Delete button
+    move-object/from16 v76, v1
     """
             items_content = p_delete_btn.sub(lambda m: addon_buttons_smali + "\n    " + m.group(1), items_content, count=1)
             with open(items_targets[0], 'w', encoding='utf-8') as f:

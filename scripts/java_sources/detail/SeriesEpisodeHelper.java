@@ -97,29 +97,6 @@ public class SeriesEpisodeHelper {
         if (currentTrailerId != null && !currentTrailerId.trim().isEmpty()) {
             return currentTrailerId;
         }
-        String imdbId = extractImdbId(itemId);
-        if (imdbId == null) return null;
-
-        String mediaType = (type != null && type.contains("series")) ? "series" : "movie";
-        try {
-            JSONObject metaObj = fetchCinemetaMeta(mediaType, imdbId);
-            if (metaObj != null && metaObj.has("trailers")) {
-                JSONArray trailersArr = metaObj.optJSONArray("trailers");
-                if (trailersArr != null && trailersArr.length() > 0) {
-                    for (int i = 0; i < trailersArr.length(); i++) {
-                        JSONObject tr = trailersArr.optJSONObject(i);
-                        if (tr != null) {
-                            String source = tr.optString("source", "");
-                            if (!source.isEmpty()) return source;
-                            String id = tr.optString("id", "");
-                            if (!id.isEmpty()) return id;
-                        }
-                    }
-                }
-            }
-        } catch (Throwable t) {
-            Log.e(TAG, "resolveTrailerId error", t);
-        }
         return null;
     }
 

@@ -1533,163 +1533,24 @@
 .end method
 
 .method public static resolveTrailerId(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-    .registers 7
+    .registers 4
 
-    .line 97
-    const-string v0, ""
-
-    const-string v1, "trailers"
-
-    if-eqz p0, :cond_11
+    if-eqz p0, :cond_0
 
     invoke-virtual {p0}, Ljava/lang/String;->trim()Ljava/lang/String;
 
-    move-result-object v2
+    move-result-object v0
 
-    invoke-virtual {v2}, Ljava/lang/String;->isEmpty()Z
+    invoke-virtual {v0}, Ljava/lang/String;->isEmpty()Z
 
-    move-result v2
+    move-result v0
 
-    if-nez v2, :cond_11
+    if-nez v0, :cond_0
 
-    .line 98
     return-object p0
 
-    .line 100
-    :cond_11
-    invoke-static {p1}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->extractImdbId(Ljava/lang/String;)Ljava/lang/String;
+    :cond_0
+    const/4 v0, 0x0
 
-    move-result-object p0
-
-    .line 101
-    const/4 p1, 0x0
-
-    if-nez p0, :cond_19
-
-    return-object p1
-
-    .line 103
-    :cond_19
-    if-eqz p2, :cond_24
-
-    const-string v2, "series"
-
-    invoke-virtual {p2, v2}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
-
-    move-result p2
-
-    if-eqz p2, :cond_24
-
-    goto :goto_26
-
-    :cond_24
-    const-string v2, "movie"
-
-    .line 105
-    :goto_26
-    :try_start_26
-    invoke-static {v2, p0}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->fetchCinemetaMeta(Ljava/lang/String;Ljava/lang/String;)Lorg/json/JSONObject;
-
-    move-result-object p0
-
-    .line 106
-    if-eqz p0, :cond_68
-
-    invoke-virtual {p0, v1}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
-
-    move-result p2
-
-    if-eqz p2, :cond_68
-
-    .line 107
-    invoke-virtual {p0, v1}, Lorg/json/JSONObject;->optJSONArray(Ljava/lang/String;)Lorg/json/JSONArray;
-
-    move-result-object p0
-
-    .line 108
-    if-eqz p0, :cond_68
-
-    invoke-virtual {p0}, Lorg/json/JSONArray;->length()I
-
-    move-result p2
-
-    if-lez p2, :cond_68
-
-    .line 109
-    const/4 p2, 0x0
-
-    :goto_3f
-    invoke-virtual {p0}, Lorg/json/JSONArray;->length()I
-
-    move-result v1
-
-    if-ge p2, v1, :cond_68
-
-    .line 110
-    invoke-virtual {p0, p2}, Lorg/json/JSONArray;->optJSONObject(I)Lorg/json/JSONObject;
-
-    move-result-object v1
-
-    .line 111
-    if-eqz v1, :cond_65
-
-    .line 112
-    const-string v2, "source"
-
-    invoke-virtual {v1, v2, v0}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v2
-
-    .line 113
-    invoke-virtual {v2}, Ljava/lang/String;->isEmpty()Z
-
-    move-result v3
-
-    if-nez v3, :cond_58
-
-    return-object v2
-
-    .line 114
-    :cond_58
-    const-string v2, "id"
-
-    invoke-virtual {v1, v2, v0}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v1
-
-    .line 115
-    invoke-virtual {v1}, Ljava/lang/String;->isEmpty()Z
-
-    move-result v2
-    :try_end_62
-    .catchall {:try_start_26 .. :try_end_62} :catchall_69
-
-    if-nez v2, :cond_65
-
-    return-object v1
-
-    .line 109
-    :cond_65
-    add-int/lit8 p2, p2, 0x1
-
-    goto :goto_3f
-
-    .line 122
-    :cond_68
-    goto :goto_71
-
-    .line 120
-    :catchall_69
-    move-exception p0
-
-    .line 121
-    const-string p2, "SeriesEpisodeHelper"
-
-    const-string v0, "resolveTrailerId error"
-
-    invoke-static {p2, v0, p0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
-
-    .line 123
-    :goto_71
-    return-object p1
+    return-object v0
 .end method
