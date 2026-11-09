@@ -1129,6 +1129,10 @@ def patch_manifest_and_resources(unpack_dir):
         manifest = re.sub(r'android:versionName="[^"]*"', 'android:versionName="1.9.4"', manifest)
         log("Updated AndroidManifest versionCode to 194 and versionName to 1.9.4.")
         changed = True
+    else:
+        manifest = re.sub(r'<manifest\s+', '<manifest android:versionCode="194" android:versionName="1.9.4" ', manifest)
+        log("Inserted android:versionCode and versionName into AndroidManifest.")
+        changed = True
 
     # 4b. Create res/xml/file_paths.xml for FileProvider
     xml_dir = os.path.join(unpack_dir, "res", "xml")
@@ -1167,8 +1171,8 @@ def patch_manifest_and_resources(unpack_dir):
         with open(apktool_yml_path, 'r', encoding='utf-8') as yf:
             yml_content = yf.read()
         
-        yml_content = re.sub(r"versionCode:\s*'[0-9]+'", "versionCode: '194'", yml_content)
-        yml_content = re.sub(r"versionName:\s*'[^']*'", "versionName: '1.9.4'", yml_content)
+        yml_content = re.sub(r"versionCode:\s*[^\r\n]+", lambda m: "versionCode: '194'", yml_content)
+        yml_content = re.sub(r"versionName:\s*[^\r\n]+", lambda m: "versionName: '1.9.4'", yml_content)
 
         if "doNotCompress:" in yml_content and "- so" not in yml_content:
             yml_content = yml_content.replace(
