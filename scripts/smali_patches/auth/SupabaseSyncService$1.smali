@@ -32,7 +32,7 @@
         }
     .end annotation
 
-    .line 48
+    .line 54
     iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseSyncService$1;->val$context:Landroid/content/Context;
 
     iput-object p2, p0, Lcom/streamsync/app/auth/SupabaseSyncService$1;->val$msg:Ljava/lang/String;
@@ -47,12 +47,12 @@
 .method public run()V
     .registers 4
 
-    .line 51
+    .line 57
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseSyncService$1;->val$context:Landroid/content/Context;
 
     if-eqz v0, :cond_14
 
-    .line 52
+    .line 58
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseSyncService$1;->val$context:Landroid/content/Context;
 
     invoke-virtual {v0}, Landroid/content/Context;->getApplicationContext()Landroid/content/Context;
@@ -69,7 +69,7 @@
 
     invoke-virtual {v0}, Landroid/widget/Toast;->show()V
 
-    .line 54
+    .line 60
     :cond_14
     return-void
 .end method

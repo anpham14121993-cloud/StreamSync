@@ -20,21 +20,33 @@
 # instance fields
 .field final synthetic this$0:Lcom/streamsync/app/auth/SupabaseSyncService$3;
 
+.field final synthetic val$err:Ljava/lang/String;
+
 
 # direct methods
-.method constructor <init>(Lcom/streamsync/app/auth/SupabaseSyncService$3;)V
-    .registers 2
+.method constructor <init>(Lcom/streamsync/app/auth/SupabaseSyncService$3;Ljava/lang/String;)V
+    .registers 3
     .annotation system Ldalvik/annotation/MethodParameters;
         accessFlags = {
-            0x8010
+            0x8010,
+            0x1010
         }
         names = {
+            null,
             null
         }
     .end annotation
 
-    .line 243
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "()V"
+        }
+    .end annotation
+
+    .line 247
     iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseSyncService$3$2;->this$0:Lcom/streamsync/app/auth/SupabaseSyncService$3;
+
+    iput-object p2, p0, Lcom/streamsync/app/auth/SupabaseSyncService$3$2;->val$err:Ljava/lang/String;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
@@ -46,15 +58,22 @@
 .method public run()V
     .registers 3
 
-    .line 246
+    .line 250
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseSyncService$3$2;->this$0:Lcom/streamsync/app/auth/SupabaseSyncService$3;
 
-    iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseSyncService$3;->val$callback:Lcom/streamsync/app/auth/SupabaseSyncService$AuthCallback;
+    iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseSyncService$3;->val$callback:Lcom/streamsync/app/auth/SupabaseSyncService$DeviceLinkStartCallback;
 
-    const-string v1, "\u0110\u00e3 g\u1eedi email x\u00e1c nh\u1eadn. Vui l\u00f2ng ki\u1ec3m tra h\u1ed9p th\u01b0!"
+    if-eqz v0, :cond_f
 
-    invoke-interface {v0, v1}, Lcom/streamsync/app/auth/SupabaseSyncService$AuthCallback;->onError(Ljava/lang/String;)V
+    iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseSyncService$3$2;->this$0:Lcom/streamsync/app/auth/SupabaseSyncService$3;
 
-    .line 247
+    iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseSyncService$3;->val$callback:Lcom/streamsync/app/auth/SupabaseSyncService$DeviceLinkStartCallback;
+
+    iget-object v1, p0, Lcom/streamsync/app/auth/SupabaseSyncService$3$2;->val$err:Ljava/lang/String;
+
+    invoke-interface {v0, v1}, Lcom/streamsync/app/auth/SupabaseSyncService$DeviceLinkStartCallback;->onError(Ljava/lang/String;)V
+
+    .line 251
+    :cond_f
     return-void
 .end method

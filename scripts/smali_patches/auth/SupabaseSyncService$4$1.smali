@@ -33,7 +33,7 @@
         }
     .end annotation
 
-    .line 296
+    .line 380
     iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseSyncService$4$1;->this$0:Lcom/streamsync/app/auth/SupabaseSyncService$4;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
@@ -46,15 +46,15 @@
 .method public run()V
     .registers 3
 
-    .line 299
+    .line 383
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseSyncService$4$1;->this$0:Lcom/streamsync/app/auth/SupabaseSyncService$4;
 
     iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseSyncService$4;->val$callback:Lcom/streamsync/app/auth/SupabaseSyncService$SyncCallback;
 
-    const-string v1, "Ch\u01b0a \u0111\u0103ng nh\u1eadp Supabase"
+    const-string v1, "Ch\u01b0a \u0111\u0103ng nh\u1eadp t\u00e0i kho\u1ea3n"
 
     invoke-interface {v0, v1}, Lcom/streamsync/app/auth/SupabaseSyncService$SyncCallback;->onError(Ljava/lang/String;)V
 
-    .line 300
+    .line 384
     return-void
 .end method

@@ -38,7 +38,7 @@
         }
     .end annotation
 
-    .line 93
+    .line 99
     iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseSyncService$2;->val$serverUrl:Ljava/lang/String;
 
     iput-object p2, p0, Lcom/streamsync/app/auth/SupabaseSyncService$2;->val$email:Ljava/lang/String;
@@ -57,261 +57,273 @@
 
 # virtual methods
 .method public run()V
-    .registers 10
+    .registers 11
 
-    .line 97
+    .line 103
     const-string v0, "message"
 
     const-string v1, "error_description"
 
     const-string v2, "msg"
 
-    :try_start_6
-    iget-object v3, p0, Lcom/streamsync/app/auth/SupabaseSyncService$2;->val$serverUrl:Ljava/lang/String;
+    const-string v3, "refresh_token"
 
-    invoke-static {v3}, Lcom/streamsync/app/auth/SupabaseSyncService;->normalizeUrl(Ljava/lang/String;)Ljava/lang/String;
+    :try_start_8
+    iget-object v4, p0, Lcom/streamsync/app/auth/SupabaseSyncService$2;->val$serverUrl:Ljava/lang/String;
 
-    move-result-object v3
-
-    .line 98
-    invoke-virtual {v3}, Ljava/lang/String;->isEmpty()Z
-
-    move-result v4
-
-    if-eqz v4, :cond_14
-
-    const-string v3, "https://api.nuvio.tv"
-
-    .line 100
-    :cond_14
-    invoke-static {v3}, Lcom/streamsync/app/auth/SupabaseSyncService;->fetchDiscoveryKey(Ljava/lang/String;)Ljava/lang/String;
+    invoke-static {v4}, Lcom/streamsync/app/auth/SupabaseSyncService;->normalizeUrl(Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v4
 
-    .line 102
-    new-instance v5, Ljava/net/URL;
-
-    new-instance v6, Ljava/lang/StringBuilder;
-
-    invoke-direct {v6}, Ljava/lang/StringBuilder;-><init>()V
-
-    invoke-virtual {v6, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v6
-
-    const-string v7, "/auth/v1/token?grant_type=password"
-
-    invoke-virtual {v6, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v6
-
-    invoke-virtual {v6}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    move-result-object v6
-
-    invoke-direct {v5, v6}, Ljava/net/URL;-><init>(Ljava/lang/String;)V
-
-    .line 103
-    invoke-virtual {v5}, Ljava/net/URL;->openConnection()Ljava/net/URLConnection;
-
-    move-result-object v5
-
-    check-cast v5, Ljava/net/HttpURLConnection;
-
     .line 104
-    const-string v6, "POST"
+    invoke-virtual {v4}, Ljava/lang/String;->isEmpty()Z
 
-    invoke-virtual {v5, v6}, Ljava/net/HttpURLConnection;->setRequestMethod(Ljava/lang/String;)V
+    move-result v5
 
-    .line 105
-    const-string v6, "Content-Type"
+    if-eqz v5, :cond_16
 
-    const-string v7, "application/json"
-
-    invoke-virtual {v5, v6, v7}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
+    const-string v4, "https://api.nuvio.tv"
 
     .line 106
-    const-string v6, "apikey"
+    :cond_16
+    invoke-static {v4}, Lcom/streamsync/app/auth/SupabaseSyncService;->fetchDiscoveryKey(Ljava/lang/String;)Ljava/lang/String;
 
-    invoke-virtual {v5, v6, v4}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 107
-    const/16 v6, 0x2710
-
-    invoke-virtual {v5, v6}, Ljava/net/HttpURLConnection;->setConnectTimeout(I)V
+    move-result-object v5
 
     .line 108
-    invoke-virtual {v5, v6}, Ljava/net/HttpURLConnection;->setReadTimeout(I)V
+    new-instance v6, Ljava/net/URL;
 
-    .line 109
-    const/4 v6, 0x1
+    new-instance v7, Ljava/lang/StringBuilder;
 
-    invoke-virtual {v5, v6}, Ljava/net/HttpURLConnection;->setDoOutput(Z)V
+    invoke-direct {v7}, Ljava/lang/StringBuilder;-><init>()V
 
-    .line 111
-    new-instance v6, Lorg/json/JSONObject;
-
-    invoke-direct {v6}, Lorg/json/JSONObject;-><init>()V
-
-    .line 112
-    const-string v7, "email"
-
-    iget-object v8, p0, Lcom/streamsync/app/auth/SupabaseSyncService$2;->val$email:Ljava/lang/String;
-
-    invoke-virtual {v8}, Ljava/lang/String;->trim()Ljava/lang/String;
-
-    move-result-object v8
-
-    invoke-virtual {v6, v7, v8}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
-
-    .line 113
-    const-string v7, "password"
-
-    iget-object v8, p0, Lcom/streamsync/app/auth/SupabaseSyncService$2;->val$password:Ljava/lang/String;
-
-    invoke-virtual {v6, v7, v8}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
-
-    .line 115
-    invoke-virtual {v6}, Lorg/json/JSONObject;->toString()Ljava/lang/String;
-
-    move-result-object v6
-
-    sget-object v7, Ljava/nio/charset/StandardCharsets;->UTF_8:Ljava/nio/charset/Charset;
-
-    invoke-virtual {v6, v7}, Ljava/lang/String;->getBytes(Ljava/nio/charset/Charset;)[B
-
-    move-result-object v6
-
-    .line 116
-    invoke-virtual {v5}, Ljava/net/HttpURLConnection;->getOutputStream()Ljava/io/OutputStream;
+    invoke-virtual {v7, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v7
-    :try_end_78
-    .catch Ljava/lang/Exception; {:try_start_6 .. :try_end_78} :catch_16a
+
+    const-string v8, "/auth/v1/token?grant_type=password"
+
+    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v7
+
+    invoke-virtual {v7}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v7
+
+    invoke-direct {v6, v7}, Ljava/net/URL;-><init>(Ljava/lang/String;)V
+
+    .line 109
+    invoke-virtual {v6}, Ljava/net/URL;->openConnection()Ljava/net/URLConnection;
+
+    move-result-object v6
+
+    check-cast v6, Ljava/net/HttpURLConnection;
+
+    .line 110
+    const-string v7, "POST"
+
+    invoke-virtual {v6, v7}, Ljava/net/HttpURLConnection;->setRequestMethod(Ljava/lang/String;)V
+
+    .line 111
+    const-string v7, "Content-Type"
+
+    const-string v8, "application/json"
+
+    invoke-virtual {v6, v7, v8}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
+
+    .line 112
+    const-string v7, "apikey"
+
+    invoke-virtual {v6, v7, v5}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
+
+    .line 113
+    const/16 v7, 0x2710
+
+    invoke-virtual {v6, v7}, Ljava/net/HttpURLConnection;->setConnectTimeout(I)V
+
+    .line 114
+    invoke-virtual {v6, v7}, Ljava/net/HttpURLConnection;->setReadTimeout(I)V
+
+    .line 115
+    const/4 v7, 0x1
+
+    invoke-virtual {v6, v7}, Ljava/net/HttpURLConnection;->setDoOutput(Z)V
 
     .line 117
-    :try_start_78
-    invoke-virtual {v7, v6}, Ljava/io/OutputStream;->write([B)V
-    :try_end_7b
-    .catchall {:try_start_78 .. :try_end_7b} :catchall_15e
+    new-instance v7, Lorg/json/JSONObject;
+
+    invoke-direct {v7}, Lorg/json/JSONObject;-><init>()V
 
     .line 118
-    if-eqz v7, :cond_80
+    const-string v8, "email"
 
-    :try_start_7d
-    invoke-virtual {v7}, Ljava/io/OutputStream;->close()V
+    iget-object v9, p0, Lcom/streamsync/app/auth/SupabaseSyncService$2;->val$email:Ljava/lang/String;
 
-    .line 120
-    :cond_80
-    invoke-virtual {v5}, Ljava/net/HttpURLConnection;->getResponseCode()I
+    invoke-virtual {v9}, Ljava/lang/String;->trim()Ljava/lang/String;
 
-    move-result v6
+    move-result-object v9
+
+    invoke-virtual {v7, v8, v9}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+
+    .line 119
+    const-string v8, "password"
+
+    iget-object v9, p0, Lcom/streamsync/app/auth/SupabaseSyncService$2;->val$password:Ljava/lang/String;
+
+    invoke-virtual {v7, v8, v9}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
     .line 121
-    const/16 v7, 0xc8
+    invoke-virtual {v7}, Lorg/json/JSONObject;->toString()Ljava/lang/String;
 
-    if-lt v6, v7, :cond_91
+    move-result-object v7
 
-    const/16 v8, 0x12c
+    sget-object v8, Ljava/nio/charset/StandardCharsets;->UTF_8:Ljava/nio/charset/Charset;
 
-    if-ge v6, v8, :cond_91
+    invoke-virtual {v7, v8}, Ljava/lang/String;->getBytes(Ljava/nio/charset/Charset;)[B
 
-    invoke-virtual {v5}, Ljava/net/HttpURLConnection;->getInputStream()Ljava/io/InputStream;
-
-    move-result-object v5
-
-    goto :goto_95
-
-    :cond_91
-    invoke-virtual {v5}, Ljava/net/HttpURLConnection;->getErrorStream()Ljava/io/InputStream;
-
-    move-result-object v5
-    :try_end_95
-    .catch Ljava/lang/Exception; {:try_start_7d .. :try_end_95} :catch_16a
+    move-result-object v7
 
     .line 122
-    :goto_95
-    const-string v8, ""
+    invoke-virtual {v6}, Ljava/net/HttpURLConnection;->getOutputStream()Ljava/io/OutputStream;
 
-    if-eqz v5, :cond_9e
+    move-result-object v8
+    :try_end_7a
+    .catch Ljava/lang/Exception; {:try_start_8 .. :try_end_7a} :catch_174
 
-    :try_start_99
-    invoke-static {v5}, Lcom/streamsync/app/auth/SupabaseSyncService;->-$$Nest$smreadStream(Ljava/io/InputStream;)Ljava/lang/String;
-
-    move-result-object v5
-
-    goto :goto_9f
-
-    :cond_9e
-    move-object v5, v8
+    .line 123
+    :try_start_7a
+    invoke-virtual {v8, v7}, Ljava/io/OutputStream;->write([B)V
+    :try_end_7d
+    .catchall {:try_start_7a .. :try_end_7d} :catchall_168
 
     .line 124
-    :goto_9f
-    if-ne v6, v7, :cond_10c
+    if-eqz v8, :cond_82
 
-    .line 125
-    new-instance v0, Lorg/json/JSONObject;
-
-    invoke-direct {v0, v5}, Lorg/json/JSONObject;-><init>(Ljava/lang/String;)V
+    :try_start_7f
+    invoke-virtual {v8}, Ljava/io/OutputStream;->close()V
 
     .line 126
+    :cond_82
+    invoke-virtual {v6}, Ljava/net/HttpURLConnection;->getResponseCode()I
+
+    move-result v7
+
+    .line 127
+    const/16 v8, 0xc8
+
+    if-lt v7, v8, :cond_93
+
+    const/16 v9, 0x12c
+
+    if-ge v7, v9, :cond_93
+
+    invoke-virtual {v6}, Ljava/net/HttpURLConnection;->getInputStream()Ljava/io/InputStream;
+
+    move-result-object v6
+
+    goto :goto_97
+
+    :cond_93
+    invoke-virtual {v6}, Ljava/net/HttpURLConnection;->getErrorStream()Ljava/io/InputStream;
+
+    move-result-object v6
+    :try_end_97
+    .catch Ljava/lang/Exception; {:try_start_7f .. :try_end_97} :catch_174
+
+    .line 128
+    :goto_97
+    const-string v9, ""
+
+    if-eqz v6, :cond_a0
+
+    :try_start_9b
+    invoke-static {v6}, Lcom/streamsync/app/auth/SupabaseSyncService;->-$$Nest$smreadStream(Ljava/io/InputStream;)Ljava/lang/String;
+
+    move-result-object v6
+
+    goto :goto_a1
+
+    :cond_a0
+    move-object v6, v9
+
+    .line 130
+    :goto_a1
+    if-ne v7, v8, :cond_116
+
+    .line 131
+    new-instance v0, Lorg/json/JSONObject;
+
+    invoke-direct {v0, v6}, Lorg/json/JSONObject;-><init>(Ljava/lang/String;)V
+
+    .line 132
     const-string v1, "access_token"
 
-    invoke-virtual {v0, v1, v8}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    invoke-virtual {v0, v1, v9}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v1
 
-    .line 127
-    const-string v2, "user"
+    .line 133
+    invoke-virtual {v0, v3, v9}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 
-    invoke-virtual {v0, v2}, Lorg/json/JSONObject;->optJSONObject(Ljava/lang/String;)Lorg/json/JSONObject;
+    move-result-object v2
+
+    .line 134
+    const-string v6, "user"
+
+    invoke-virtual {v0, v6}, Lorg/json/JSONObject;->optJSONObject(Ljava/lang/String;)Lorg/json/JSONObject;
 
     move-result-object v0
 
-    .line 128
-    if-eqz v0, :cond_ba
+    .line 135
+    if-eqz v0, :cond_c0
 
-    const-string v2, "id"
+    const-string v6, "id"
 
-    invoke-virtual {v0, v2, v8}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    invoke-virtual {v0, v6, v9}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 
-    move-result-object v8
+    move-result-object v9
 
-    .line 130
-    :cond_ba
+    .line 137
+    :cond_c0
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseSyncService$2;->val$context:Landroid/content/Context;
 
-    const-string v2, "nuvio_supabase_auth"
+    const-string v6, "nuvio_supabase_auth"
 
-    const/4 v5, 0x0
+    const/4 v7, 0x0
 
-    invoke-virtual {v0, v2, v5}, Landroid/content/Context;->getSharedPreferences(Ljava/lang/String;I)Landroid/content/SharedPreferences;
+    invoke-virtual {v0, v6, v7}, Landroid/content/Context;->getSharedPreferences(Ljava/lang/String;I)Landroid/content/SharedPreferences;
 
     move-result-object v0
 
-    .line 131
+    .line 138
     invoke-interface {v0}, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
 
     move-result-object v0
 
-    const-string v2, "server_url"
+    const-string v6, "server_url"
 
-    .line 132
-    invoke-interface {v0, v2, v3}, Landroid/content/SharedPreferences$Editor;->putString(Ljava/lang/String;Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
-
-    move-result-object v0
-
-    const-string v2, "anon_key"
-
-    .line 133
-    invoke-interface {v0, v2, v4}, Landroid/content/SharedPreferences$Editor;->putString(Ljava/lang/String;Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+    .line 139
+    invoke-interface {v0, v6, v4}, Landroid/content/SharedPreferences$Editor;->putString(Ljava/lang/String;Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
 
     move-result-object v0
 
-    const-string v2, "auth_token"
+    const-string v4, "anon_key"
 
-    .line 134
-    invoke-interface {v0, v2, v1}, Landroid/content/SharedPreferences$Editor;->putString(Ljava/lang/String;Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+    .line 140
+    invoke-interface {v0, v4, v5}, Landroid/content/SharedPreferences$Editor;->putString(Ljava/lang/String;Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+
+    move-result-object v0
+
+    const-string v4, "auth_token"
+
+    .line 141
+    invoke-interface {v0, v4, v1}, Landroid/content/SharedPreferences$Editor;->putString(Ljava/lang/String;Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+
+    move-result-object v0
+
+    .line 142
+    invoke-interface {v0, v3, v2}, Landroid/content/SharedPreferences$Editor;->putString(Ljava/lang/String;Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
 
     move-result-object v0
 
@@ -319,7 +331,7 @@
 
     iget-object v3, p0, Lcom/streamsync/app/auth/SupabaseSyncService$2;->val$email:Ljava/lang/String;
 
-    .line 135
+    .line 143
     invoke-virtual {v3}, Ljava/lang/String;->trim()Ljava/lang/String;
 
     move-result-object v3
@@ -330,21 +342,21 @@
 
     const-string v2, "auth_user_id"
 
-    .line 136
-    invoke-interface {v0, v2, v8}, Landroid/content/SharedPreferences$Editor;->putString(Ljava/lang/String;Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+    .line 144
+    invoke-interface {v0, v2, v9}, Landroid/content/SharedPreferences$Editor;->putString(Ljava/lang/String;Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
 
     move-result-object v0
 
     const-string v2, "is_anonymous"
 
-    .line 137
-    invoke-interface {v0, v2, v5}, Landroid/content/SharedPreferences$Editor;->putBoolean(Ljava/lang/String;Z)Landroid/content/SharedPreferences$Editor;
+    .line 145
+    invoke-interface {v0, v2, v7}, Landroid/content/SharedPreferences$Editor;->putBoolean(Ljava/lang/String;Z)Landroid/content/SharedPreferences$Editor;
 
     move-result-object v0
 
     const-string v2, "last_login_time"
 
-    .line 138
+    .line 146
     invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
 
     move-result-wide v3
@@ -353,30 +365,30 @@
 
     move-result-object v0
 
-    .line 139
+    .line 147
     invoke-interface {v0}, Landroid/content/SharedPreferences$Editor;->apply()V
 
-    .line 141
+    .line 149
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseSyncService$2;->val$callback:Lcom/streamsync/app/auth/SupabaseSyncService$AuthCallback;
 
-    if-eqz v0, :cond_10b
+    if-eqz v0, :cond_115
 
-    .line 142
+    .line 150
     nop
 
-    .line 143
+    .line 151
     new-instance v0, Lcom/streamsync/app/auth/SupabaseSyncService$2$1;
 
     invoke-direct {v0, p0, v1}, Lcom/streamsync/app/auth/SupabaseSyncService$2$1;-><init>(Lcom/streamsync/app/auth/SupabaseSyncService$2;Ljava/lang/String;)V
 
     invoke-static {v0}, Lcom/streamsync/app/auth/SupabaseSyncService;->runOnMain(Ljava/lang/Runnable;)V
 
-    .line 150
-    :cond_10b
-    goto :goto_15d
+    .line 158
+    :cond_115
+    goto :goto_167
 
-    .line 151
-    :cond_10c
+    .line 159
+    :cond_116
     new-instance v3, Ljava/lang/StringBuilder;
 
     invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
@@ -387,7 +399,7 @@
 
     move-result-object v3
 
-    invoke-virtual {v3, v6}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    invoke-virtual {v3, v7}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
 
     move-result-object v3
 
@@ -400,21 +412,21 @@
     invoke-virtual {v3}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
 
     move-result-object v3
-    :try_end_125
-    .catch Ljava/lang/Exception; {:try_start_99 .. :try_end_125} :catch_16a
+    :try_end_12f
+    .catch Ljava/lang/Exception; {:try_start_9b .. :try_end_12f} :catch_174
 
-    .line 153
-    :try_start_125
+    .line 161
+    :try_start_12f
     new-instance v4, Lorg/json/JSONObject;
 
-    invoke-direct {v4, v5}, Lorg/json/JSONObject;-><init>(Ljava/lang/String;)V
+    invoke-direct {v4, v6}, Lorg/json/JSONObject;-><init>(Ljava/lang/String;)V
 
-    .line 154
+    .line 162
     invoke-virtual {v4, v2}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
 
     move-result v5
 
-    if-eqz v5, :cond_136
+    if-eqz v5, :cond_140
 
     invoke-virtual {v4, v2}, Lorg/json/JSONObject;->getString(Ljava/lang/String;)Ljava/lang/String;
 
@@ -422,15 +434,15 @@
 
     move-object v3, v0
 
-    goto :goto_14f
+    goto :goto_159
 
-    .line 155
-    :cond_136
+    .line 163
+    :cond_140
     invoke-virtual {v4, v1}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
 
     move-result v2
 
-    if-eqz v2, :cond_142
+    if-eqz v2, :cond_14c
 
     invoke-virtual {v4, v1}, Lorg/json/JSONObject;->getString(Ljava/lang/String;)Ljava/lang/String;
 
@@ -438,100 +450,100 @@
 
     move-object v3, v0
 
-    goto :goto_14f
+    goto :goto_159
 
-    .line 156
-    :cond_142
+    .line 164
+    :cond_14c
     invoke-virtual {v4, v0}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
 
     move-result v1
 
-    if-eqz v1, :cond_14f
+    if-eqz v1, :cond_159
 
     invoke-virtual {v4, v0}, Lorg/json/JSONObject;->getString(Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v0
-    :try_end_14c
-    .catchall {:try_start_125 .. :try_end_14c} :catchall_14e
+    :try_end_156
+    .catchall {:try_start_12f .. :try_end_156} :catchall_158
 
     move-object v3, v0
 
-    goto :goto_14f
+    goto :goto_159
 
-    .line 157
-    :catchall_14e
+    .line 165
+    :catchall_158
     move-exception v0
 
-    :cond_14f
-    :goto_14f
+    :cond_159
+    :goto_159
     nop
 
-    .line 159
+    .line 167
     nop
 
-    .line 160
-    :try_start_151
+    .line 168
+    :try_start_15b
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseSyncService$2;->val$callback:Lcom/streamsync/app/auth/SupabaseSyncService$AuthCallback;
 
-    if-eqz v0, :cond_15d
+    if-eqz v0, :cond_167
 
-    .line 161
+    .line 169
     new-instance v0, Lcom/streamsync/app/auth/SupabaseSyncService$2$2;
 
     invoke-direct {v0, p0, v3}, Lcom/streamsync/app/auth/SupabaseSyncService$2$2;-><init>(Lcom/streamsync/app/auth/SupabaseSyncService$2;Ljava/lang/String;)V
 
     invoke-static {v0}, Lcom/streamsync/app/auth/SupabaseSyncService;->runOnMain(Ljava/lang/Runnable;)V
-    :try_end_15d
-    .catch Ljava/lang/Exception; {:try_start_151 .. :try_end_15d} :catch_16a
+    :try_end_167
+    .catch Ljava/lang/Exception; {:try_start_15b .. :try_end_167} :catch_174
 
-    .line 178
-    :cond_15d
-    :goto_15d
-    goto :goto_177
+    .line 186
+    :cond_167
+    :goto_167
+    goto :goto_181
 
-    .line 116
-    :catchall_15e
+    .line 122
+    :catchall_168
     move-exception v0
 
-    if-eqz v7, :cond_169
+    if-eqz v8, :cond_173
 
-    :try_start_161
-    invoke-virtual {v7}, Ljava/io/OutputStream;->close()V
-    :try_end_164
-    .catchall {:try_start_161 .. :try_end_164} :catchall_165
+    :try_start_16b
+    invoke-virtual {v8}, Ljava/io/OutputStream;->close()V
+    :try_end_16e
+    .catchall {:try_start_16b .. :try_end_16e} :catchall_16f
 
-    goto :goto_169
+    goto :goto_173
 
-    :catchall_165
+    :catchall_16f
     move-exception v1
 
-    :try_start_166
+    :try_start_170
     invoke-static {v0, v1}, Lcom/streamsync/app/auth/SupabaseSyncService$$ExternalSyntheticBackport0;->m(Ljava/lang/Throwable;Ljava/lang/Throwable;)V
 
-    :cond_169
-    :goto_169
+    :cond_173
+    :goto_173
     throw v0
-    :try_end_16a
-    .catch Ljava/lang/Exception; {:try_start_166 .. :try_end_16a} :catch_16a
+    :try_end_174
+    .catch Ljava/lang/Exception; {:try_start_170 .. :try_end_174} :catch_174
 
-    .line 169
-    :catch_16a
+    .line 177
+    :catch_174
     move-exception v0
 
-    .line 170
+    .line 178
     iget-object v1, p0, Lcom/streamsync/app/auth/SupabaseSyncService$2;->val$callback:Lcom/streamsync/app/auth/SupabaseSyncService$AuthCallback;
 
-    if-eqz v1, :cond_177
+    if-eqz v1, :cond_181
 
-    .line 171
+    .line 179
     new-instance v1, Lcom/streamsync/app/auth/SupabaseSyncService$2$3;
 
     invoke-direct {v1, p0, v0}, Lcom/streamsync/app/auth/SupabaseSyncService$2$3;-><init>(Lcom/streamsync/app/auth/SupabaseSyncService$2;Ljava/lang/Exception;)V
 
     invoke-static {v1}, Lcom/streamsync/app/auth/SupabaseSyncService;->runOnMain(Ljava/lang/Runnable;)V
 
-    .line 179
-    :cond_177
-    :goto_177
+    .line 187
+    :cond_181
+    :goto_181
     return-void
 .end method

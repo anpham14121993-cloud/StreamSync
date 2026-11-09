@@ -20,11 +20,11 @@
 # instance fields
 .field final synthetic this$0:Lcom/streamsync/app/auth/SupabaseSyncService$3;
 
-.field final synthetic val$finalErrMsg:Ljava/lang/String;
+.field final synthetic val$e:Ljava/lang/Exception;
 
 
 # direct methods
-.method constructor <init>(Lcom/streamsync/app/auth/SupabaseSyncService$3;Ljava/lang/String;)V
+.method constructor <init>(Lcom/streamsync/app/auth/SupabaseSyncService$3;Ljava/lang/Exception;)V
     .registers 3
     .annotation system Ldalvik/annotation/MethodParameters;
         accessFlags = {
@@ -43,10 +43,10 @@
         }
     .end annotation
 
-    .line 262
+    .line 254
     iput-object p1, p0, Lcom/streamsync/app/auth/SupabaseSyncService$3$3;->this$0:Lcom/streamsync/app/auth/SupabaseSyncService$3;
 
-    iput-object p2, p0, Lcom/streamsync/app/auth/SupabaseSyncService$3$3;->val$finalErrMsg:Ljava/lang/String;
+    iput-object p2, p0, Lcom/streamsync/app/auth/SupabaseSyncService$3$3;->val$e:Ljava/lang/Exception;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
@@ -56,17 +56,46 @@
 
 # virtual methods
 .method public run()V
-    .registers 3
+    .registers 5
 
-    .line 265
+    .line 257
     iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseSyncService$3$3;->this$0:Lcom/streamsync/app/auth/SupabaseSyncService$3;
 
-    iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseSyncService$3;->val$callback:Lcom/streamsync/app/auth/SupabaseSyncService$AuthCallback;
+    iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseSyncService$3;->val$callback:Lcom/streamsync/app/auth/SupabaseSyncService$DeviceLinkStartCallback;
 
-    iget-object v1, p0, Lcom/streamsync/app/auth/SupabaseSyncService$3$3;->val$finalErrMsg:Ljava/lang/String;
+    if-eqz v0, :cond_26
 
-    invoke-interface {v0, v1}, Lcom/streamsync/app/auth/SupabaseSyncService$AuthCallback;->onError(Ljava/lang/String;)V
+    iget-object v0, p0, Lcom/streamsync/app/auth/SupabaseSyncService$3$3;->this$0:Lcom/streamsync/app/auth/SupabaseSyncService$3;
 
-    .line 266
+    iget-object v0, v0, Lcom/streamsync/app/auth/SupabaseSyncService$3;->val$callback:Lcom/streamsync/app/auth/SupabaseSyncService$DeviceLinkStartCallback;
+
+    iget-object v1, p0, Lcom/streamsync/app/auth/SupabaseSyncService$3$3;->val$e:Ljava/lang/Exception;
+
+    invoke-virtual {v1}, Ljava/lang/Exception;->getMessage()Ljava/lang/String;
+
+    move-result-object v1
+
+    new-instance v2, Ljava/lang/StringBuilder;
+
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+
+    const-string v3, "L\u1ed7i k\u1ebft n\u1ed1i: "
+
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v2
+
+    invoke-virtual {v2, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v1
+
+    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v1
+
+    invoke-interface {v0, v1}, Lcom/streamsync/app/auth/SupabaseSyncService$DeviceLinkStartCallback;->onError(Ljava/lang/String;)V
+
+    .line 258
+    :cond_26
     return-void
 .end method

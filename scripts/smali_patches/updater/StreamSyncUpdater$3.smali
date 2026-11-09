@@ -8,7 +8,7 @@
 
 # annotations
 .annotation system Ldalvik/annotation/EnclosingMethod;
-    value = Lcom/streamsync/app/updater/StreamSyncUpdater;->showLatestDialog(Landroid/content/Context;Ljava/lang/String;)V
+    value = Lcom/streamsync/app/updater/StreamSyncUpdater;->startInAppDownloadAndInstall(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;)V
 .end annotation
 
 .annotation system Ldalvik/annotation/InnerClass;
@@ -18,24 +18,32 @@
 
 
 # instance fields
-.field final synthetic val$context:Landroid/content/Context;
+.field final synthetic val$activity:Landroid/app/Activity;
 
-.field final synthetic val$currentVersion:Ljava/lang/String;
+.field final synthetic val$downloadUrl:Ljava/lang/String;
+
+.field final synthetic val$fileName:Ljava/lang/String;
+
+.field final synthetic val$progressDialog:Landroid/app/ProgressDialog;
 
 
 # direct methods
-.method constructor <init>(Landroid/content/Context;Ljava/lang/String;)V
-    .registers 3
+.method constructor <init>(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Landroid/app/ProgressDialog;)V
+    .registers 5
     .annotation system Ldalvik/annotation/Signature;
         value = {
             "()V"
         }
     .end annotation
 
-    .line 115
-    iput-object p1, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$3;->val$context:Landroid/content/Context;
+    .line 208
+    iput-object p1, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$3;->val$activity:Landroid/app/Activity;
 
-    iput-object p2, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$3;->val$currentVersion:Ljava/lang/String;
+    iput-object p2, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$3;->val$fileName:Ljava/lang/String;
+
+    iput-object p3, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$3;->val$downloadUrl:Ljava/lang/String;
+
+    iput-object p4, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$3;->val$progressDialog:Landroid/app/ProgressDialog;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
@@ -45,77 +53,267 @@
 
 # virtual methods
 .method public run()V
-    .registers 5
+    .registers 12
 
-    .line 119
-    :try_start_0
-    new-instance v0, Landroid/app/AlertDialog$Builder;
+    .line 211
+    nop
 
-    iget-object v1, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$3;->val$context:Landroid/content/Context;
+    .line 213
+    const/4 v0, 0x0
 
-    invoke-direct {v0, v1}, Landroid/app/AlertDialog$Builder;-><init>(Landroid/content/Context;)V
+    :try_start_2
+    new-instance v1, Ljava/io/File;
 
-    const-string v1, "C\u1eadp nh\u1eadt \u1ee9ng d\u1ee5ng"
+    iget-object v2, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$3;->val$activity:Landroid/app/Activity;
 
-    .line 120
-    invoke-virtual {v0, v1}, Landroid/app/AlertDialog$Builder;->setTitle(Ljava/lang/CharSequence;)Landroid/app/AlertDialog$Builder;
-
-    move-result-object v0
-
-    iget-object v1, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$3;->val$currentVersion:Ljava/lang/String;
-
-    new-instance v2, Ljava/lang/StringBuilder;
-
-    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
-
-    const-string v3, "\u1ee8ng d\u1ee5ng \u0111ang \u1edf phi\u00ean b\u1ea3n m\u1edbi nh\u1ea5t ("
-
-    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v2}, Landroid/app/Activity;->getCacheDir()Ljava/io/File;
 
     move-result-object v2
 
-    invoke-virtual {v2, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    const-string v3, "updates"
 
-    move-result-object v1
+    invoke-direct {v1, v2, v3}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
 
-    const-string v2, ")!"
+    .line 214
+    invoke-virtual {v1}, Ljava/io/File;->exists()Z
 
-    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result v2
 
-    move-result-object v1
+    if-nez v2, :cond_18
 
-    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    invoke-virtual {v1}, Ljava/io/File;->mkdirs()Z
 
-    move-result-object v1
+    .line 215
+    :cond_18
+    new-instance v2, Ljava/io/File;
 
-    .line 121
-    invoke-virtual {v0, v1}, Landroid/app/AlertDialog$Builder;->setMessage(Ljava/lang/CharSequence;)Landroid/app/AlertDialog$Builder;
+    iget-object v3, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$3;->val$fileName:Ljava/lang/String;
+
+    invoke-direct {v2, v1, v3}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    :try_end_1f
+    .catchall {:try_start_2 .. :try_end_1f} :catchall_b9
+
+    .line 216
+    :try_start_1f
+    invoke-virtual {v2}, Ljava/io/File;->exists()Z
+
+    move-result v0
+
+    if-eqz v0, :cond_28
+
+    invoke-virtual {v2}, Ljava/io/File;->delete()Z
+
+    .line 218
+    :cond_28
+    new-instance v0, Ljava/net/URL;
+
+    iget-object v1, p0, Lcom/streamsync/app/updater/StreamSyncUpdater$3;->val$downloadUrl:Ljava/lang/String;
+
+    invoke-direct {v0, v1}, Ljava/net/URL;-><init>(Ljava/lang/String;)V
+
+    .line 219
+    invoke-virtual {v0}, Ljava/net/URL;->openConnection()Ljava/net/URLConnection;
 
     move-result-object v0
 
-    const-string v1, "\u0110\u00f3ng"
+    check-cast v0, Ljava/net/HttpURLConnection;
 
-    .line 122
-    const/4 v2, 0x0
+    .line 220
+    const/4 v1, 0x1
 
-    invoke-virtual {v0, v1, v2}, Landroid/app/AlertDialog$Builder;->setPositiveButton(Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
+    invoke-virtual {v0, v1}, Ljava/net/HttpURLConnection;->setInstanceFollowRedirects(Z)V
+
+    .line 221
+    const/16 v3, 0x3a98
+
+    invoke-virtual {v0, v3}, Ljava/net/HttpURLConnection;->setConnectTimeout(I)V
+
+    .line 222
+    invoke-virtual {v0, v3}, Ljava/net/HttpURLConnection;->setReadTimeout(I)V
+
+    .line 225
+    invoke-virtual {v0}, Ljava/net/HttpURLConnection;->getResponseCode()I
+
+    move-result v3
+
+    .line 226
+    const/16 v4, 0x12e
+
+    if-eq v3, v4, :cond_55
+
+    const/16 v4, 0x12d
+
+    if-eq v3, v4, :cond_55
+
+    const/16 v4, 0x133
+
+    if-eq v3, v4, :cond_55
+
+    const/16 v4, 0x134
+
+    if-ne v3, v4, :cond_69
+
+    .line 227
+    :cond_55
+    const-string v3, "Location"
+
+    invoke-virtual {v0, v3}, Ljava/net/HttpURLConnection;->getHeaderField(Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v0
 
-    .line 123
-    invoke-virtual {v0}, Landroid/app/AlertDialog$Builder;->show()Landroid/app/AlertDialog;
-    :try_end_36
-    .catchall {:try_start_0 .. :try_end_36} :catchall_37
+    .line 228
+    new-instance v3, Ljava/net/URL;
 
-    goto :goto_38
+    invoke-direct {v3, v0}, Ljava/net/URL;-><init>(Ljava/lang/String;)V
 
-    .line 124
-    :catchall_37
-    move-exception v0
+    invoke-virtual {v3}, Ljava/net/URL;->openConnection()Ljava/net/URLConnection;
 
-    :goto_38
+    move-result-object v0
+
+    check-cast v0, Ljava/net/HttpURLConnection;
+
+    .line 229
+    invoke-virtual {v0, v1}, Ljava/net/HttpURLConnection;->setInstanceFollowRedirects(Z)V
+
+    .line 232
+    :cond_69
+    invoke-virtual {v0}, Ljava/net/HttpURLConnection;->getContentLength()I
+
+    move-result v1
+
+    .line 233
+    invoke-virtual {v0}, Ljava/net/HttpURLConnection;->getInputStream()Ljava/io/InputStream;
+
+    move-result-object v0
+
+    .line 234
+    new-instance v3, Ljava/io/FileOutputStream;
+
+    invoke-direct {v3, v2}, Ljava/io/FileOutputStream;-><init>(Ljava/io/File;)V
+
+    .line 236
+    const/16 v4, 0x2000
+
+    new-array v4, v4, [B
+
+    .line 237
+    const-wide/16 v5, 0x0
+
+    .line 239
+    :cond_7c
+    :goto_7c
+    invoke-virtual {v0, v4}, Ljava/io/InputStream;->read([B)I
+
+    move-result v7
+
+    const/4 v8, -0x1
+
+    if-eq v7, v8, :cond_9f
+
+    .line 240
+    int-to-long v8, v7
+
+    add-long/2addr v5, v8
+
+    .line 241
+    const/4 v8, 0x0
+
+    invoke-virtual {v3, v4, v8, v7}, Ljava/io/FileOutputStream;->write([BII)V
+
+    .line 242
+    if-lez v1, :cond_7c
+
+    .line 243
+    const-wide/16 v7, 0x64
+
+    mul-long v7, v7, v5
+
+    int-to-long v9, v1
+
+    div-long/2addr v7, v9
+
+    long-to-int v8, v7
+
+    .line 244
+    invoke-static {}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$sfgetsMainHandler()Landroid/os/Handler;
+
+    move-result-object v7
+
+    new-instance v9, Lcom/streamsync/app/updater/StreamSyncUpdater$3$1;
+
+    invoke-direct {v9, p0, v8}, Lcom/streamsync/app/updater/StreamSyncUpdater$3$1;-><init>(Lcom/streamsync/app/updater/StreamSyncUpdater$3;I)V
+
+    invoke-virtual {v7, v9}, Landroid/os/Handler;->post(Ljava/lang/Runnable;)Z
+
+    .line 250
+    goto :goto_7c
+
+    .line 253
+    :cond_9f
+    invoke-virtual {v3}, Ljava/io/FileOutputStream;->flush()V
+
+    .line 254
+    invoke-virtual {v3}, Ljava/io/FileOutputStream;->close()V
+
+    .line 255
+    invoke-virtual {v0}, Ljava/io/InputStream;->close()V
+
+    .line 257
     nop
 
-    .line 125
+    .line 258
+    invoke-static {}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$sfgetsMainHandler()Landroid/os/Handler;
+
+    move-result-object v0
+
+    new-instance v1, Lcom/streamsync/app/updater/StreamSyncUpdater$3$2;
+
+    invoke-direct {v1, p0, v2}, Lcom/streamsync/app/updater/StreamSyncUpdater$3$2;-><init>(Lcom/streamsync/app/updater/StreamSyncUpdater$3;Ljava/io/File;)V
+
+    invoke-virtual {v0, v1}, Landroid/os/Handler;->post(Ljava/lang/Runnable;)Z
+    :try_end_b5
+    .catchall {:try_start_1f .. :try_end_b5} :catchall_b6
+
+    .line 277
+    goto :goto_d1
+
+    .line 266
+    :catchall_b6
+    move-exception v1
+
+    move-object v0, v2
+
+    goto :goto_ba
+
+    :catchall_b9
+    move-exception v1
+
+    .line 267
+    :goto_ba
+    if-eqz v0, :cond_c5
+
+    invoke-virtual {v0}, Ljava/io/File;->exists()Z
+
+    move-result v2
+
+    if-eqz v2, :cond_c5
+
+    .line 268
+    invoke-virtual {v0}, Ljava/io/File;->delete()Z
+
+    .line 270
+    :cond_c5
+    invoke-static {}, Lcom/streamsync/app/updater/StreamSyncUpdater;->-$$Nest$sfgetsMainHandler()Landroid/os/Handler;
+
+    move-result-object v0
+
+    new-instance v2, Lcom/streamsync/app/updater/StreamSyncUpdater$3$3;
+
+    invoke-direct {v2, p0, v1}, Lcom/streamsync/app/updater/StreamSyncUpdater$3$3;-><init>(Lcom/streamsync/app/updater/StreamSyncUpdater$3;Ljava/lang/Throwable;)V
+
+    invoke-virtual {v0, v2}, Landroid/os/Handler;->post(Ljava/lang/Runnable;)Z
+
+    .line 278
+    :goto_d1
     return-void
 .end method

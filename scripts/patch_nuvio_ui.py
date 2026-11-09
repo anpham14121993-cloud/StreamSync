@@ -13,9 +13,15 @@ Applies Nuvio smooth UI & performance optimizations directly to decompiled Strea
 5. Player Default Decoder: Sets default decoder to "Ưu tiên bộ giải mã thiết bị" (PREFER_DEVICE).
 6. Integrations & DNS/ByeDPI: Merges DNS-over-HTTPS and ByeDPI into the "Tích hợp" settings section.
 7. Account & Supabase Sync: Hooks Settings row to Nuvio Mobile-style Supabase authentication and account management.
-8. In-App Updater: Adds crash-free "Cập nhật ứng dụng" checking releases from repo anpham14121993-cloud/StreamSync with direct download & install dialog.
-9. Upgrade & Overwrite Support: Increments versionCode to 189 and versionName to 1.8.9 with REQUEST_INSTALL_PACKAGES permission and fixed keystore.
+8. In-App Updater: Adds OTA in-app updater checking releases from repo anpham14121993-cloud/StreamSync with direct download & FileProvider install dialog.
+9. Upgrade & Overwrite Support: Increments versionCode to 190 and versionName to 1.9.0 with REQUEST_INSTALL_PACKAGES permission and fixed keystore.
 10. Native Libraries: Injects 64-bit arm64-v8a and 32-bit armeabi-v7a native libraries (FFmpeg JNI, AC3, Subtitle translation).
+11. Meta Screen Upgrades:
+   - Fixes missing Cast / Actors in AddonRepository for single-part composite IDs (Cinemeta).
+   - Fixes movie showing series episode selector in AddonRepositoryKt.
+   - Hides stream list on detail screen until user clicks 'Xem phim'.
+   - Adds primary 'Xem phim' ActionButton in DetailActionRow.
+   - Allows stream titles to wrap across multiple lines (maxLines = 5) like Nuvio.
 """
 
 import os
@@ -66,6 +72,13 @@ def find_files(root_dir, pattern):
         for fname in filenames:
             if regex.search(fname):
                 matches.append(os.path.join(dirpath, fname))
+    return matches
+
+def find_file_exact(root_dir, exact_name):
+    matches = []
+    for dirpath, _, filenames in os.walk(root_dir):
+        if exact_name in filenames:
+            matches.append(os.path.join(dirpath, exact_name))
     return matches
 
 def patch_continue_watching(unpack_dir):
@@ -488,15 +501,15 @@ def patch_settings_integrations_and_account_and_updater(unpack_dir, script_dir):
         with open(s4_path, 'r', encoding='utf-8', errors='ignore') as f:
             s4_content = f.read()
 
-        # Update text "Máy chủ đồng bộ" -> "Tài khoản & Đồng bộ Supabase"
+        # Update text "Máy chủ đồng bộ" -> "Tài khoản" (strictly Tài khoản, no supabase text)
         if "M\\u00e1y ch\\u1ee7 \\u0111\\u1ed3ng b\\u1ed9" in s4_content:
             s4_content = s4_content.replace(
                 "M\\u00e1y ch\\u1ee7 \\u0111\\u1ed3ng b\\u1ed9",
-                "T\\u00e0i kho\\u1ea3n & \\u0110\\u1ed3ng b\\u1ed9 Supabase"
+                "T\\u00e0i kho\\u1ea3n"
             )
             s4_content = s4_content.replace(
                 "G\\u1eedi ti\\u1ebfn \\u0111\\u1ed9 xem l\\u00ean m\\u00e1y ch\\u1ee7 c\\u1ee7a b\\u1ea1n, ho\\u1eb7c d\\u00f9ng addon sync",
-                "T\\u00e0i kho\\u1ea3n Supabase, \\u0111\\u1ed3ng b\\u1ed9 ti\\u1ebfn \\u0111\\u1ed9 xem v\\u00e0 c\\u1ea5u h\\u00ecnh \\u0111a thi\\u1ebft b\\u1ecb"
+                "\\u0110\\u0103ng nh\\u1eadp t\\u00e0i kho\\u1ea3n \\u0111\\u1ec3 t\\u1ef1 \\u0111\\u1ed9ng \\u0111\\u1ed3ng b\\u1ed9"
             )
 
         # Hook Account row to SupabaseAccountManager via AccountClickLambda
@@ -518,7 +531,7 @@ def patch_settings_integrations_and_account_and_updater(unpack_dir, script_dir):
     invoke-static {v0}, Landroidx/compose/material/icons/filled/SystemUpdateKt;->getSystemUpdate(Landroidx/compose/material/icons/Icons$Filled;)Landroidx/compose/ui/graphics/vector/ImageVector;
     move-result-object v1
     const-string v2, "C\\u1eadp nh\\u1eadt \\u1ee9ng d\\u1ee5ng"
-    const-string v3, "B\\u1ea3n v1.8.9 \\u2022 Ki\\u1ec3m tra phi\\u00ean b\\u1ea3n m\\u1edbi t\\u1eeb repo StreamSync"
+    const-string v3, "B\\u1ea3n v1.9.0 \\u2022 Ki\\u1ec3m tra & c\\u1eadp nh\\u1eadt tr\\u1ef1c ti\\u1ebfp (OTA)"
     new-instance v4, Lcom/streamsync/app/updater/UpdaterClickLambda;
     invoke-direct {v4}, Lcom/streamsync/app/updater/UpdaterClickLambda;-><init>()V
     const/16 v6, 0x1b0
@@ -544,6 +557,14 @@ def patch_settings_integrations_and_account_and_updater(unpack_dir, script_dir):
     os.makedirs(updater_dir, exist_ok=True)
     os.makedirs(auth_dir, exist_ok=True)
 
+    # Clean old classes
+    for existing in os.listdir(updater_dir):
+        if existing.endswith(".smali"):
+            os.remove(os.path.join(updater_dir, existing))
+    for existing in os.listdir(auth_dir):
+        if existing.endswith(".smali"):
+            os.remove(os.path.join(auth_dir, existing))
+
     src_updater = os.path.join(smali_patches_dir, "updater")
     for f in os.listdir(src_updater):
         if f.endswith(".smali"):
@@ -555,6 +576,275 @@ def patch_settings_integrations_and_account_and_updater(unpack_dir, script_dir):
         if f.endswith(".smali"):
             shutil.copy2(os.path.join(src_auth, f), os.path.join(auth_dir, f))
     log("Copied precompiled Auth smali classes.")
+
+    return True
+
+def patch_meta_screen(unpack_dir, script_dir):
+    """
+    Patches the Movie Detail / Meta screen:
+    1. Fixes missing Cast / Actors in AddonRepository (enrichFromMeta & findItemRaw) for single-part composite IDs (Cinemeta).
+    2. Fixes movie showing series episode selector in AddonRepositoryKt (isSeriesWithEpisodes checks type == 'series').
+    3. Hides stream list on detail screen until user clicks 'Xem phim' (gated by PlayClickLambda.sWatchRequested).
+    4. Adds primary 'Xem phim' ActionButton in DetailActionRow (DetailSectionsKt).
+    5. Allows stream titles to wrap across multiple lines (maxLines = 5) like Nuvio (StreamRow$1).
+    6. Copies MetaHelper.smali and PlayClickLambda.smali.
+    """
+    log("Patching Meta detail screen (Cast display, watch-before-stream, episode selector fix, multi-line streams)...")
+
+    # 1. Copy MetaHelper.smali to data package
+    data_repo_targets = find_file_exact(unpack_dir, "AddonRepository.smali")
+    if data_repo_targets:
+        data_dir = os.path.dirname(os.path.dirname(data_repo_targets[0]))
+        smali_patches_dir = os.path.join(script_dir, "smali_patches")
+        shutil.copy2(
+            os.path.join(smali_patches_dir, "data", "MetaHelper.smali"),
+            os.path.join(data_dir, "MetaHelper.smali")
+        )
+        log("Copied MetaHelper.smali.")
+
+        # 2. Patch AddonRepository.smali (enrichFromMeta & findItemRaw)
+        with open(data_repo_targets[0], 'r', encoding='utf-8', errors='ignore') as f:
+            repo_content = f.read()
+
+        changed_repo = False
+
+        # 2a. enrichFromMeta parts
+        p_enrich_parts = re.compile(r'invoke-interface\s*\{v11\},\s*Ljava/util/List;->size\(\)I[\s\S]*?check-cast\s+v3,\s*Ljava/lang/String;')
+        enrich_parts_rep = """invoke-static {v3}, Lcom/streamsync/app/data/MetaHelper;->isValidParts(Ljava/util/List;)Z
+    move-result v8
+    if-nez v8, :cond_parts_ok
+    return-object v7
+
+    :cond_parts_ok
+    invoke-static {v3}, Lcom/streamsync/app/data/MetaHelper;->getAddonId(Ljava/util/List;)Ljava/lang/String;
+    move-result-object v11
+    invoke-static {v3}, Lcom/streamsync/app/data/MetaHelper;->getItemId(Ljava/util/List;)Ljava/lang/String;
+    move-result-object v3"""
+        if p_enrich_parts.search(repo_content):
+            repo_content = p_enrich_parts.sub(enrich_parts_rep, repo_content, count=1)
+            changed_repo = True
+            log("Patched enrichFromMeta parts validation with MetaHelper.")
+
+        # 2b. enrichFromMeta firstOrNull
+        p_enrich_match = re.compile(r'invoke-virtual\s*\{v15\},\s*Lcom/streamsync/app/data/addon/AddonManifest;->getId\(\)Ljava/lang/String;[\s\S]*?invoke-static\s*\{v7,\s*v11\},\s*Lkotlin/jvm/internal/Intrinsics;->areEqual\(Ljava/lang/Object;Ljava/lang/Object;\)Z')
+        enrich_match_rep = """invoke-static {v15, v11}, Lcom/streamsync/app/data/MetaHelper;->matchesAddon(Lcom/streamsync/app/data/addon/AddonManifest;Ljava/lang/String;)Z"""
+        if p_enrich_match.search(repo_content):
+            repo_content = p_enrich_match.sub(enrich_match_rep, repo_content, count=1)
+            changed_repo = True
+            log("Patched enrichFromMeta firstOrNull match with MetaHelper.")
+
+        # 2c. findItemRaw parts
+        p_find_parts = re.compile(r'invoke-interface\s*\{v5\},\s*Ljava/util/List;->size\(\)I[\s\S]*?check-cast\s+v0,\s*Ljava/lang/String;')
+        find_parts_rep = """invoke-static {v0}, Lcom/streamsync/app/data/MetaHelper;->isValidParts(Ljava/util/List;)Z
+    move-result v2
+    if-nez v2, :cond_find_ok
+    const/4 v2, 0x0
+    return-object v2
+
+    :cond_find_ok
+    invoke-static {v0}, Lcom/streamsync/app/data/MetaHelper;->getAddonId(Ljava/util/List;)Ljava/lang/String;
+    move-result-object v2
+    invoke-static {v0}, Lcom/streamsync/app/data/MetaHelper;->getItemId(Ljava/util/List;)Ljava/lang/String;
+    move-result-object v0"""
+        if p_find_parts.search(repo_content):
+            repo_content = p_find_parts.sub(find_parts_rep, repo_content, count=1)
+            changed_repo = True
+            log("Patched findItemRaw parts validation with MetaHelper.")
+
+        # 2d. findItemRaw firstOrNull
+        p_find_match = re.compile(r'invoke-virtual\s*\{v7\},\s*Lcom/streamsync/app/data/addon/AddonManifest;->getId\(\)Ljava/lang/String;[\s\S]*?invoke-static\s*\{v2,\s*v13\},\s*Lkotlin/jvm/internal/Intrinsics;->areEqual\(Ljava/lang/Object;Ljava/lang/Object;\)Z')
+        find_match_rep = """invoke-static {v7, v13}, Lcom/streamsync/app/data/MetaHelper;->matchesAddon(Lcom/streamsync/app/data/addon/AddonManifest;Ljava/lang/String;)Z"""
+        if p_find_match.search(repo_content):
+            repo_content = p_find_match.sub(find_match_rep, repo_content, count=1)
+            changed_repo = True
+            log("Patched findItemRaw firstOrNull match with MetaHelper.")
+
+        if changed_repo:
+            with open(data_repo_targets[0], 'w', encoding='utf-8') as f:
+                f.write(repo_content)
+
+    # 3. Patch AddonRepositoryKt.smali (isSeriesWithEpisodes)
+    repo_kt_targets = find_file_exact(unpack_dir, "AddonRepositoryKt.smali")
+    if repo_kt_targets:
+        with open(repo_kt_targets[0], 'r', encoding='utf-8', errors='ignore') as f:
+            kt_content = f.read()
+
+        series_check_smali = """.method public static final isSeriesWithEpisodes(Lcom/streamsync/app/data/addon/AddonMeta;)Z
+    .locals 2
+    .param p0, "$this$isSeriesWithEpisodes"    # Lcom/streamsync/app/data/addon/AddonMeta;
+
+    if-nez p0, :cond_null
+    const/4 v0, 0x0
+    return v0
+
+    :cond_null
+    invoke-virtual {p0}, Lcom/streamsync/app/data/addon/AddonMeta;->getType()Ljava/lang/String;
+    move-result-object v0
+    const-string v1, "series"
+    invoke-static {v1, v0}, Lkotlin/jvm/internal/Intrinsics;->areEqual(Ljava/lang/Object;Ljava/lang/Object;)Z
+    move-result v0
+    if-nez v0, :cond_is_series
+
+    const/4 v0, 0x0
+    return v0
+
+    :cond_is_series
+    invoke-virtual {p0}, Lcom/streamsync/app/data/addon/AddonMeta;->getVideos()Ljava/util/List;
+    move-result-object v0
+    check-cast v0, Ljava/util/Collection;
+    const/4 v1, 0x1
+    if-eqz v0, :cond_1
+    invoke-interface {v0}, Ljava/util/Collection;->isEmpty()Z
+    move-result v0
+    if-eqz v0, :cond_0
+    goto :goto_0
+
+    :cond_0
+    const/4 v0, 0x0
+    goto :goto_1
+
+    :cond_1
+    :goto_0
+    move v0, v1
+
+    :goto_1
+    xor-int/2addr v0, v1
+    return v0
+.end method"""
+        p_series = re.compile(r'\.method public static final isSeriesWithEpisodes\(Lcom/streamsync/app/data/addon/AddonMeta;\)Z[\s\S]*?\.end method')
+        if p_series.search(kt_content):
+            kt_content = p_series.sub(series_check_smali, kt_content)
+            with open(repo_kt_targets[0], 'w', encoding='utf-8') as f:
+                f.write(kt_content)
+            log("Patched isSeriesWithEpisodes to check meta.type == 'series'.")
+
+    # 4. Copy PlayClickLambda.smali to ui/detail
+    detail_dirs = find_file_exact(unpack_dir, "MovieDetailScreenKt.smali")
+    if detail_dirs:
+        detail_target_dir = os.path.dirname(detail_dirs[0])
+        smali_patches_dir = os.path.join(script_dir, "smali_patches")
+        shutil.copy2(
+            os.path.join(smali_patches_dir, "detail", "PlayClickLambda.smali"),
+            os.path.join(detail_target_dir, "PlayClickLambda.smali")
+        )
+        log("Copied PlayClickLambda.smali.")
+
+        # 5. Patch MovieDetailScreenKt.smali (sCurrentViewModel & sWatchRequested reset)
+        with open(detail_dirs[0], 'r', encoding='utf-8', errors='ignore') as f:
+            mds_content = f.read()
+
+        changed_mds = False
+        if "sCurrentViewModel" not in mds_content:
+            mds_content = mds_content.replace(
+                "# static fields\n",
+                "# static fields\n.field public static sCurrentViewModel:Lcom/streamsync/app/ui/detail/MovieDetailViewModel;\n"
+            )
+            changed_mds = True
+
+        p_start_mds = re.compile(r'(\.method public static final MovieDetailScreen[^\n]+\s*\.locals\s+\d+)')
+        if "PlayClickLambda;->sWatchRequested" not in mds_content and p_start_mds.search(mds_content):
+            mds_content = p_start_mds.sub(
+                r'\1\n    const/4 v0, 0x0\n    sput-boolean v0, Lcom/streamsync/app/ui/detail/PlayClickLambda;->sWatchRequested:Z',
+                mds_content
+            )
+            changed_mds = True
+
+        p_cast_vm = re.compile(r'(check-cast\s+(v\d+),\s*Lcom/streamsync/app/ui/detail/MovieDetailViewModel;\s*\n\s*\.local\s+\2,\s*\"viewModel\")')
+        if "sCurrentViewModel" in mds_content and "sput-object" not in mds_content:
+            mds_content = p_cast_vm.sub(
+                r'\1\n    sput-object \2, Lcom/streamsync/app/ui/detail/MovieDetailScreenKt;->sCurrentViewModel:Lcom/streamsync/app/ui/detail/MovieDetailViewModel;',
+                mds_content
+            )
+            changed_mds = True
+
+        if changed_mds:
+            with open(detail_dirs[0], 'w', encoding='utf-8') as f:
+                f.write(mds_content)
+            log("Patched MovieDetailScreenKt with sCurrentViewModel and sWatchRequested reset.")
+
+    # 6. Patch MovieDetailScreenKt$MovieDetailScreen$3$4$1.smali (gate streamSection on sWatchRequested)
+    m341_targets = find_file_exact(unpack_dir, "MovieDetailScreenKt$MovieDetailScreen$3$4$1.smali")
+    if m341_targets:
+        with open(m341_targets[0], 'r', encoding='utf-8', errors='ignore') as f:
+            m341_content = f.read()
+
+        p_stream_gate = re.compile(r'(:cond_7\s*\n\s*iget-object\s+v0,\s*p0,\s*Lcom/streamsync/app/ui/detail/MovieDetailScreenKt\$MovieDetailScreen\$3\$4\$1;->\$streamSection:Lkotlin/jvm/functions/Function1;)')
+        if p_stream_gate.search(m341_content):
+            m341_content = p_stream_gate.sub(
+                ":cond_7\n    sget-boolean v0, Lcom/streamsync/app/ui/detail/PlayClickLambda;->sWatchRequested:Z\n    if-nez v0, :cond_8\n    \\1",
+                m341_content
+            )
+            with open(m341_targets[0], 'w', encoding='utf-8') as f:
+                f.write(m341_content)
+            log("Gated MovieDetailScreen movie streamSection on sWatchRequested.")
+
+    # 7. Patch MovieDetailViewModel$load$1$sourcesDeferred$1.smali (skip initial stream resolution)
+    sd_targets = find_file_exact(unpack_dir, "MovieDetailViewModel$load$1$sourcesDeferred$1.smali")
+    if sd_targets:
+        with open(sd_targets[0], 'r', encoding='utf-8', errors='ignore') as f:
+            sd_content = f.read()
+
+        p_sd = re.compile(r'(:pswitch_1\s*\n\s*invoke-static\s*\{p1\},\s*Lkotlin/ResultKt;->throwOnFailure\(Ljava/lang/Object;\)V)')
+        if p_sd.search(sd_content):
+            sd_rep = r""":pswitch_1
+    invoke-static {p1}, Lkotlin/ResultKt;->throwOnFailure(Ljava/lang/Object;)V
+    sget-boolean v0, Lcom/streamsync/app/ui/detail/PlayClickLambda;->sWatchRequested:Z
+    if-nez v0, :cond_fetch_sources
+    invoke-static {}, Lkotlin/collections/CollectionsKt;->emptyList()Ljava/util/List;
+    move-result-object v2
+    return-object v2
+    :cond_fetch_sources"""
+            sd_content = p_sd.sub(sd_rep, sd_content)
+            with open(sd_targets[0], 'w', encoding='utf-8') as f:
+                f.write(sd_content)
+            log("Patched MovieDetailViewModel sourcesDeferred to wait for watch click.")
+
+    # 8. Patch DetailSectionsKt.smali (insert primary 'Xem phim' ActionButton)
+    ds_targets = find_file_exact(unpack_dir, "DetailSectionsKt.smali")
+    if ds_targets:
+        with open(ds_targets[0], 'r', encoding='utf-8', errors='ignore') as f:
+            ds_content = f.read()
+
+        p_row_start = re.compile(r'(const\s+v5,\s*-0x222835d3\s*\n\s*invoke-interface\s*\{v12,\s*v5\},\s*Landroidx/compose/runtime/Composer;->startReplaceableGroup\(I\)V)')
+        if "PlayClickLambda" not in ds_content and p_row_start.search(ds_content):
+            play_btn_smali = """# [NUVIO PATCH] Primary 'Xem phim' ActionButton
+    sget-object v8, Landroidx/compose/material/icons/Icons;->INSTANCE:Landroidx/compose/material/icons/Icons;
+    invoke-virtual {v8}, Landroidx/compose/material/icons/Icons;->getDefault()Landroidx/compose/material/icons/Icons$Filled;
+    move-result-object v8
+    invoke-static {v8}, Landroidx/compose/material/icons/filled/PlayArrowKt;->getPlayArrow(Landroidx/compose/material/icons/Icons$Filled;)Landroidx/compose/ui/graphics/vector/ImageVector;
+    move-result-object v32
+    const-string v33, "Xem phim"
+    const/16 v34, 0x1
+    new-instance v35, Lcom/streamsync/app/ui/detail/PlayClickLambda;
+    invoke-direct/range {v35 .. v35}, Lcom/streamsync/app/ui/detail/PlayClickLambda;-><init>()V
+    check-cast v35, Lkotlin/jvm/functions/Function0;
+    const/16 v37, 0x1b0
+    move-object/from16 v36, v12
+    invoke-static/range {v32 .. v37}, Lcom/streamsync/app/ui/detail/DetailSectionsKt;->ActionButton(Landroidx/compose/ui/graphics/vector/ImageVector;Ljava/lang/String;ZLkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;I)V
+
+    \\1"""
+            ds_content = p_row_start.sub(play_btn_smali, ds_content)
+            # Make trailer button secondary (const/16 v34, 0x0)
+            ds_content = ds_content.replace(
+                'const-string v33, "Xem trailer"\\n\\n    const/16 v34, 0x1',
+                'const-string v33, "Xem trailer"\\n\\n    const/16 v34, 0x0'
+            )
+            with open(ds_targets[0], 'w', encoding='utf-8') as f:
+                f.write(ds_content)
+            log("Injected primary 'Xem phim' ActionButton into DetailActionRow.")
+
+    # 9. Patch StreamRow$1.smali (multi-line stream rows up to 5 lines)
+    sr_targets = find_file_exact(unpack_dir, "MovieDetailScreenKt$StreamRow$1.smali")
+    if sr_targets:
+        with open(sr_targets[0], 'r', encoding='utf-8', errors='ignore') as f:
+            sr_content = f.read()
+
+        p_maxlines = re.compile(r'(const/16\s+v\d+,\s*)0x[12](\s*\n\s*const/16\s+v\d+,\s*0x0\s*\n\s*const/16\s+v\d+,\s*0x0[\s\S]*?Text--4IGK_g)')
+        sr_content_patched, count = p_maxlines.subn(r'\g<1>0x5\2', sr_content)
+        if count > 0:
+            with open(sr_targets[0], 'w', encoding='utf-8') as f:
+                f.write(sr_content_patched)
+            log(f"Patched {count} stream Text elements to support up to 5 lines.")
 
     return True
 
@@ -599,12 +889,43 @@ def patch_manifest_and_resources(unpack_dir):
         log("Added REQUEST_INSTALL_PACKAGES permission for updates.")
         changed = True
 
-    # 4. Bump versionCode to 189 and versionName to 1.8.9 for overwrite/update support
-    if 'android:versionCode=' in manifest:
-        manifest = re.sub(r'android:versionCode="[^"]*"', 'android:versionCode="189"', manifest)
-        manifest = re.sub(r'android:versionName="[^"]*"', 'android:versionName="1.8.9"', manifest)
-        log("Updated AndroidManifest versionCode to 189 and versionName to 1.8.9.")
+    # 3b. Add FileProvider for in-app OTA installer
+    if "com.streamsync.app.fileprovider" not in manifest:
+        provider_xml = """        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.streamsync.app.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+    </application>"""
+        manifest = manifest.replace("</application>", provider_xml, 1)
+        log("Added FileProvider to AndroidManifest.")
         changed = True
+
+    # 4. Bump versionCode to 190 and versionName to 1.9.0 for overwrite/update support
+    if 'android:versionCode=' in manifest:
+        manifest = re.sub(r'android:versionCode="[^"]*"', 'android:versionCode="190"', manifest)
+        manifest = re.sub(r'android:versionName="[^"]*"', 'android:versionName="1.9.0"', manifest)
+        log("Updated AndroidManifest versionCode to 190 and versionName to 1.9.0.")
+        changed = True
+
+    # 4b. Create res/xml/file_paths.xml for FileProvider
+    xml_dir = os.path.join(unpack_dir, "res", "xml")
+    os.makedirs(xml_dir, exist_ok=True)
+    file_paths_xml = """<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <cache-path name="cache" path="." />
+    <external-cache-path name="external_cache" path="." />
+    <external-files-path name="external_files" path="." />
+    <files-path name="files" path="." />
+</paths>
+"""
+    with open(os.path.join(xml_dir, "file_paths.xml"), "w", encoding="utf-8") as f:
+        f.write(file_paths_xml)
+    log("Created res/xml/file_paths.xml.")
 
     # 5. Add banner attribute to application if not present
     if 'android:banner=' not in manifest:
@@ -628,8 +949,8 @@ def patch_manifest_and_resources(unpack_dir):
         with open(apktool_yml_path, 'r', encoding='utf-8') as yf:
             yml_content = yf.read()
         
-        yml_content = re.sub(r"versionCode:\s*'[0-9]+'", "versionCode: '189'", yml_content)
-        yml_content = re.sub(r"versionName:\s*'[^']*'", "versionName: '1.8.9'", yml_content)
+        yml_content = re.sub(r"versionCode:\s*'[0-9]+'", "versionCode: '190'", yml_content)
+        yml_content = re.sub(r"versionName:\s*'[^']*'", "versionName: '1.9.0'", yml_content)
 
         if "doNotCompress:" in yml_content and "- so" not in yml_content:
             yml_content = yml_content.replace(
@@ -638,7 +959,7 @@ def patch_manifest_and_resources(unpack_dir):
             )
         with open(apktool_yml_path, 'w', encoding='utf-8') as yf:
             yf.write(yml_content)
-        log("Updated apktool.yml with version 189 (1.8.9) and uncompressed shared libraries.")
+        log("Updated apktool.yml with version 190 (1.9.0) and uncompressed shared libraries.")
 
     # 8. Generate tv_banner.png and copy tv_banner.xml into res/drawable
     drawable_dir = os.path.join(unpack_dir, "res", "drawable")
@@ -699,6 +1020,7 @@ def main():
     patch_single_swipe_and_exit_dialog(unpack_dir, script_dir)
     patch_default_decoder(unpack_dir)
     patch_settings_integrations_and_account_and_updater(unpack_dir, script_dir)
+    patch_meta_screen(unpack_dir, script_dir)
     patch_manifest_and_resources(unpack_dir)
     inject_native_libraries(unpack_dir, repo_root)
     log("All Nuvio UI & feature patches successfully applied!")
