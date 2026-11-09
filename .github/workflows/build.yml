@@ -125,28 +125,28 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG="v1.9.6"
+          TAG="v1.9.7"
           echo "=== Publishing Release $TAG ==="
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" output-apks/StreamSync-arm64-v8a.apk output-apks/StreamSync-armeabi-v7a.apk output-apks/StreamSync-universal.apk --clobber
           else
             gh release create "$TAG" output-apks/StreamSync-arm64-v8a.apk output-apks/StreamSync-armeabi-v7a.apk output-apks/StreamSync-universal.apk \
-              --title "AioStream v1.9.6 (Fix Native SIGSEGV/SIGABRT on Large Movies via Standard Media3 FFmpeg Libs)" \
-              --notes "Bản phát hành chính thức AioStream v1.9.6:
+              --title "AioStream v1.9.7 (Auto RAM Buffer Scaled to RAM/4 & LargeHeap Enabled)" \
+              --notes "Bản phát hành chính thức AioStream v1.9.7:
               - Chuẩn 3 phiên bản duy nhất: arm64-v8a, armeabi-v7a và universal.
-              - Khắc phục triệt để lỗi sập native (SIGSEGV/SIGABRT trong thư viện .so) khi mở phim dung lượng lớn:
-                + Thay thế thư viện libffmpegJNI.so trên arm64-v8a và armeabi-v7a bằng bản chuẩn AndroidX Media3 (ExoPlayer) 16KB page-aligned từ Jellyfin.
-                + Sửa tận gốc nguyên nhân gây sập native SIGSEGV: thư viện libffmpegJNI.so arm64 cũ lấy từ nhánh Nuvio có chữ ký JNI C++ (ffmpegInitialize 8 tham số, ffmpegDecode 9 tham số) không tương thích với mã Java của StreamSync (5 tham số và 6 tham số), dẫn đến lỗi đọc sai vùng nhớ và sập native khi phát các phim dung lượng lớn dùng định dạng âm thanh TrueHD, DTS, DTS-HD MA, EAC3-JOC.
-                + Bản thư viện mới tương thích 100% với mã smali Media3, hỗ trợ đầy đủ giải mã DTS, TrueHD, AC3, EAC3, FLAC, Opus mượt mà không crash.
-              - Bảo toàn đầy đủ tất cả các tính năng đã hoàn thiện:
-                + Sửa triệt để VerifyError trong các lambda (AccountClickLambda, UpdaterClickLambda, AddonToggle, AddonConfig).
-                + Tự động đồng bộ tài khoản ngầm mượt mà không khóa SQLite (WAL mode).
-                + Hỗ trợ quét mã QR đăng nhập trên TV và D-pad navigation.
-                + Nút bật/tắt và cấu hình riêng cho từng addon.
-                + Xem trailer phim bộ & phim lẻ in-app (TrailerPlayerActivity).
-                + Lấy đầy đủ danh sách tập phim bộ catalog.
-                + Căn giữa 1 hàng tên app 'AioStream v1.9.6' ở chân trang cài đặt.
-                + Cập nhật OTA trực tiếp trong ứng dụng cho phiên bản v1.9.6.
+              - Tăng giới hạn bộ nhớ đệm ExoPlayer native theo công thức chuẩn: tối đa bằng RAM thiết bị chia cho 4 (RAM / 4):
+                + RAM 1GB: buffer 256MB (ngưỡng cảnh báo 320MB)
+                + RAM 1.5GB: buffer 384MB (ngưỡng cảnh báo 480MB)
+                + RAM 2GB: buffer 512MB (ngưỡng cảnh báo 640MB)
+                + RAM 3GB: buffer 768MB (ngưỡng cảnh báo 960MB)
+                + RAM 4GB: buffer 1024MB / 1GB (ngưỡng cảnh báo 1280MB)
+                + RAM 6GB: buffer 1536MB / 1.5GB (ngưỡng cảnh báo 1920MB)
+                + RAM 8GB trở lên: buffer 2048MB / 2GB (ngưỡng cảnh báo 2560MB)
+              - Thêm android:largeHeap=\"true\" vào AndroidManifest.xml để cấp phát heap tối đa (dalvik.vm.heapsize) cho tiến trình, giúp ExoPlayer và bộ đệm hoạt động mượt mà không bị giới hạn heap chuẩn.
+              - Cập nhật BufferCeiling tính toán trực tiếp từ SafetyLimit của RamTier, được bảo vệ giới hạn an toàn theo bộ nhớ RAM khả dụng (available RAM) tránh tràn bộ nhớ kernel OOM.
+              - Kế thừa toàn bộ bản vá v1.9.6: thư viện Media3 libffmpegJNI.so chuẩn 16KB page-aligned loại bỏ hoàn toàn lỗi sập native SIGSEGV/SIGABRT khi xem phim dung lượng lớn.
+              - Căn giữa 1 hàng tên app 'AioStream v1.9.7' ở chân trang cài đặt.
+              - Cập nhật OTA trực tiếp trong ứng dụng cho phiên bản v1.9.7.
               - Keystore cố định hỗ trợ cài đè trực tiếp lên phiên bản cũ không mất dữ liệu." \
               --latest
           fi

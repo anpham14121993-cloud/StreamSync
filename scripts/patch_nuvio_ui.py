@@ -505,7 +505,7 @@ def patch_settings_integrations_and_account_and_updater(unpack_dir, script_dir):
                     "    const/high16 v8, 0x3f800000    # 1.0f\n"
                     "    invoke-static {v0, v8, v1, v6}, Landroidx/compose/foundation/layout/SizeKt;->fillMaxWidth$default(Landroidx/compose/ui/Modifier;FILjava/lang/Object;)Landroidx/compose/ui/Modifier;\n"
                     "    move-result-object v53\n"
-                    "    const-string v52, \"AioStream v1.9.6\"" + m.group(2) +
+                    "    const-string v52, \"AioStream v1.9.7\"" + m.group(2) +
                     "sget-object v0, Landroidx/compose/ui/text/style/TextAlign;->Companion:Landroidx/compose/ui/text/style/TextAlign$Companion;\n"
                     "    invoke-virtual {v0}, Landroidx/compose/ui/text/style/TextAlign$Companion;->getCenter-e0LSkKk()I\n"
                     "    move-result v0\n"
@@ -514,7 +514,7 @@ def patch_settings_integrations_and_account_and_updater(unpack_dir, script_dir):
                     "const v76, 0xfef8" + m.group(6)
                 )
             s2_content = pattern_disclaimer.sub(repl_disclaimer, s2_content, count=1)
-            log("Replaced settings disclaimer note with centered single-line AioStream v1.9.6.")
+            log("Replaced settings disclaimer note with centered single-line AioStream v1.9.7.")
 
         with open(s2_path, 'w', encoding='utf-8') as f:
             f.write(s2_content)
@@ -556,7 +556,7 @@ def patch_settings_integrations_and_account_and_updater(unpack_dir, script_dir):
     invoke-static {v0}, Landroidx/compose/material/icons/filled/SystemUpdateKt;->getSystemUpdate(Landroidx/compose/material/icons/Icons$Filled;)Landroidx/compose/ui/graphics/vector/ImageVector;
     move-result-object v1
     const-string v2, "C\\u1eadp nh\\u1eadt \\u1ee9ng d\\u1ee5ng"
-    const-string v3, "B\\u1ea3n v1.9.6 \\u2022 Ki\\u1ec3m tra & c\\u1eadp nh\\u1eadt tr\\u1ef1c ti\\u1ebfp (OTA)"
+    const-string v3, "B\\u1ea3n v1.9.7 \\u2022 Ki\\u1ec3m tra & c\\u1eadp nh\\u1eadt tr\\u1ef1c ti\\u1ebfp (OTA)"
     new-instance v4, Lcom/streamsync/app/updater/UpdaterClickLambda;
     invoke-direct {v4}, Lcom/streamsync/app/updater/UpdaterClickLambda;-><init>()V
     const/16 v6, 0x1b0
@@ -860,12 +860,12 @@ def patch_addons_screen(unpack_dir):
 
 def patch_exo_native_buffers(unpack_dir):
     """
-    1. Patches BufferCeiling.smali (forDevice and compute) to uncap buffers and return
-       NuvioNativeBufferHelper.getWarningNativeMemoryLimitMb(context) scaled up to 2500MB based on RAM.
+    1. Patches BufferCeiling.smali (forDevice and compute) to scale buffers based on RAM / 4,
+       capped by available physical device RAM (85% normal, 50% low memory).
     2. Patches RamTier.smali RAM_1 through RAM_8 safetyLimitMb and warningMb constants
-       to match Nuvio native RAM tiers.
+       to exactly RAM / 4 (1GB: 256MB, 1.5GB: 384MB, 2GB: 512MB, 3GB: 768MB, 4GB: 1024MB, 6GB: 1536MB, 8GB: 2048MB).
     """
-    log("Patching ExoPlayer native buffer limits (uncapping 256MB limit)...")
+    log("Patching ExoPlayer buffer limits based on device RAM / 4...")
 
     # 1. Patch BufferCeiling.smali
     bc_targets = find_file_exact(unpack_dir, "BufferCeiling.smali")
@@ -874,40 +874,94 @@ def patch_exo_native_buffers(unpack_dir):
             bc_content = f.read()
 
         new_compute = """.method public final compute(Lcom/streamsync/app/settings/RamTier;IIZI)I
-    .locals 7
+    .locals 3
     .param p1, "tier"    # Lcom/streamsync/app/settings/RamTier;
     .param p2, "heapLimitMb"    # I
     .param p3, "availableMb"    # I
     .param p4, "lowMemory"    # Z
     .param p5, "imageCacheMb"    # I
 
-    sget-object v0, Lcom/streamsync/app/MainActivity;->sInstance:Lcom/streamsync/app/MainActivity;
-    if-eqz v0, :cond_0
+    const-string v0, "tier"
+    invoke-static {p1, v0}, Lkotlin/jvm/internal/Intrinsics;->checkNotNullParameter(Ljava/lang/Object;Ljava/lang/String;)V
 
-    invoke-static {v0}, Lcom/streamsync/app/settings/NuvioNativeBufferHelper;->getWarningNativeMemoryLimitMb(Landroid/content/Context;)I
+    invoke-virtual {p1}, Lcom/streamsync/app/settings/RamTier;->getSafetyLimitMb()I
     move-result v0
-    return v0
+
+    if-eqz p4, :cond_0
+
+    int-to-float v1, p3
+    const/high16 v2, 0x3f000000    # 0.5f
+    mul-float/2addr v1, v2
+    float-to-int v1, v1
+    goto :goto_0
 
     :cond_0
-    invoke-virtual {p1}, Lcom/streamsync/app/settings/RamTier;->getWarningMb()I
+    int-to-float v1, p3
+    const v2, 0x3f59999a    # 0.85f
+    mul-float/2addr v1, v2
+    float-to-int v1, v1
+
+    :goto_0
+    invoke-static {v0, v1}, Ljava/lang/Math;->min(II)I
     move-result v0
+
+    const/16 v1, 0x30
+    invoke-static {v0, v1}, Lkotlin/ranges/RangesKt;->coerceAtLeast(II)I
+    move-result v0
+
     return v0
 .end method"""
 
         new_for_device = """.method public final forDevice(Landroid/content/Context;Lcom/streamsync/app/settings/RamTier;)I
-    .locals 1
+    .locals 3
     .param p1, "context"    # Landroid/content/Context;
     .param p2, "tier"    # Lcom/streamsync/app/settings/RamTier;
 
-    if-eqz p1, :cond_0
+    const-string v0, "tier"
+    invoke-static {p2, v0}, Lkotlin/jvm/internal/Intrinsics;->checkNotNullParameter(Ljava/lang/Object;Ljava/lang/String;)V
 
-    invoke-static {p1}, Lcom/streamsync/app/settings/NuvioNativeBufferHelper;->getWarningNativeMemoryLimitMb(Landroid/content/Context;)I
+    invoke-virtual {p2}, Lcom/streamsync/app/settings/RamTier;->getSafetyLimitMb()I
     move-result v0
-    return v0
 
-    :cond_0
-    invoke-virtual {p2}, Lcom/streamsync/app/settings/RamTier;->getWarningMb()I
+    if-eqz p1, :cond_exit
+
+    :try_start_0
+    sget-object v1, Lcom/streamsync/app/settings/DeviceMemory;->INSTANCE:Lcom/streamsync/app/settings/DeviceMemory;
+    invoke-virtual {v1, p1}, Lcom/streamsync/app/settings/DeviceMemory;->read(Landroid/content/Context;)Lcom/streamsync/app/settings/DeviceMemory$Info;
+    move-result-object v1
+
+    invoke-virtual {v1}, Lcom/streamsync/app/settings/DeviceMemory$Info;->getAvailableMb()I
+    move-result v2
+
+    invoke-virtual {v1}, Lcom/streamsync/app/settings/DeviceMemory$Info;->getLowMemory()Z
+    move-result v1
+
+    if-eqz v1, :cond_normal
+
+    int-to-float v1, v2
+    const/high16 v2, 0x3f000000    # 0.5f
+    mul-float/2addr v1, v2
+    float-to-int v1, v1
+    goto :goto_cap
+
+    :cond_normal
+    int-to-float v1, v2
+    const v2, 0x3f59999a    # 0.85f
+    mul-float/2addr v1, v2
+    float-to-int v1, v1
+
+    :goto_cap
+    invoke-static {v0, v1}, Ljava/lang/Math;->min(II)I
     move-result v0
+    :try_end_0
+    .catchall {:try_start_0 .. :try_end_0} :catchall_0
+
+    :catchall_0
+    :cond_exit
+    const/16 v1, 0x30
+    invoke-static {v0, v1}, Lkotlin/ranges/RangesKt;->coerceAtLeast(II)I
+    move-result v0
+
     return v0
 .end method"""
 
@@ -921,7 +975,7 @@ def patch_exo_native_buffers(unpack_dir):
 
         with open(bc_targets[0], 'w', encoding='utf-8') as f:
             f.write(bc_content)
-        log("Patched BufferCeiling.compute and BufferCeiling.forDevice with Nuvio native limits.")
+        log("Patched BufferCeiling.compute and BufferCeiling.forDevice with RAM/4 safety limits.")
 
     # 2. Patch RamTier.smali
     rt_targets = find_file_exact(unpack_dir, "RamTier.smali")
@@ -929,52 +983,52 @@ def patch_exo_native_buffers(unpack_dir):
         with open(rt_targets[0], 'r', encoding='utf-8', errors='ignore') as f:
             rt_content = f.read()
 
-        # Update RAM_1: safetyLimit 150 (0x96), warning 180 (0xb4)
+        # Update RAM_1: safetyLimit 256 (0x100), warning 320 (0x140)
         rt_content = re.sub(
-            r'(const-string\s+v1,\s*"RAM_1"[\s\S]*?const/16\s+v9,\s*)0x60(\s*\n\s*const/16\s+v10,\s*)0x78',
-            r'\g<1>0x96\g<2>0xb4',
+            r'(const/16\s+v9,\s*)0x60(\s*\n\s*const/16\s+v10,\s*)0x78(\s*\n\s*const-string\s+v1,\s*"RAM_1")',
+            r'\g<1>0x100\g<2>0x140\g<3>',
             rt_content
         )
-        # Update RAM_15: safetyLimit 200 (0xc8), warning 250 (0xfa)
+        # Update RAM_15: safetyLimit 384 (0x180), warning 480 (0x1e0)
         rt_content = re.sub(
-            r'(const-string\s+v13,\s*"RAM_15"[\s\S]*?const/16\s+v21,\s*)0x70(\s*\n\s*const/16\s+v22,\s*)0x8c',
-            r'\g<1>0xc8\g<2>0xfa',
+            r'(const/16\s+v21,\s*)0x70(\s*\n\s*const/16\s+v22,\s*)0x8c(\s*\n\s*const-string\s+v13,\s*"RAM_15")',
+            r'\g<1>0x180\g<2>0x1e0\g<3>',
             rt_content
         )
-        # Update RAM_2: safetyLimit 250 (0xfa), warning 325 (0x145)
+        # Update RAM_2: safetyLimit 512 (0x200), warning 640 (0x280)
         rt_content = re.sub(
-            r'(const-string\s+v2,\s*"RAM_2"[\s\S]*?const/16\s+v10,\s*)0x80(\s*\n\s*const/16\s+v11,\s*)0xa0',
-            r'\g<1>0xfa\g<2>0x145',
+            r'(const/16\s+v10,\s*)0x80(\s*\n\s*const/16\s+v11,\s*)0xa0(\s*\n\s*const-string\s+v2,\s*"RAM_2")',
+            r'\g<1>0x200\g<2>0x280\g<3>',
             rt_content
         )
-        # Update RAM_3: safetyLimit 500 (0x1f4), warning 650 (0x28a)
+        # Update RAM_3: safetyLimit 768 (0x300), warning 960 (0x3c0)
         rt_content = re.sub(
-            r'(const-string\s+v13,\s*"RAM_3"[\s\S]*?const/16\s+v21,\s*)0xa0(\s*\n\s*const/16\s+v22,\s*)0xc8',
-            r'\g<1>0x1f4\g<2>0x28a',
+            r'(const/16\s+v21,\s*)0xa0(\s*\n\s*const/16\s+v22,\s*)0xc8(\s*\n\s*const-string\s+v13,\s*"RAM_3")',
+            r'\g<1>0x300\g<2>0x3c0\g<3>',
             rt_content
         )
-        # Update RAM_4: safetyLimit 1000 (0x3e8), warning 1200 (0x4b0)
+        # Update RAM_4: safetyLimit 1024 (0x400), warning 1280 (0x500)
         rt_content = re.sub(
-            r'(const-string\s+v2,\s*"RAM_4"[\s\S]*?const/16\s+v10,\s*)0xc8(\s*\n\s*const/16\s+v11,\s*)0xfa',
-            r'\g<1>0x3e8\g<2>0x4b0',
+            r'(const/16\s+v10,\s*)0xc8(\s*\n\s*const/16\s+v11,\s*)0xfa(\s*\n\s*const-string\s+v2,\s*"RAM_4")',
+            r'\g<1>0x400\g<2>0x500\g<3>',
             rt_content
         )
-        # Update RAM_6: safetyLimit 1600 (0x640), warning 2000 (0x7d0)
+        # Update RAM_6: safetyLimit 1536 (0x600), warning 1920 (0x780)
         rt_content = re.sub(
-            r'(const-string\s+v13,\s*"RAM_6"[\s\S]*?const/16\s+v21,\s*)0x100(\s*\n\s*const/16\s+v22,\s*)0x140',
-            r'\g<1>0x640\g<2>0x7d0',
+            r'(const/16\s+v21,\s*)0x100(\s*\n\s*const/16\s+v22,\s*)0x140(\s*\n\s*const-string\s+v13,\s*"RAM_6")',
+            r'\g<1>0x600\g<2>0x780\g<3>',
             rt_content
         )
-        # Update RAM_8: safetyLimit 2000 (0x7d0), warning 2500 (0x9c4)
+        # Update RAM_8: safetyLimit 2048 (0x800), warning 2560 (0xa00)
         rt_content = re.sub(
-            r'(const-string\s+v2,\s*"RAM_8"[\s\S]*?const/16\s+v10,\s*)0x140(\s*\n\s*const/16\s+v11,\s*)0x190',
-            r'\g<1>0x7d0\g<2>0x9c4',
+            r'(const/16\s+v10,\s*)0x140(\s*\n\s*const/16\s+v11,\s*)0x190(\s*\n\s*const-string\s+v2,\s*"RAM_8")',
+            r'\g<1>0x800\g<2>0xa00\g<3>',
             rt_content
         )
 
         with open(rt_targets[0], 'w', encoding='utf-8') as f:
             f.write(rt_content)
-        log("Patched RamTier constants to Nuvio native RAM limits (up to 2500MB).")
+        log("Patched RamTier constants to RAM / 4 limits (up to 2048MB).")
 
     return True
 
@@ -1123,14 +1177,14 @@ def patch_manifest_and_resources(unpack_dir):
         log("Registered TrailerPlayerActivity in AndroidManifest.")
         changed = True
 
-    # 4. Bump versionCode to 196 and versionName to 1.9.6 for overwrite/update support
+    # 4. Bump versionCode to 197 and versionName to 1.9.7 for overwrite/update support
     if 'android:versionCode=' in manifest:
-        manifest = re.sub(r'android:versionCode="[^"]*"', 'android:versionCode="196"', manifest)
-        manifest = re.sub(r'android:versionName="[^"]*"', 'android:versionName="1.9.6"', manifest)
-        log("Updated AndroidManifest versionCode to 196 and versionName to 1.9.6.")
+        manifest = re.sub(r'android:versionCode="[^"]*"', 'android:versionCode="197"', manifest)
+        manifest = re.sub(r'android:versionName="[^"]*"', 'android:versionName="1.9.7"', manifest)
+        log("Updated AndroidManifest versionCode to 197 and versionName to 1.9.7.")
         changed = True
     else:
-        manifest = re.sub(r'<manifest\s+', '<manifest android:versionCode="196" android:versionName="1.9.6" ', manifest)
+        manifest = re.sub(r'<manifest\s+', '<manifest android:versionCode="197" android:versionName="1.9.7" ', manifest)
         log("Inserted android:versionCode and versionName into AndroidManifest.")
         changed = True
 
@@ -1155,6 +1209,12 @@ def patch_manifest_and_resources(unpack_dir):
         log("Added android:banner=@drawable/tv_banner to application tag.")
         changed = True
 
+    # 5b. Add largeHeap="true" to application if not present
+    if 'android:largeHeap="true"' not in manifest:
+        manifest = manifest.replace("<application ", '<application android:largeHeap="true" ', 1)
+        log("Added android:largeHeap=true to application tag.")
+        changed = True
+
     # 6. Fix "Gói có vẻ không hợp lệ":
     if 'android:extractNativeLibs="false"' in manifest:
         manifest = manifest.replace('android:extractNativeLibs="false"', 'android:extractNativeLibs="true"')
@@ -1171,8 +1231,8 @@ def patch_manifest_and_resources(unpack_dir):
         with open(apktool_yml_path, 'r', encoding='utf-8') as yf:
             yml_content = yf.read()
         
-        yml_content = re.sub(r"versionCode:\s*[^\r\n]+", lambda m: "versionCode: '196'", yml_content)
-        yml_content = re.sub(r"versionName:\s*[^\r\n]+", lambda m: "versionName: '1.9.6'", yml_content)
+        yml_content = re.sub(r"versionCode:\s*[^\r\n]+", lambda m: "versionCode: '197'", yml_content)
+        yml_content = re.sub(r"versionName:\s*[^\r\n]+", lambda m: "versionName: '1.9.7'", yml_content)
 
         if "doNotCompress:" in yml_content and "- so" not in yml_content:
             yml_content = yml_content.replace(
@@ -1181,7 +1241,7 @@ def patch_manifest_and_resources(unpack_dir):
             )
         with open(apktool_yml_path, 'w', encoding='utf-8') as yf:
             yf.write(yml_content)
-        log("Updated apktool.yml with version 196 (1.9.6) and uncompressed shared libraries.")
+        log("Updated apktool.yml with version 197 (1.9.7) and uncompressed shared libraries.")
 
     # 8. Generate tv_banner.png and copy tv_banner.xml into res/drawable
     drawable_dir = os.path.join(unpack_dir, "res", "drawable")
@@ -1243,7 +1303,7 @@ def main():
     patch_settings_integrations_and_account_and_updater(unpack_dir, script_dir)
     patch_meta_screen(unpack_dir, script_dir)
     patch_addons_screen(unpack_dir)
-    # patch_exo_native_buffers(unpack_dir)  # REMOVED: Exceeds JVM heap on DefaultAllocator, causing SIGSEGV/SIGABRT in native decoders
+    patch_exo_native_buffers(unpack_dir)
     patch_disable_logging(unpack_dir)
     patch_manifest_and_resources(unpack_dir)
     inject_native_libraries(unpack_dir, repo_root)
