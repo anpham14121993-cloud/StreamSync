@@ -777,12 +777,8 @@ def patch_meta_screen(unpack_dir, script_dir):
     const/high16 v1, 0x10000000
     invoke-virtual {v0, v1}, Landroid/content/Intent;->addFlags(I)Landroid/content/Intent;
 
-    :try_start_0
     invoke-virtual {v2, v0}, Landroid/content/Context;->startActivity(Landroid/content/Intent;)V
-    :try_end_0
-    .catch Ljava/lang/Throwable; {:try_start_0 .. :try_end_0} :catch_0
 
-    :catch_0
     :cond_return_early"""
             ar1_content = p_intent.sub(lambda m: m.group(1) + inapp_trailer_smali, ar1_content, count=1)
             with open(action_row_targets[0], 'w', encoding='utf-8') as f:
