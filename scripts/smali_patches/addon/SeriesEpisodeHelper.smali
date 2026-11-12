@@ -14,6 +14,8 @@
 
 .field private static volatile streamPickerActive:Z
 
+.field private static volatile streamPickerState:Landroidx/compose/runtime/MutableState;
+
 
 # direct methods
 .method static constructor <clinit>()V
@@ -1726,18 +1728,70 @@
 .end method
 
 .method public static isStreamPickerActive()Z
-    .registers 1
+    .registers 4
 
+    sget-object v0, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->streamPickerState:Landroidx/compose/runtime/MutableState;
+    if-nez v0, :cond_read_state
+
+    :try_start_init
     sget-boolean v0, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->streamPickerActive:Z
+    invoke-static {v0}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
+    move-result-object v0
+    const/4 v1, 0x0
+    const/4 v2, 0x2
+    const/4 v3, 0x0
+    invoke-static {v0, v1, v2, v3}, Landroidx/compose/runtime/SnapshotStateKt;->mutableStateOf$default(Ljava/lang/Object;Landroidx/compose/runtime/SnapshotMutationPolicy;ILjava/lang/Object;)Landroidx/compose/runtime/MutableState;
+    move-result-object v0
+    sput-object v0, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->streamPickerState:Landroidx/compose/runtime/MutableState;
+    :try_end_init
+    .catch Ljava/lang/Throwable; {:try_start_init .. :try_end_init} :catch_init
 
+    :cond_read_state
+    if-eqz v0, :cond_fallback
+    :try_start_read
+    invoke-interface {v0}, Landroidx/compose/runtime/MutableState;->getValue()Ljava/lang/Object;
+    move-result-object v0
+    check-cast v0, Ljava/lang/Boolean;
+    invoke-virtual {v0}, Ljava/lang/Boolean;->booleanValue()Z
+    move-result v0
+    return v0
+    :try_end_read
+    .catch Ljava/lang/Throwable; {:try_start_read .. :try_end_read} :catch_read
+
+    :catch_init
+    :catch_read
+    :cond_fallback
+    sget-boolean v0, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->streamPickerActive:Z
     return v0
 .end method
 
 .method public static setStreamPickerActive(Z)V
-    .registers 1
+    .registers 4
 
     sput-boolean p0, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->streamPickerActive:Z
 
+    :try_start_set
+    sget-object v0, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->streamPickerState:Landroidx/compose/runtime/MutableState;
+    if-nez v0, :cond_set_val
+
+    invoke-static {p0}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
+    move-result-object v0
+    const/4 v1, 0x0
+    const/4 v2, 0x2
+    const/4 v3, 0x0
+    invoke-static {v0, v1, v2, v3}, Landroidx/compose/runtime/SnapshotStateKt;->mutableStateOf$default(Ljava/lang/Object;Landroidx/compose/runtime/SnapshotMutationPolicy;ILjava/lang/Object;)Landroidx/compose/runtime/MutableState;
+    move-result-object v0
+    sput-object v0, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->streamPickerState:Landroidx/compose/runtime/MutableState;
+    return-void
+
+    :cond_set_val
+    invoke-static {p0}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
+    move-result-object v1
+    invoke-interface {v0, v1}, Landroidx/compose/runtime/MutableState;->setValue(Ljava/lang/Object;)V
+    :try_end_set
+    .catch Ljava/lang/Throwable; {:try_start_set .. :try_end_set} :catch_set
+
+    :catch_set
     return-void
 .end method
 
@@ -1746,7 +1800,7 @@
 
     const/4 v0, 0x0
 
-    sput-boolean v0, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->streamPickerActive:Z
+    invoke-static {v0}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->setStreamPickerActive(Z)V
 
     return-void
 .end method

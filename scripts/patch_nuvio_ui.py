@@ -723,7 +723,10 @@ def patch_meta_screen(unpack_dir, script_dir):
     const-string v2, "series"
     invoke-static {v9, v1, v2}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->resolveTrailerId(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
     move-result-object v9
-    :cond_trailer_set"""
+    :cond_trailer_set
+    if-nez v9, :cond_trailer_not_null
+    const-string v9, "watch"
+    :cond_trailer_not_null"""
             mds_content = p_trailer_resolve.sub(lambda m: m.group(1) + resolve_trailer_hook, mds_content, count=1)
             with open(mds_targets[0], 'w', encoding='utf-8') as f:
                 f.write(mds_content)
@@ -740,7 +743,28 @@ def patch_meta_screen(unpack_dir, script_dir):
             re.MULTILINE
         )
         if p_intent.search(ar1_content):
-            inapp_trailer_smali = """    iget-object v2, p0, Lcom/streamsync/app/ui/detail/DetailSectionsKt$DetailActionRow$1$1$1;->$context:Landroid/content/Context;
+            inapp_trailer_smali = """    invoke-static {}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->isStreamPickerActive()Z
+    move-result v0
+    if-nez v0, :cond_trailer_action
+
+    const/4 v0, 0x1
+    invoke-static {v0}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->setStreamPickerActive(Z)V
+    return-void
+
+    :cond_trailer_action
+    iget-object v1, p0, Lcom/streamsync/app/ui/detail/DetailSectionsKt$DetailActionRow$1$1$1;->$trailerKey:Ljava/lang/String;
+    if-eqz v1, :cond_return_early
+    invoke-virtual {v1}, Ljava/lang/String;->isEmpty()Z
+    move-result v0
+    if-nez v0, :cond_return_early
+    const-string v0, "watch"
+    invoke-virtual {v0, v1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    if-eqz v0, :cond_launch_trailer
+    return-void
+
+    :cond_launch_trailer
+    iget-object v2, p0, Lcom/streamsync/app/ui/detail/DetailSectionsKt$DetailActionRow$1$1$1;->$context:Landroid/content/Context;
 
     new-instance v0, Landroid/content/Intent;
     const-class v1, Lcom/streamsync/app/ui/detail/TrailerPlayerActivity;
@@ -754,7 +778,12 @@ def patch_meta_screen(unpack_dir, script_dir):
     invoke-virtual {v0, v1}, Landroid/content/Intent;->addFlags(I)Landroid/content/Intent;
 
     :try_start_0
-    invoke-virtual {v2, v0}, Landroid/content/Context;->startActivity(Landroid/content/Intent;)V"""
+    invoke-virtual {v2, v0}, Landroid/content/Context;->startActivity(Landroid/content/Intent;)V
+    :try_end_0
+    .catch Ljava/lang/Throwable; {:try_start_0 .. :try_end_0} :catch_0
+
+    :catch_0
+    :cond_return_early"""
             ar1_content = p_intent.sub(lambda m: m.group(1) + inapp_trailer_smali, ar1_content, count=1)
             with open(action_row_targets[0], 'w', encoding='utf-8') as f:
                 f.write(ar1_content)
@@ -805,16 +834,13 @@ def patch_meta_screen(unpack_dir, script_dir):
             c = f.read()
 
         p_trailer_btn = re.compile(r'(const-string\s+(v\d+),\s*"Xem trailer")')
-        if p_trailer_btn.search(c) and "WatchClickLambda" not in c:
+        if p_trailer_btn.search(c) and "isStreamPickerActive" not in c:
             def repl_watch_btn(m):
                 label_reg = m.group(2)
                 return f"""invoke-static {{}}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->isStreamPickerActive()Z
-    move-result v0
-    if-nez v0, :cond_orig_trailer
+    move-result {label_reg}
+    if-nez {label_reg}, :cond_orig_trailer
     const-string {label_reg}, "Xem phim"
-    new-instance v35, Lcom/streamsync/app/ui/detail/WatchClickLambda;
-    invoke-direct {{v35}}, Lcom/streamsync/app/ui/detail/WatchClickLambda;-><init>()V
-    const/4 v34, 0x1
     goto :cond_trailer_ready
     :cond_orig_trailer
     {m.group(1)}

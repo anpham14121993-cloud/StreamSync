@@ -31,17 +31,49 @@ public class SeriesEpisodeHelper {
     private static final String CINEMETA_MOVIE_URL = "https://v3-cinemeta.strem.io/meta/movie/";
     private static final Pattern IMDB_PATTERN = Pattern.compile("tt\\d+");
     private static volatile boolean streamPickerActive = false;
+    private static volatile Object streamPickerState = null;
+
+    private static synchronized void ensureState() {
+        if (streamPickerState == null) {
+            try {
+                Class<?> cls = Class.forName("androidx.compose.runtime.SnapshotStateKt");
+                for (Method m : cls.getMethods()) {
+                    if ("mutableStateOf$default".equals(m.getName()) && m.getParameterTypes().length == 4) {
+                        streamPickerState = m.invoke(null, Boolean.FALSE, null, 2, null);
+                        break;
+                    }
+                }
+            } catch (Throwable t) {
+                Log.e(TAG, "ensureState error", t);
+            }
+        }
+    }
 
     public static boolean isStreamPickerActive() {
+        ensureState();
+        if (streamPickerState != null) {
+            try {
+                Method getValue = streamPickerState.getClass().getMethod("getValue");
+                Object val = getValue.invoke(streamPickerState);
+                if (val instanceof Boolean) return ((Boolean) val).booleanValue();
+            } catch (Throwable ignored) {}
+        }
         return streamPickerActive;
     }
 
     public static void setStreamPickerActive(boolean active) {
         streamPickerActive = active;
+        ensureState();
+        if (streamPickerState != null) {
+            try {
+                Method setValue = streamPickerState.getClass().getMethod("setValue", Object.class);
+                setValue.invoke(streamPickerState, Boolean.valueOf(active));
+            } catch (Throwable ignored) {}
+        }
     }
 
     public static void resetStreamPicker() {
-        streamPickerActive = false;
+        setStreamPickerActive(false);
     }
 
     public static boolean shouldScopeToOwner(List<?> rawTargets) {
