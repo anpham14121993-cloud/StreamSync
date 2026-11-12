@@ -125,10 +125,9 @@ fun HeroSlider(
                 key = { page -> items[page].id }
             ) { page ->
                 val item = items[page]
-                val pageOffset = ((pagerState.currentPage - page) + pagerState.currentPageOffsetFraction).coerceIn(-1f, 1f)
 
                 Box(modifier = Modifier.fillMaxSize()) {
-                    // Parallax Backdrop Image
+                    // Parallax Backdrop Image (offset evaluated only in Draw phase for 60/120fps fluid swipe)
                     val backdropUrl = item.backdropUrl.ifBlank { item.posterUrl }
                     AsyncImage(
                         model = backdropUrl,
@@ -136,6 +135,7 @@ fun HeroSlider(
                         modifier = Modifier
                             .fillMaxSize()
                             .graphicsLayer {
+                                val pageOffset = ((pagerState.currentPage - page) + pagerState.currentPageOffsetFraction).coerceIn(-1f, 1f)
                                 translationX = pageOffset * size.width * 0.12f
                                 scaleX = 1.08f
                                 scaleY = 1.08f
@@ -177,7 +177,7 @@ fun HeroSlider(
                             )
                     )
 
-                    // Foreground Media Info & Actions
+                    // Foreground Media Info & Actions (offset evaluated only in Draw phase)
                     Column(
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
@@ -187,6 +187,7 @@ fun HeroSlider(
                                 vertical = 24.dp
                             )
                             .graphicsLayer {
+                                val pageOffset = ((pagerState.currentPage - page) + pagerState.currentPageOffsetFraction).coerceIn(-1f, 1f)
                                 translationX = pageOffset * size.width * 0.22f
                                 alpha = (1f - abs(pageOffset) * 1.4f).coerceIn(0f, 1f)
                             },

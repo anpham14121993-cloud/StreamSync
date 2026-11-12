@@ -91,9 +91,9 @@ object AddonClient {
                     seriesVideos = meta.videos?.map { v ->
                         SeriesVideo(
                             id = v.id,
-                            title = v.title ?: "Tập ${v.episode}",
-                            season = v.season,
-                            episode = v.episode,
+                            title = v.displayTitle,
+                            season = v.seasonNumber,
+                            episode = v.episodeNumber,
                             released = v.released ?: "",
                             thumbnail = v.thumbnail ?: ""
                         )

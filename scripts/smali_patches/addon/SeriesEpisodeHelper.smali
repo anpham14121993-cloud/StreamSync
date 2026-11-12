@@ -622,146 +622,69 @@
 .method public static enrichSeriesIfEmpty(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
     .registers 9
 
-    .line 45
     const-string v0, "getId"
-
-    const-string v1, "getTrailers"
 
     const-string v2, "getVideos"
 
-    if-nez p0, :cond_9
+    if-nez p0, :cond_check_base
 
     return-object p1
 
-    .line 49
-    :cond_9
-    :try_start_9
+    :cond_check_base
+    :try_start_enrich
+    # 1. Check if baseMeta already has videos
     invoke-static {p0, v2}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->getListField(Ljava/lang/Object;Ljava/lang/String;)Ljava/util/List;
 
     move-result-object v3
 
-    .line 50
-    const/4 v4, 0x0
-
-    if-eqz p1, :cond_15
-
-    invoke-static {p1, v2}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->getListField(Ljava/lang/Object;Ljava/lang/String;)Ljava/util/List;
-
-    move-result-object v2
-
-    goto :goto_16
-
-    :cond_15
-    move-object v2, v4
-
-    .line 52
-    :goto_16
-    const/4 v5, 0x1
-
-    const/4 v6, 0x0
-
-    if-eqz v3, :cond_20
+    if-eqz v3, :cond_check_full_videos
 
     invoke-interface {v3}, Ljava/util/List;->isEmpty()Z
 
     move-result v3
 
-    if-eqz v3, :cond_28
+    if-nez v3, :cond_check_full_videos
 
-    :cond_20
-    if-eqz v2, :cond_2a
+    # baseMeta already has episodes from addon! Preserve them completely!
+    return-object p0
 
-    .line 53
-    invoke-interface {v2}, Ljava/util/List;->isEmpty()Z
+    :cond_check_full_videos
+    # 2. Check if fullMeta has videos from addon
+    if-eqz p1, :cond_no_videos
 
-    move-result v2
-
-    if-nez v2, :cond_2a
-
-    :cond_28
-    const/4 v2, 0x1
-
-    goto :goto_2b
-
-    :cond_2a
-    const/4 v2, 0x0
-
-    .line 55
-    :goto_2b
-    invoke-static {p0, v1}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->getListField(Ljava/lang/Object;Ljava/lang/String;)Ljava/util/List;
+    invoke-static {p1, v2}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->getListField(Ljava/lang/Object;Ljava/lang/String;)Ljava/util/List;
 
     move-result-object v3
 
-    .line 56
-    if-eqz p1, :cond_35
-
-    invoke-static {p1, v1}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->getListField(Ljava/lang/Object;Ljava/lang/String;)Ljava/util/List;
-
-    move-result-object v4
-
-    .line 57
-    :cond_35
-    if-eqz v3, :cond_3d
+    if-eqz v3, :cond_no_videos
 
     invoke-interface {v3}, Ljava/util/List;->isEmpty()Z
 
-    move-result v1
+    move-result v3
 
-    if-eqz v1, :cond_45
+    if-nez v3, :cond_no_videos
 
-    :cond_3d
-    if-eqz v4, :cond_46
-
-    .line 58
-    invoke-interface {v4}, Ljava/util/List;->isEmpty()Z
-
-    move-result v1
-
-    if-nez v1, :cond_46
-
-    :cond_45
-    goto :goto_47
-
-    :cond_46
-    const/4 v5, 0x0
-
-    .line 60
-    :goto_47
-    if-eqz v2, :cond_53
-
-    if-eqz v5, :cond_53
-
-    .line 62
-    if-eqz p1, :cond_52
-
-    .line 63
+    # fullMeta has videos! Merge into baseMeta
     invoke-static {p0, p1}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->mergeAddonMetas(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
 
     move-result-object p0
 
     return-object p0
 
-    .line 65
-    :cond_52
-    return-object p0
-
-    .line 69
-    :cond_53
+    :cond_no_videos
+    # 3. Neither has videos: Need to query Cinemeta!
     invoke-static {p0, v0}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->getStringField(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v1
 
-    .line 70
     invoke-static {v1}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->extractImdbId(Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v1
 
-    .line 71
-    if-nez v1, :cond_67
+    if-nez v1, :cond_check_title
 
-    if-eqz p1, :cond_67
+    if-eqz p1, :cond_check_title
 
-    .line 72
     invoke-static {p1, v0}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->getStringField(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v0
@@ -770,64 +693,70 @@
 
     move-result-object v1
 
-    .line 74
-    :cond_67
-    if-nez v1, :cond_6d
+    :cond_check_title
+    if-nez v1, :cond_fetch_cinemeta
 
-    .line 76
-    if-eqz p1, :cond_6c
+    # Resolve by series title from Cinemeta search!
+    const-string v0, "getName"
 
-    move-object p0, p1
+    invoke-static {p0, v0}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->getStringField(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
 
-    :cond_6c
+    move-result-object v0
+
+    if-nez v0, :cond_resolve_name
+
+    if-eqz p1, :cond_resolve_name
+
+    const-string v0, "getName"
+
+    invoke-static {p1, v0}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->getStringField(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v0
+
+    :cond_resolve_name
+    if-eqz v0, :cond_return_base
+
+    const-string v2, "series"
+
+    invoke-static {v2, v0}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->searchCinemetaImdbId(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v1
+
+    :cond_fetch_cinemeta
+    if-nez v1, :cond_do_fetch
+
+    :cond_return_base
     return-object p0
 
-    .line 80
-    :cond_6d
+    :cond_do_fetch
     const-string v0, "series"
 
     invoke-static {v0, v1}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->fetchCinemetaMeta(Ljava/lang/String;Ljava/lang/String;)Lorg/json/JSONObject;
 
     move-result-object v0
 
-    .line 81
-    if-nez v0, :cond_79
+    if-nez v0, :cond_apply
 
-    .line 83
-    if-eqz p1, :cond_78
-
-    move-object p0, p1
-
-    :cond_78
     return-object p0
 
-    .line 86
-    :cond_79
+    :cond_apply
     invoke-static {p0, p1, v0}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->applyCinemetaToMeta(Ljava/lang/Object;Ljava/lang/Object;Lorg/json/JSONObject;)Ljava/lang/Object;
 
     move-result-object p0
-    :try_end_7d
-    .catchall {:try_start_9 .. :try_end_7d} :catchall_7e
+    :try_end_enrich
+    .catchall {:try_start_enrich .. :try_end_enrich} :catchall_enrich_err
 
     return-object p0
 
-    .line 87
-    :catchall_7e
+    :catchall_enrich_err
     move-exception v0
 
-    .line 88
     const-string v1, "SeriesEpisodeHelper"
 
     const-string v2, "enrichSeriesIfEmpty error"
 
     invoke-static {v1, v2, v0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
 
-    .line 89
-    if-eqz p1, :cond_89
-
-    move-object p0, p1
-
-    :cond_89
     return-object p0
 .end method
 
@@ -867,6 +796,198 @@
 
     .line 37
     :cond_16
+    return-object v0
+.end method
+
+.method public static searchCinemetaImdbId(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    .registers 8
+
+    const/4 v0, 0x0
+
+    if-eqz p1, :cond_search_null
+
+    invoke-virtual {p1}, Ljava/lang/String;->trim()Ljava/lang/String;
+
+    move-result-object p1
+
+    invoke-virtual {p1}, Ljava/lang/String;->isEmpty()Z
+
+    move-result v1
+
+    if-eqz v1, :cond_search_start
+
+    :cond_search_null
+    return-object v0
+
+    :cond_search_start
+    :try_start_search
+    const-string v1, "UTF-8"
+
+    invoke-static {p1, v1}, Ljava/net/URLEncoder;->encode(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v1
+
+    new-instance v2, Ljava/lang/StringBuilder;
+
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+
+    const-string v3, "https://v3-cinemeta.strem.io/catalog/"
+
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v2, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    const-string p0, "/top/search="
+
+    invoke-virtual {v2, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v2, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    const-string p0, ".json"
+
+    invoke-virtual {v2, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object p0
+
+    new-instance v1, Ljava/net/URL;
+
+    invoke-direct {v1, p0}, Ljava/net/URL;-><init>(Ljava/lang/String;)V
+
+    invoke-virtual {v1}, Ljava/net/URL;->openConnection()Ljava/net/URLConnection;
+
+    move-result-object p0
+
+    check-cast p0, Ljava/net/HttpURLConnection;
+
+    const-string v1, "GET"
+
+    invoke-virtual {p0, v1}, Ljava/net/HttpURLConnection;->setRequestMethod(Ljava/lang/String;)V
+
+    const/16 v1, 0x1770
+
+    invoke-virtual {p0, v1}, Ljava/net/HttpURLConnection;->setConnectTimeout(I)V
+
+    invoke-virtual {p0, v1}, Ljava/net/HttpURLConnection;->setReadTimeout(I)V
+
+    const-string v1, "User-Agent"
+
+    const-string v2, "Mozilla/5.0 StreamSync"
+
+    invoke-virtual {p0, v1, v2}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
+
+    invoke-virtual {p0}, Ljava/net/HttpURLConnection;->getResponseCode()I
+
+    move-result v1
+
+    const/16 v2, 0xc8
+
+    if-eq v1, v2, :cond_search_ok
+
+    return-object v0
+
+    :cond_search_ok
+    new-instance v1, Ljava/io/BufferedReader;
+
+    new-instance v2, Ljava/io/InputStreamReader;
+
+    invoke-virtual {p0}, Ljava/net/HttpURLConnection;->getInputStream()Ljava/io/InputStream;
+
+    move-result-object p0
+
+    const-string v3, "UTF-8"
+
+    invoke-direct {v2, p0, v3}, Ljava/io/InputStreamReader;-><init>(Ljava/io/InputStream;Ljava/lang/String;)V
+
+    invoke-direct {v1, v2}, Ljava/io/BufferedReader;-><init>(Ljava/io/Reader;)V
+
+    new-instance p0, Ljava/lang/StringBuilder;
+
+    invoke-direct {p0}, Ljava/lang/StringBuilder;-><init>()V
+
+    :goto_search_read
+    invoke-virtual {v1}, Ljava/io/BufferedReader;->readLine()Ljava/lang/String;
+
+    move-result-object v2
+
+    if-eqz v2, :cond_search_done
+
+    invoke-virtual {p0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    goto :goto_search_read
+
+    :cond_search_done
+    invoke-virtual {v1}, Ljava/io/BufferedReader;->close()V
+
+    new-instance v1, Lorg/json/JSONObject;
+
+    invoke-virtual {p0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object p0
+
+    invoke-direct {v1, p0}, Lorg/json/JSONObject;-><init>(Ljava/lang/String;)V
+
+    const-string p0, "metas"
+
+    invoke-virtual {v1, p0}, Lorg/json/JSONObject;->optJSONArray(Ljava/lang/String;)Lorg/json/JSONArray;
+
+    move-result-object p0
+
+    if-eqz p0, :cond_search_end
+
+    const/4 v1, 0x0
+
+    :goto_search_loop
+    invoke-virtual {p0}, Lorg/json/JSONArray;->length()I
+
+    move-result v2
+
+    if-ge v1, v2, :cond_search_end
+
+    invoke-virtual {p0, v1}, Lorg/json/JSONArray;->optJSONObject(I)Lorg/json/JSONObject;
+
+    move-result-object v2
+
+    if-eqz v2, :cond_search_next
+
+    const-string v3, "id"
+
+    const-string v4, ""
+
+    invoke-virtual {v2, v3, v4}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v2
+
+    const-string v3, "tt"
+
+    invoke-virtual {v2, v3}, Ljava/lang/String;->startsWith(Ljava/lang/String;)Z
+
+    move-result v3
+
+    if-eqz v3, :cond_search_next
+
+    return-object v2
+
+    :cond_search_next
+    add-int/lit8 v1, v1, 0x1
+
+    goto :goto_search_loop
+
+    :cond_search_end
+    return-object v0
+    :try_end_search
+    .catchall {:try_start_search .. :try_end_search} :catchall_search_err
+
+    :catchall_search_err
+    move-exception p0
+
+    const-string v1, "SeriesEpisodeHelper"
+
+    const-string v2, "searchCinemetaImdbId error"
+
+    invoke-static {v1, v2, p0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+
     return-object v0
 .end method
 
@@ -1485,27 +1606,119 @@
 .end method
 
 .method public static resolveTrailerId(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-    .registers 3
+    .registers 6
 
-    .line 97
-    if-eqz p0, :cond_d
+    if-eqz p0, :cond_trailer_empty
 
     invoke-virtual {p0}, Ljava/lang/String;->trim()Ljava/lang/String;
 
-    move-result-object p1
+    move-result-object v0
 
-    invoke-virtual {p1}, Ljava/lang/String;->isEmpty()Z
+    invoke-virtual {v0}, Ljava/lang/String;->isEmpty()Z
+
+    move-result v0
+
+    if-nez v0, :cond_trailer_empty
+
+    return-object p0
+
+    :cond_trailer_empty
+    const/4 v0, 0x0
+
+    :try_start_trailer
+    invoke-static {p1}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->extractImdbId(Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object p0
+
+    if-nez p0, :cond_trailer_fetch
+
+    return-object v0
+
+    :cond_trailer_fetch
+    if-nez p2, :cond_trailer_type_ok
+
+    const-string p2, "movie"
+
+    :cond_trailer_type_ok
+    invoke-static {p2, p0}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->fetchCinemetaMeta(Ljava/lang/String;Ljava/lang/String;)Lorg/json/JSONObject;
+
+    move-result-object p0
+
+    if-nez p0, :cond_trailer_has_meta
+
+    return-object v0
+
+    :cond_trailer_has_meta
+    const-string p1, "trailers"
+
+    invoke-virtual {p0, p1}, Lorg/json/JSONObject;->optJSONArray(Ljava/lang/String;)Lorg/json/JSONArray;
+
+    move-result-object p0
+
+    if-eqz p0, :cond_trailer_end
+
+    invoke-virtual {p0}, Lorg/json/JSONArray;->length()I
 
     move-result p1
 
-    if-nez p1, :cond_d
+    if-lez p1, :cond_trailer_end
 
-    .line 98
-    return-object p0
+    const/4 p1, 0x0
 
-    .line 100
-    :cond_d
-    const/4 p0, 0x0
+    :goto_trailer_loop
+    invoke-virtual {p0}, Lorg/json/JSONArray;->length()I
 
-    return-object p0
+    move-result p2
+
+    if-ge p1, p2, :cond_trailer_end
+
+    invoke-virtual {p0, p1}, Lorg/json/JSONArray;->optJSONObject(I)Lorg/json/JSONObject;
+
+    move-result-object p2
+
+    if-eqz p2, :cond_trailer_next
+
+    const-string v1, "source"
+
+    const-string v2, ""
+
+    invoke-virtual {p2, v1, v2}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v1
+
+    invoke-virtual {v1}, Ljava/lang/String;->isEmpty()Z
+
+    move-result v2
+
+    if-eqz v2, :cond_trailer_found
+
+    const-string v1, "id"
+
+    const-string v2, ""
+
+    invoke-virtual {p2, v1, v2}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v1
+
+    :cond_trailer_found
+    invoke-virtual {v1}, Ljava/lang/String;->isEmpty()Z
+
+    move-result p2
+
+    if-nez p2, :cond_trailer_next
+
+    return-object v1
+
+    :cond_trailer_next
+    add-int/lit8 p1, p1, 0x1
+
+    goto :goto_trailer_loop
+
+    :cond_trailer_end
+    return-object v0
+    :try_end_trailer
+    .catchall {:try_start_trailer .. :try_end_trailer} :catchall_trailer_err
+
+    :catchall_trailer_err
+    return-object v0
 .end method

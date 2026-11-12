@@ -47,13 +47,36 @@ data class AddonMeta(
 )
 
 data class AddonVideo(
-    val id: String,
+    val id: String = "",
     val title: String? = null,
-    val season: Int = 1,
-    val episode: Int = 1,
+    val name: String? = null,
+    val season: Any? = 1,
+    val episode: Any? = 1,
+    val number: Any? = null,
     val released: String? = null,
-    val thumbnail: String? = null
-)
+    val thumbnail: String? = null,
+    val overview: String? = null,
+    val description: String? = null
+) {
+    val displayTitle: String
+        get() = title?.takeIf { it.isNotBlank() }
+            ?: name?.takeIf { it.isNotBlank() }
+            ?: "Tập ${episodeNumber}"
+
+    val seasonNumber: Int
+        get() = when (val s = season) {
+            is Number -> s.toInt()
+            is String -> s.toIntOrNull() ?: 1
+            else -> 1
+        }
+
+    val episodeNumber: Int
+        get() = when (val e = episode ?: number) {
+            is Number -> e.toInt()
+            is String -> e.toIntOrNull() ?: 1
+            else -> 1
+        }
+}
 
 data class AddonStream(
     val title: String? = null,

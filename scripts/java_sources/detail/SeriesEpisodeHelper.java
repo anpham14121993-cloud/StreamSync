@@ -10,6 +10,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,8 +20,10 @@ import java.util.regex.Pattern;
 /**
  * SeriesEpisodeHelper:
  * 1. Enriches series metadata with episodes, videos, trailers, cast, and genres from Cinemeta
- *    when catalog addons (like Cyberflix) do not provide them.
- * 2. Resolves trailer YouTube IDs for both series and movies.
+ *    when catalog addons do not provide them.
+ * 2. Preserves addon-provided episodes when present (does not overwrite with Cinemeta).
+ * 3. Supports resolving non-IMDb series (TMDB, custom IDs) via title search on Cinemeta.
+ * 4. Resolves trailer YouTube IDs for both series and movies if missing.
  */
 public class SeriesEpisodeHelper {
     private static final String TAG = "SeriesEpisodeHelper";
@@ -38,55 +41,105 @@ public class SeriesEpisodeHelper {
     }
 
     /**
-     * Called when series metadata is loaded. If videos list is null or empty,
-     * this queries Cinemeta to fetch full episode metadata, trailers, cast, and genres.
+     * Searches Cinemeta by catalog title to obtain the IMDb tt... ID for items
+     * with non-IMDb IDs (e.g. tmdb:..., kitsu:..., or custom addon IDs).
+     */
+    public static String searchCinemetaImdbId(String type, String title) {
+        if (title == null || title.trim().isEmpty()) return null;
+        try {
+            String encoded = URLEncoder.encode(title.trim(), "UTF-8");
+            String urlStr = "https://v3-cinemeta.strem.io/catalog/" + type + "/top/search=" + encoded + ".json";
+            URL url = new URL(urlStr);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(6000);
+            conn.setReadTimeout(6000);
+            conn.setRequestProperty("User-Agent", "Mozilla/5.0 StreamSync");
+
+            if (conn.getResponseCode() != 200) return null;
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+            reader.close();
+
+            JSONObject root = new JSONObject(sb.toString());
+            JSONArray metas = root.optJSONArray("metas");
+            if (metas != null) {
+                for (int i = 0; i < metas.length(); i++) {
+                    JSONObject m = metas.optJSONObject(i);
+                    if (m != null) {
+                        String id = m.optString("id", "");
+                        if (id.startsWith("tt")) {
+                            return id;
+                        }
+                    }
+                }
+            }
+        } catch (Throwable t) {
+            Log.e(TAG, "searchCinemetaImdbId error: " + title, t);
+        }
+        return null;
+    }
+
+    /**
+     * Called when series metadata is loaded.
+     * 1. If baseMeta or fullMeta already contains videos from the addon, preserves them 100%.
+     * 2. If neither has videos, queries Cinemeta (by IMDb ID or title search) to enrich episode list.
      */
     public static Object enrichSeriesIfEmpty(Object baseMeta, Object fullMeta) {
         if (baseMeta == null) return fullMeta;
 
         try {
-            // Check if base has videos
+            // 1. Check if baseMeta ALREADY has videos from addon
             List<?> baseVideos = getListField(baseMeta, "getVideos");
-            List<?> fullVideos = fullMeta != null ? getListField(fullMeta, "getVideos") : null;
-
-            boolean hasVideos = (baseVideos != null && !baseVideos.isEmpty()) ||
-                                (fullVideos != null && !fullVideos.isEmpty());
-
-            List<?> baseTrailers = getListField(baseMeta, "getTrailers");
-            List<?> fullTrailers = fullMeta != null ? getListField(fullMeta, "getTrailers") : null;
-            boolean hasTrailers = (baseTrailers != null && !baseTrailers.isEmpty()) ||
-                                  (fullTrailers != null && !fullTrailers.isEmpty());
-
-            if (hasVideos && hasTrailers) {
-                // If fullMeta has videos/trailers and base doesn't, merge them
-                if (fullMeta != null) {
-                    return mergeAddonMetas(baseMeta, fullMeta);
-                }
+            if (baseVideos != null && !baseVideos.isEmpty()) {
+                // Addon already provided episodes! Preserve them completely.
                 return baseMeta;
             }
 
-            // Need to fetch from Cinemeta!
+            // 2. Check if fullMeta has videos from addon
+            List<?> fullVideos = fullMeta != null ? getListField(fullMeta, "getVideos") : null;
+            if (fullVideos != null && !fullVideos.isEmpty()) {
+                return mergeAddonMetas(baseMeta, fullMeta);
+            }
+
+            // 3. Neither has videos: Need to query Cinemeta!
             String rawId = getStringField(baseMeta, "getId");
             String imdbId = extractImdbId(rawId);
             if (imdbId == null && fullMeta != null) {
                 imdbId = extractImdbId(getStringField(fullMeta, "getId"));
             }
+
+            // If still no IMDb ID (e.g. TMDB or custom addon ID), resolve by series title!
             if (imdbId == null) {
-                // Return whatever we have
-                return fullMeta != null ? fullMeta : baseMeta;
+                String seriesName = getStringField(baseMeta, "getName");
+                if (seriesName == null && fullMeta != null) {
+                    seriesName = getStringField(fullMeta, "getName");
+                }
+                if (seriesName != null && !seriesName.trim().isEmpty()) {
+                    imdbId = searchCinemetaImdbId("series", seriesName);
+                }
             }
 
-            // Query Cinemeta
+            if (imdbId == null) {
+                // Cannot find IMDb ID: return baseMeta intact
+                return baseMeta;
+            }
+
+            // Query Cinemeta with resolved IMDb ID
             JSONObject metaObj = fetchCinemetaMeta("series", imdbId);
             if (metaObj == null) {
-                // Fallback to fullMeta or baseMeta
-                return fullMeta != null ? fullMeta : baseMeta;
+                return baseMeta;
             }
 
             return applyCinemetaToMeta(baseMeta, fullMeta, metaObj);
         } catch (Throwable t) {
             Log.e(TAG, "enrichSeriesIfEmpty error", t);
-            return fullMeta != null ? fullMeta : baseMeta;
+            return baseMeta;
         }
     }
 
@@ -97,6 +150,24 @@ public class SeriesEpisodeHelper {
         if (currentTrailerId != null && !currentTrailerId.trim().isEmpty()) {
             return currentTrailerId;
         }
+        try {
+            String imdbId = extractImdbId(itemId);
+            if (imdbId != null) {
+                JSONObject metaObj = fetchCinemetaMeta(type != null ? type : "movie", imdbId);
+                if (metaObj != null) {
+                    JSONArray trailers = metaObj.optJSONArray("trailers");
+                    if (trailers != null && trailers.length() > 0) {
+                        for (int i = 0; i < trailers.length(); i++) {
+                            JSONObject tr = trailers.optJSONObject(i);
+                            if (tr != null) {
+                                String source = tr.optString("source", tr.optString("id", ""));
+                                if (!source.isEmpty()) return source;
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Throwable ignored) {}
         return null;
     }
 

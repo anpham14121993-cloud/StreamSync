@@ -122,17 +122,17 @@ def patch_continue_watching(unpack_dir):
                 log(f"Patched POSTER_HEIGHT integer const 0xba -> 0x7e in {os.path.basename(target)}")
                 changed = True
 
-        # 3. Increase beyondViewportPageCount in ContinueWatchingPager to 8 items for catalog-like smooth sliding
+        # 3. Set beyondViewportPageCount in ContinueWatchingPager to 1 for fluid sliding without memory overhead
         if "HorizontalPager-xYaah8o" in content:
             pager_patched = re.sub(
                 r"(HorizontalPager-xYaah8o[\s\S]*?)(const/16\s+v\d+,\s*)0x0",
-                r"\g<1>\g<2>0x8",
+                r"\g<1>\g<2>0x1",
                 content,
                 count=1
             )
             if pager_patched != content:
                 content = pager_patched
-                log(f"Increased beyondViewportPageCount to 8 in {os.path.basename(target)}")
+                log(f"Set beyondViewportPageCount to 1 in {os.path.basename(target)}")
                 changed = True
 
         if changed:
@@ -143,7 +143,7 @@ def patch_continue_watching(unpack_dir):
     return patched_count > 0
 
 def patch_image_prefetch(unpack_dir):
-    """Throttles Coil image prefetch from all items to top 15 items"""
+    """Throttles Coil image prefetch from all items to top 6 items to eliminate UI freezes"""
     log("Searching for StreamSyncImageLoaderKt smali files...")
     targets = find_files(unpack_dir, r"^StreamSyncImageLoaderKt.*\.smali$")
     if not targets:
@@ -158,8 +158,8 @@ def patch_image_prefetch(unpack_dir):
         if "prefetchPosters" in content:
             pattern = re.compile(r"(\.method\s+public\s+static\s+final\s+prefetchPosters\(Landroid/content/Context;Ljava/util/List;\)V.*?)(\s+invoke-static\s*\{p0,\s*\"context\"\})", re.DOTALL)
             throttle_smali = r"""\1
-    # [NUVIO PATCH] Throttle prefetch to top 15 items to prevent GC frame drops
-    const/16 v0, 0xf
+    # [NUVIO PATCH] Throttle prefetch to top 6 items to prevent GC frame drops
+    const/16 v0, 0x6
     invoke-static {p1, v0}, Lkotlin/collections/CollectionsKt;->take(Ljava/lang/Iterable;I)Ljava/util/List;
     move-result-object p1
 \2"""
@@ -167,7 +167,7 @@ def patch_image_prefetch(unpack_dir):
             if count > 0:
                 with open(target, 'w', encoding='utf-8') as f:
                     f.write(new_content)
-                log(f"Successfully injected 15-item throttle into prefetchPosters in {os.path.basename(target)}")
+                log(f"Successfully injected 6-item throttle into prefetchPosters in {os.path.basename(target)}")
                 patched = True
 
     return patched
@@ -212,14 +212,14 @@ def patch_single_swipe_and_exit_dialog(unpack_dir, script_dir):
         log("Replaced WindowInsetsControllerCompat.hide() with show() to keep status bar visible.")
         changed = True
 
-    # 3. Explicitly set setSystemBarsBehavior to 2 (BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE)
+    # 3. Explicitly set setSystemBarsBehavior to 1 (BEHAVIOR_DEFAULT) so edge swipe gestures are not intercepted
     if "setSystemBarsBehavior" in content:
         content = re.sub(
             r"invoke-virtual\s*\{([^\}]+),\s*([^\}]+)\},\s*Landroidx/core/view/WindowInsetsControllerCompat;->setSystemBarsBehavior\(I\)V",
-            r"const/4 \2, 0x2\n    invoke-virtual {\1, \2}, Landroidx/core/view/WindowInsetsControllerCompat;->setSystemBarsBehavior(I)V",
+            r"const/4 \2, 0x1\n    invoke-virtual {\1, \2}, Landroidx/core/view/WindowInsetsControllerCompat;->setSystemBarsBehavior(I)V",
             content
         )
-        log("Set WindowInsetsControllerCompat.setSystemBarsBehavior to 2.")
+        log("Set WindowInsetsControllerCompat.setSystemBarsBehavior to 1.")
         changed = True
 
     # 3b. Add onResume() to MainActivity so system bars are always visible when returning to activity
@@ -244,7 +244,7 @@ def patch_single_swipe_and_exit_dialog(unpack_dir, script_dir):
     move-result v0
     invoke-virtual {v1, v0}, Landroidx/core/view/WindowInsetsControllerCompat;->show(I)V
 
-    const/4 v0, 0x2
+    const/4 v0, 0x1
     invoke-virtual {v1, v0}, Landroidx/core/view/WindowInsetsControllerCompat;->setSystemBarsBehavior(I)V
 
     :cond_resume_end
@@ -1320,14 +1320,14 @@ def patch_manifest_and_resources(unpack_dir):
         log("Registered TrailerPlayerActivity in AndroidManifest.")
         changed = True
 
-    # 4. Bump versionCode to 199 and versionName to 1.9.9 for overwrite/update support
+    # 4. Bump versionCode to 200 and versionName to 2.0.0 for overwrite/update support
     if 'android:versionCode=' in manifest:
-        manifest = re.sub(r'android:versionCode="[^"]*"', 'android:versionCode="199"', manifest)
-        manifest = re.sub(r'android:versionName="[^"]*"', 'android:versionName="1.9.9"', manifest)
-        log("Updated AndroidManifest versionCode to 199 and versionName to 1.9.9.")
+        manifest = re.sub(r'android:versionCode="[^"]*"', 'android:versionCode="200"', manifest)
+        manifest = re.sub(r'android:versionName="[^"]*"', 'android:versionName="2.0.0"', manifest)
+        log("Updated AndroidManifest versionCode to 200 and versionName to 2.0.0.")
         changed = True
     else:
-        manifest = re.sub(r'<manifest\s+', '<manifest android:versionCode="199" android:versionName="1.9.9" ', manifest)
+        manifest = re.sub(r'<manifest\s+', '<manifest android:versionCode="200" android:versionName="2.0.0" ', manifest)
         log("Inserted android:versionCode and versionName into AndroidManifest.")
         changed = True
 
@@ -1356,6 +1356,12 @@ def patch_manifest_and_resources(unpack_dir):
     if 'android:largeHeap="true"' not in manifest:
         manifest = manifest.replace("<application ", '<application android:largeHeap="true" ', 1)
         log("Added android:largeHeap=true to application tag.")
+        changed = True
+
+    # 5c. Add hardwareAccelerated="true" to application if not present for 60/120fps GPU rendering
+    if 'android:hardwareAccelerated="true"' not in manifest:
+        manifest = manifest.replace("<application ", '<application android:hardwareAccelerated="true" ', 1)
+        log("Added android:hardwareAccelerated=true to application tag.")
         changed = True
 
     # 6. Fix "Gói có vẻ không hợp lệ":

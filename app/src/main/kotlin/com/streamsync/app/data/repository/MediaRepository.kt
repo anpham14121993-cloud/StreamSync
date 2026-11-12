@@ -180,8 +180,39 @@ object MediaRepository {
     fun getHeroItems(): Flow<List<MediaItem>> = _heroItemsState.asStateFlow()
 
     suspend fun getMeta(type: String, id: String): MediaItem? {
-        val base = _installedAddons.value.firstOrNull()?.baseUrl?.ifBlank { CINEMETA_URL } ?: CINEMETA_URL
-        return AddonClient.fetchMeta(base, type, id)
+        val addons = _installedAddons.value
+        val isImdbId = id.startsWith("tt")
+
+        // Prioritize non-Cinemeta addons first if ID is not an IMDb tt... format
+        val orderedAddons = if (!isImdbId) {
+            addons.filter { it.baseUrl != CINEMETA_URL } + addons.filter { it.baseUrl == CINEMETA_URL }
+        } else {
+            addons
+        }
+
+        var foundMeta: MediaItem? = null
+        for (addon in orderedAddons) {
+            val base = addon.baseUrl.ifBlank { CINEMETA_URL }
+            val res = AddonClient.fetchMeta(base, type, id)
+            if (res != null) {
+                if (type != "series" || res.seriesVideos.isNotEmpty()) {
+                    return res
+                }
+                if (foundMeta == null) {
+                    foundMeta = res
+                }
+            }
+        }
+
+        // If series found but videos list is empty, enrich from Cinemeta
+        if (foundMeta != null && type == "series" && foundMeta.seriesVideos.isEmpty()) {
+            val cinemetaRes = AddonClient.fetchMeta(CINEMETA_URL, type, id)
+            if (cinemetaRes != null && cinemetaRes.seriesVideos.isNotEmpty()) {
+                return foundMeta.copy(seriesVideos = cinemetaRes.seriesVideos)
+            }
+        }
+
+        return foundMeta ?: AddonClient.fetchMeta(CINEMETA_URL, type, id)
     }
 
     suspend fun getStreams(type: String, id: String): List<AddonStream> {
