@@ -732,18 +732,21 @@ def patch_meta_screen(unpack_dir, script_dir):
                 f.write(mds_content)
             log("Patched MovieDetailScreen to resolve series trailer via SeriesEpisodeHelper.")
 
-    # 5. Patch DetailSectionsKt$DetailActionRow$1$1$1.smali to launch TrailerPlayerActivity in-app
+    # 5. Patch DetailSectionsKt$DetailActionRow$1$1$1.smali to handle watch action or trailer
     action_row_targets = find_files(unpack_dir, r"^DetailSectionsKt\$DetailActionRow\$1\$1\$1\.smali$")
     if action_row_targets:
         with open(action_row_targets[0], 'r', encoding='utf-8', errors='ignore') as f:
             ar1_content = f.read()
 
-        p_intent = re.compile(
-            r'(\.method public final invoke\(\)V[\s\S]*?\.locals 4[\s\S]*?)(new-instance v0, Landroid/content/Intent;[\s\S]*?invoke-virtual\s*\{v2,\s*v0\},\s*Landroid/content/Context;->startActivity\(Landroid/content/Intent;\)V)',
+        p_invoke = re.compile(
+            r'\.method public final invoke\(\)V[\s\S]*?\.end method',
             re.MULTILINE
         )
-        if p_intent.search(ar1_content):
-            inapp_trailer_smali = """    invoke-static {}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->isStreamPickerActive()Z
+        if p_invoke.search(ar1_content):
+            invoke_smali = """.method public final invoke()V
+    .locals 4
+
+    invoke-static {}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->isStreamPickerActive()Z
     move-result v0
     if-nez v0, :cond_trailer_action
 
@@ -754,9 +757,11 @@ def patch_meta_screen(unpack_dir, script_dir):
     :cond_trailer_action
     iget-object v1, p0, Lcom/streamsync/app/ui/detail/DetailSectionsKt$DetailActionRow$1$1$1;->$trailerKey:Ljava/lang/String;
     if-eqz v1, :cond_return_early
+
     invoke-virtual {v1}, Ljava/lang/String;->isEmpty()Z
     move-result v0
     if-nez v0, :cond_return_early
+
     const-string v0, "watch"
     invoke-virtual {v0, v1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
     move-result v0
@@ -777,13 +782,19 @@ def patch_meta_screen(unpack_dir, script_dir):
     const/high16 v1, 0x10000000
     invoke-virtual {v0, v1}, Landroid/content/Intent;->addFlags(I)Landroid/content/Intent;
 
+    :try_start_0
     invoke-virtual {v2, v0}, Landroid/content/Context;->startActivity(Landroid/content/Intent;)V
+    :try_end_0
+    .catch Ljava/lang/Throwable; {:try_start_0 .. :try_end_0} :catch_0
 
-    :cond_return_early"""
-            ar1_content = p_intent.sub(lambda m: m.group(1) + inapp_trailer_smali, ar1_content, count=1)
+    :catch_0
+    :cond_return_early
+    return-void
+.end method"""
+            ar1_content = p_invoke.sub(invoke_smali, ar1_content, count=1)
             with open(action_row_targets[0], 'w', encoding='utf-8') as f:
                 f.write(ar1_content)
-            log("Patched DetailActionRow to launch TrailerPlayerActivity in-app.")
+            log("Patched DetailActionRow to handle watch action or launch TrailerPlayerActivity in-app.")
 
     # 6. Gating streams behind isStreamPickerActive()
     mds_list_targets = find_files(unpack_dir, r"^MovieDetailScreenKt\$MovieDetailScreen\$3\$4\$1\.smali$")
