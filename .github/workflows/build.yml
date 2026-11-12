@@ -125,28 +125,27 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG="v2.0.0"
+          TAG="v2.0.1"
           echo "=== Publishing Release $TAG ==="
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" output-apks/StreamSync-arm64-v8a.apk output-apks/StreamSync-armeabi-v7a.apk output-apks/StreamSync-universal.apk --clobber
           else
             gh release create "$TAG" output-apks/StreamSync-arm64-v8a.apk output-apks/StreamSync-armeabi-v7a.apk output-apks/StreamSync-universal.apk \
-              --title "AioStream v2.0.0 (Fluid 120fps Gesture Animation & Universal Series Episode Enrichment)" \
-              --notes "Bản phát hành chính thức AioStream v2.0.0:
-              - Khắc phục triệt để hiện tượng cử chỉ vuốt chạm bị khựng/lag, tối ưu mượt mà 60/120fps như Nuvio:
-                + Tối ưu tính toán pageOffset trong HeroSlider và các Pager đưa hoàn toàn vào Draw phase (graphicsLayer), loại bỏ 100% tình trạng recomposition toàn bộ trang trên mỗi frame cử chỉ kéo/vuốt.
-                + Điều chỉnh beyondViewportPageCount trong ContinueWatchingPager về 1 card để lướt mượt mà, loại bỏ việc nạp đồng thời 16 trang ngầm gây nghẽn RAM và giật lag (GC frame drops).
-                + Giảm giới hạn Coil image prefetch từ 15 xuống 6 item để tránh nghẽn thread pool mạng và bộ nhớ khi cuộn.
-                + Kích hoạt hardwareAccelerated=true trong AndroidManifest đảm bảo 100% bề mặt UI render bằng GPU.
-                + Tối ưu cơ chế cử chỉ vuốt mép màn hình về BEHAVIOR_DEFAULT (1), vuốt là ăn ngay ở lần đầu tiên.
-              - Khắc phục triệt để lỗi không lấy được danh sách tập phim bộ ở trang meta:
-                + Cải tiến SeriesEpisodeHelper: Bảo toàn 100% danh sách tập phim do addon cung cấp, loại bỏ lỗi điều kiện 'hasVideos && hasTrailers' từng khiến series có tập nhưng thiếu trailer bị xóa sạch tập.
-                + Bổ sung cơ chế tự động tìm kiếm tên phim trên Cinemeta để lấy đầy đủ tập cho các addon sử dụng định dạng ID phi IMDb (TMDB, Kitsu, anime, custom ID).
-                + Nâng cấp MediaRepository.getMeta duyệt qua tất cả addon đã cài đặt, không còn bị ép buộc chỉ gọi duy nhất Cinemeta khi mở phim từ addon khác.
-                + Mở rộng AddonVideo hỗ trợ linh hoạt cả 'title' lẫn 'name', xử lý 'season' và 'episode'/'number' dạng số hoặc chuỗi, loại bỏ lỗi Gson parse failure đối với các addon cộng đồng.
-                + Tự động lấy trailer từ Cinemeta cho cả phim lẻ và phim bộ nếu addon thiếu trailer.
+              --title "AioStream v2.0.1 (Addon Stream Isolation, Hidden Streams on Meta, Bluray Remux OOM Fix)" \
+              --notes "Bản phát hành chính thức AioStream v2.0.1:
+              - Khắc phục cơ chế gọi luồng stream của Addon (Addon Stream Scoping & Isolation):
+                + Khi chọn xem phim/tập phim từ catalog của một addon riêng biệt, StreamSync chỉ gọi và trả về duy nhất luồng stream của chính addon sở hữu mục đó, không còn bị trộn lẫn hoặc gọi tràn lan tất cả các community addon khác như Torrentio.
+                + Các mục từ Cinemeta hoặc tìm kiếm chung vẫn truy vấn toàn bộ các addon stream đã cài đặt như bình thường.
+              - Tối ưu giao diện trang Meta (Ẩn luồng stream trước khi chọn xem):
+                + Trang chi tiết Meta cho cả phim lẻ và phim bộ không còn hiển thị và load trước danh sách luồng stream gây chậm màn hình và rối giao diện.
+                + Phim lẻ: Bổ sung nút 'Xem phim' nổi bật tại thanh hành động; khi bấm xem mới hiển thị danh sách chọn luồng phát (hoặc mở luồng). Nút sau đó chuyển thành 'Xem trailer' để xem trailer trong app.
+                + Phim bộ: Luồng stream chỉ được kích hoạt và hiển thị khi người dùng bấm chọn một tập phim cụ thể trong danh sách tập.
+                + Thoát ra hoặc đổi phim sẽ tự động ẩn lại danh sách luồng stream.
+              - Khắc phục triệt để lỗi crash app khi xem phim Bluray Remux dung lượng lớn (Java Heap vs Native Buffer OOM):
+                + Đối chiếu chuẩn cơ chế Nuvio Mobile: Cố định trần bộ đệm Java Heap an toàn cho Media3 DefaultAllocator ở mức an toàn (tối đa 220MB, 70% Java heap limit), loại bỏ việc đặt bộ đệm lên tới 1024MB - 2048MB (RAM/4) từng gây tràn ART Dalvik Heap dẫn đến OutOfMemoryError và crash SIGABRT trên các phim Remux 60GB - 80GB bitrate cao.
+                + Thiết lập prioritizeTimeOverSizeThresholds=true giúp ExoPlayer dừng đệm khi đã nạp đủ thời lượng video (35-50 giây) thay vì cố đệm tràn hàng Gigabyte bộ nhớ.
               - Đầy đủ 3 phiên bản: arm64-v8a, armeabi-v7a và universal.
-              - Cập nhật OTA trực tiếp trong ứng dụng cho phiên bản v2.0.0.
+              - Cập nhật OTA trực tiếp trong ứng dụng cho phiên bản v2.0.1.
               - Keystore cố định hỗ trợ cài đè trực tiếp lên phiên bản cũ không mất dữ liệu." \
               --latest
           fi

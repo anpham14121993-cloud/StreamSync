@@ -30,6 +30,23 @@ public class SeriesEpisodeHelper {
     private static final String CINEMETA_SERIES_URL = "https://v3-cinemeta.strem.io/meta/series/";
     private static final String CINEMETA_MOVIE_URL = "https://v3-cinemeta.strem.io/meta/movie/";
     private static final Pattern IMDB_PATTERN = Pattern.compile("tt\\d+");
+    private static volatile boolean streamPickerActive = false;
+
+    public static boolean isStreamPickerActive() {
+        return streamPickerActive;
+    }
+
+    public static void setStreamPickerActive(boolean active) {
+        streamPickerActive = active;
+    }
+
+    public static void resetStreamPicker() {
+        streamPickerActive = false;
+    }
+
+    public static boolean shouldScopeToOwner(List<?> rawTargets) {
+        return rawTargets != null && !rawTargets.isEmpty();
+    }
 
     public static String extractImdbId(String rawId) {
         if (rawId == null) return null;

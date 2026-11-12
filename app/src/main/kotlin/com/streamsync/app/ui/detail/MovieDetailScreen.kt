@@ -68,8 +68,9 @@ fun MovieDetailScreen(
 ) {
     var fullMeta by remember { mutableStateOf(mediaItem) }
     var streams by remember { mutableStateOf<List<AddonStream>>(emptyList()) }
-    var loadingStreams by remember { mutableStateOf(true) }
+    var loadingStreams by remember { mutableStateOf(false) }
     var selectedEpisode by remember { mutableStateOf<SeriesVideo?>(null) }
+    var showStreamPicker by remember { mutableStateOf(false) }
 
     LaunchedEffect(mediaItem.id) {
         val typeStr = if (mediaItem.type == MediaType.SERIES) "series" else "movie"
@@ -80,17 +81,15 @@ fun MovieDetailScreen(
                 selectedEpisode = enriched.seriesVideos.firstOrNull()
             }
         }
-
-        // Fetch streams
-        val streamId = if (selectedEpisode != null) selectedEpisode!!.id else mediaItem.id
-        streams = MediaRepository.getStreams(typeStr, streamId)
-        loadingStreams = false
+        showStreamPicker = false
     }
 
-    LaunchedEffect(selectedEpisode) {
-        if (selectedEpisode != null) {
+    LaunchedEffect(showStreamPicker, selectedEpisode) {
+        if (showStreamPicker) {
             loadingStreams = true
-            streams = MediaRepository.getStreams("series", selectedEpisode!!.id)
+            val typeStr = if (fullMeta.type == MediaType.SERIES) "series" else "movie"
+            val streamId = if (selectedEpisode != null) selectedEpisode!!.id else fullMeta.id
+            streams = MediaRepository.getStreams(typeStr, streamId, fullMeta.sourceAddonId)
             loadingStreams = false
         }
     }
@@ -241,12 +240,7 @@ fun MovieDetailScreen(
                         // Quick play button
                         Button(
                             onClick = {
-                                val stream = streams.firstOrNull { it.playableUrl.isNotBlank() }
-                                val url = stream?.playableUrl ?: fullMeta.streamUrl
-                                if (url.isNotBlank()) {
-                                    val title = if (selectedEpisode != null) "${fullMeta.title} - ${selectedEpisode!!.title}" else fullMeta.title
-                                    onPlayStream(url, title)
-                                }
+                                showStreamPicker = true
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                             shape = RoundedCornerShape(10.dp),
@@ -260,7 +254,7 @@ fun MovieDetailScreen(
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = "Xem ngay",
+                                text = if (showStreamPicker) "Chọn luồng phát bên dưới" else "Xem phim",
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White
                             )
@@ -316,7 +310,10 @@ fun MovieDetailScreen(
                                 color = if (isSelected) MaterialTheme.colorScheme.primary else Color(0xFF1E293B),
                                 shape = RoundedCornerShape(8.dp),
                                 modifier = Modifier
-                                    .clickable { selectedEpisode = ep }
+                                    .clickable {
+                                        selectedEpisode = ep
+                                        showStreamPicker = true
+                                    }
                             ) {
                                 Text(
                                     text = "Tập ${ep.episode}",
@@ -331,107 +328,109 @@ fun MovieDetailScreen(
                 }
             }
 
-            // 5. Stream Sources list
-            item(key = "streams_header") {
-                Spacer(modifier = Modifier.height(24.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Nguồn phát trực tuyến",
-                        fontSize = 17.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                    if (loadingStreams) {
-                        Spacer(modifier = Modifier.width(10.dp))
-                        CircularProgressIndicator(
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(16.dp),
-                            strokeWidth = 2.dp
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(10.dp))
-            }
-
-            if (!loadingStreams && streams.isEmpty()) {
-                item(key = "empty_streams") {
-                    Text(
-                        text = "Chưa tìm thấy nguồn phát trực tiếp. Bạn có thể cài thêm Addon Stremio ở phần Cài đặt.",
-                        color = Color(0xFF94A3B8),
-                        fontSize = 13.sp,
-                        modifier = Modifier.padding(horizontal = 20.dp)
-                    )
-                }
-            } else {
-                items(streams) { stream ->
-                    val interactionSource = remember { MutableInteractionSource() }
-                    val isFocused by interactionSource.collectIsFocusedAsState()
-
-                    Surface(
-                        color = if (isFocused) Color(0xFF334155) else Color(0xFF1E293B),
-                        shape = RoundedCornerShape(10.dp),
+            // 5. Stream Sources list (only shown after clicking 'Xem phim' or selecting an episode)
+            if (showStreamPicker) {
+                item(key = "streams_header") {
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 20.dp, vertical = 5.dp)
-                            .focusable(interactionSource = interactionSource)
-                            .border(
-                                width = if (isFocused) 2.dp else 1.dp,
-                                color = if (isFocused) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.08f),
-                                shape = RoundedCornerShape(10.dp)
-                            )
-                            .clickable {
-                                val url = stream.playableUrl
-                                if (url.isNotBlank()) {
-                                    val title = if (selectedEpisode != null) "${fullMeta.title} - ${selectedEpisode!!.title}" else fullMeta.title
-                                    onPlayStream(url, title)
-                                }
-                            }
+                            .padding(horizontal = 20.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(
+                        Text(
+                            text = "Nguồn phát trực tuyến",
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                        if (loadingStreams) {
+                            Spacer(modifier = Modifier.width(10.dp))
+                            CircularProgressIndicator(
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(16.dp),
+                                strokeWidth = 2.dp
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
+
+                if (!loadingStreams && streams.isEmpty()) {
+                    item(key = "empty_streams") {
+                        Text(
+                            text = "Chưa tìm thấy nguồn phát trực tiếp. Bạn có thể cài thêm Addon Stremio ở phần Cài đặt.",
+                            color = Color(0xFF94A3B8),
+                            fontSize = 13.sp,
+                            modifier = Modifier.padding(horizontal = 20.dp)
+                        )
+                    }
+                } else {
+                    items(streams) { stream ->
+                        val interactionSource = remember { MutableInteractionSource() }
+                        val isFocused by interactionSource.collectIsFocusedAsState()
+
+                        Surface(
+                            color = if (isFocused) Color(0xFF334155) else Color(0xFF1E293B),
+                            shape = RoundedCornerShape(10.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(14.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                                .padding(horizontal = 20.dp, vertical = 5.dp)
+                                .focusable(interactionSource = interactionSource)
+                                .border(
+                                    width = if (isFocused) 2.dp else 1.dp,
+                                    color = if (isFocused) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.08f),
+                                    shape = RoundedCornerShape(10.dp)
+                                )
+                                .clickable {
+                                    val url = stream.playableUrl
+                                    if (url.isNotBlank()) {
+                                        val title = if (selectedEpisode != null) "${fullMeta.title} - ${selectedEpisode!!.title}" else fullMeta.title
+                                        onPlayStream(url, title)
+                                    }
+                                }
                         ) {
-                            Box(
+                            Row(
                                 modifier = Modifier
-                                    .size(36.dp)
-                                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f), CircleShape),
-                                contentAlignment = Alignment.Center
+                                    .fillMaxWidth()
+                                    .padding(14.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Icon(
-                                    imageVector = Icons.Rounded.PlayArrow,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(22.dp)
-                                )
-                            }
+                                Box(
+                                    modifier = Modifier
+                                        .size(36.dp)
+                                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f), CircleShape),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.PlayArrow,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(22.dp)
+                                    )
+                                }
 
-                            Spacer(modifier = Modifier.width(12.dp))
+                                Spacer(modifier = Modifier.width(12.dp))
 
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = stream.displayTitle,
-                                    color = Color.White,
-                                    fontWeight = FontWeight.Medium,
-                                    fontSize = 14.sp,
-                                    maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                                if (!stream.description.isNullOrBlank()) {
-                                    Spacer(modifier = Modifier.height(2.dp))
+                                Column(modifier = Modifier.weight(1f)) {
                                     Text(
-                                        text = stream.description,
-                                        color = Color(0xFF94A3B8),
-                                        fontSize = 12.sp,
-                                        maxLines = 1,
+                                        text = stream.displayTitle,
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Medium,
+                                        fontSize = 14.sp,
+                                        maxLines = 2,
                                         overflow = TextOverflow.Ellipsis
                                     )
+                                    if (!stream.description.isNullOrBlank()) {
+                                        Spacer(modifier = Modifier.height(2.dp))
+                                        Text(
+                                            text = stream.description,
+                                            color = Color(0xFF94A3B8),
+                                            fontSize = 12.sp,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    }
                                 }
                             }
                         }

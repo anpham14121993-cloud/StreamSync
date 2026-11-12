@@ -27,7 +27,7 @@ import java.nio.charset.StandardCharsets;
 
 public class StreamSyncUpdater {
 
-    private static final String DEFAULT_VERSION = "v2.0.0";
+    private static final String DEFAULT_VERSION = "v2.0.1";
     private static final String GITHUB_REPO_API = "https://api.github.com/repos/anpham14121993-cloud/StreamSync/releases/latest";
 
     private static final Handler sMainHandler = new Handler(Looper.getMainLooper());

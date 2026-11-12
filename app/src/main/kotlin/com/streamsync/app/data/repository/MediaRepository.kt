@@ -215,9 +215,18 @@ object MediaRepository {
         return foundMeta ?: AddonClient.fetchMeta(CINEMETA_URL, type, id)
     }
 
-    suspend fun getStreams(type: String, id: String): List<AddonStream> {
+    suspend fun getStreams(type: String, id: String, addonId: String = ""): List<AddonStream> {
         val streams = mutableListOf<AddonStream>()
         val addons = _installedAddons.value
+
+        // If scoped to a specific owner addon (e.g. from an addon catalog), query only that addon
+        if (addonId.isNotBlank()) {
+            val ownerAddon = addons.firstOrNull { it.id == addonId }
+            if (ownerAddon != null) {
+                val base = ownerAddon.baseUrl.ifBlank { CINEMETA_URL }
+                return AddonClient.fetchStreams(base, type, id)
+            }
+        }
 
         for (addon in addons) {
             val base = addon.baseUrl.ifBlank { CINEMETA_URL }

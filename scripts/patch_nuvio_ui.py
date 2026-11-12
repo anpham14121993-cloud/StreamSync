@@ -760,6 +760,95 @@ def patch_meta_screen(unpack_dir, script_dir):
                 f.write(ar1_content)
             log("Patched DetailActionRow to launch TrailerPlayerActivity in-app.")
 
+    # 6. Gating streams behind isStreamPickerActive()
+    mds_list_targets = find_files(unpack_dir, r"^MovieDetailScreenKt\$MovieDetailScreen\$3\$4\$1\.smali$")
+    if mds_list_targets:
+        with open(mds_list_targets[0], 'r', encoding='utf-8', errors='ignore') as f:
+            c = f.read()
+        p_item7 = re.compile(r'(new-instance\s+[^\n]+,\s*Lcom/streamsync/app/ui/detail/MovieDetailScreenKt\$MovieDetailScreen\$3\$4\$1\$7;)')
+        if p_item7.search(c) and "isStreamPickerActive" not in c:
+            gate_smali = """invoke-static {}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->isStreamPickerActive()Z
+    move-result v0
+    if-nez v0, :cond_show_streams
+    return-void
+    :cond_show_streams
+    \\1"""
+            c = p_item7.sub(gate_smali, c, count=1)
+            with open(mds_list_targets[0], 'w', encoding='utf-8') as f:
+                f.write(c)
+            log("Gated MovieDetailScreen items 7, 8, 9 behind SeriesEpisodeHelper.isStreamPickerActive().")
+
+    # 7. Reset stream picker on initial load, and activate stream picker on episode stream load
+    mdvm_targets = find_files(unpack_dir, r"^MovieDetailViewModel\.smali$")
+    if mdvm_targets:
+        with open(mdvm_targets[0], 'r', encoding='utf-8', errors='ignore') as f:
+            c = f.read()
+
+        # In resolveSources: reset stream picker
+        p_resolve = re.compile(r'(\.method private final resolveSources\([^\)]*\)[^\n]+[\s\S]*?\.locals \d+)')
+        if p_resolve.search(c) and "resetStreamPicker" not in c:
+            c = p_resolve.sub(r'\1\n    invoke-static {}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->resetStreamPicker()V', c, count=1)
+
+        # In loadEpisodeStreams: set stream picker active
+        p_ep_streams = re.compile(r'(\.method public final loadEpisodeStreams\([^\)]*\)[^\n]+[\s\S]*?\.locals \d+)')
+        if p_ep_streams.search(c) and "setStreamPickerActive" not in c:
+            c = p_ep_streams.sub(r'\1\n    const/4 v0, 0x1\n    invoke-static {v0}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->setStreamPickerActive(Z)V', c, count=1)
+
+        with open(mdvm_targets[0], 'w', encoding='utf-8') as f:
+            f.write(c)
+        log("Patched MovieDetailViewModel to reset/activate stream picker.")
+
+    # 8. DetailSectionsKt.smali: Toggle "Xem phim" / "Xem trailer" based on stream picker state
+    ds_targets = find_file_exact(unpack_dir, "DetailSectionsKt.smali")
+    if ds_targets:
+        with open(ds_targets[0], 'r', encoding='utf-8', errors='ignore') as f:
+            c = f.read()
+
+        p_trailer_btn = re.compile(r'(const-string\s+(v\d+),\s*"Xem trailer")')
+        if p_trailer_btn.search(c) and "WatchClickLambda" not in c:
+            def repl_watch_btn(m):
+                label_reg = m.group(2)
+                return f"""invoke-static {{}}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->isStreamPickerActive()Z
+    move-result v0
+    if-nez v0, :cond_orig_trailer
+    const-string {label_reg}, "Xem phim"
+    new-instance v35, Lcom/streamsync/app/ui/detail/WatchClickLambda;
+    invoke-direct {{v35}}, Lcom/streamsync/app/ui/detail/WatchClickLambda;-><init>()V
+    const/4 v34, 0x1
+    goto :cond_trailer_ready
+    :cond_orig_trailer
+    {m.group(1)}
+    :cond_trailer_ready"""
+            c = p_trailer_btn.sub(repl_watch_btn, c, count=1)
+            with open(ds_targets[0], 'w', encoding='utf-8') as f:
+                f.write(c)
+            log("Patched DetailSectionsKt to toggle 'Xem phim' / 'Xem trailer' based on stream picker state.")
+
+    # 9. Scope streams to catalog owner addon if rawTargets is non-empty
+    merged_targets = find_files(unpack_dir, r"^AddonRepository\$resolveStreams\$mergedSources\$1\.smali$")
+    if merged_targets:
+        with open(merged_targets[0], 'r', encoding='utf-8', errors='ignore') as f:
+            c = f.read()
+
+        p_stream_addons = re.compile(r'(iget-object\s+(v\d+),\s+(v\d+),\s+Lcom/streamsync/app/data/repository/AddonRepository\$resolveStreams\$mergedSources\$1;->\$streamAddons:Ljava/util/List;)')
+        if p_stream_addons.search(c) and "shouldScopeToOwner" not in c:
+            def repl_scope(m):
+                addons_reg = m.group(2)
+                this_reg = m.group(3)
+                return f"""{m.group(1)}
+    # [NUVIO OWNER SCOPE] If item has rawTargets from its catalog addon, do not query all other addons
+    iget-object v11, {this_reg}, Lcom/streamsync/app/data/repository/AddonRepository$resolveStreams$mergedSources$1;->$rawTargets:Ljava/util/List;
+    invoke-static {{v11}}, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->shouldScopeToOwner(Ljava/util/List;)Z
+    move-result v11
+    if-eqz v11, :cond_keep_stream_addons
+    invoke-static {{}}, Lkotlin/collections/CollectionsKt;->emptyList()Ljava/util/List;
+    move-result-object {addons_reg}
+    :cond_keep_stream_addons"""
+            c = p_stream_addons.sub(repl_scope, c, count=1)
+            with open(merged_targets[0], 'w', encoding='utf-8') as f:
+                f.write(c)
+            log("Patched AddonRepository$resolveStreams$mergedSources$1 to scope streams to owner addon.")
+
     return True
 
 def patch_addons_screen(unpack_dir):
@@ -860,12 +949,11 @@ def patch_addons_screen(unpack_dir):
 
 def patch_exo_native_buffers(unpack_dir):
     """
-    1. Patches BufferCeiling.smali (forDevice and compute) to scale buffers based on RAM / 4,
-       capped by available physical device RAM (85% normal, 50% low memory).
+    1. Patches BufferCeiling.smali (forDevice and compute) to cap buffers to safe Dalvik heap limits (heapLimitMb * 0.70, absolute max 220MB).
     2. Patches RamTier.smali RAM_1 through RAM_8 safetyLimitMb and warningMb constants
-       to exactly RAM / 4 (1GB: 256MB, 1.5GB: 384MB, 2GB: 512MB, 3GB: 768MB, 4GB: 1024MB, 6GB: 1536MB, 8GB: 2048MB).
+       to safe limits (RAM_1: 64MB/80MB, RAM_15: 80MB/96MB, RAM_2: 96MB/120MB, RAM_3: 128MB/160MB, RAM_4: 160MB/192MB, RAM_6: 192MB/220MB, RAM_8: 220MB/256MB).
     """
-    log("Patching ExoPlayer buffer limits based on device RAM / 4...")
+    log("Patching ExoPlayer buffer limits for Bluray Remux stability (safe Dalvik heap caps)...")
 
     # 1. Patch BufferCeiling.smali
     bc_targets = find_file_exact(unpack_dir, "BufferCeiling.smali")
@@ -887,6 +975,14 @@ def patch_exo_native_buffers(unpack_dir):
     invoke-virtual {p1}, Lcom/streamsync/app/settings/RamTier;->getSafetyLimitMb()I
     move-result v0
 
+    # Cap by Dalvik Java heap limit * 0.70
+    int-to-float v1, p2
+    const v2, 0x3f333333    # 0.7f
+    mul-float/2addr v1, v2
+    float-to-int v1, v1
+    invoke-static {v0, v1}, Ljava/lang/Math;->min(II)I
+    move-result v0
+
     if-eqz p4, :cond_0
 
     int-to-float v1, p3
@@ -905,6 +1001,12 @@ def patch_exo_native_buffers(unpack_dir):
     invoke-static {v0, v1}, Ljava/lang/Math;->min(II)I
     move-result v0
 
+    # Hard ceiling for Java heap safe limit: 220 MB (0xdc)
+    const/16 v1, 0xdc
+    invoke-static {v0, v1}, Ljava/lang/Math;->min(II)I
+    move-result v0
+
+    # Minimum floor: 48 MB (0x30)
     const/16 v1, 0x30
     invoke-static {v0, v1}, Lkotlin/ranges/RangesKt;->coerceAtLeast(II)I
     move-result v0
@@ -913,7 +1015,7 @@ def patch_exo_native_buffers(unpack_dir):
 .end method"""
 
         new_for_device = """.method public final forDevice(Landroid/content/Context;Lcom/streamsync/app/settings/RamTier;)I
-    .locals 3
+    .locals 5
     .param p1, "context"    # Landroid/content/Context;
     .param p2, "tier"    # Lcom/streamsync/app/settings/RamTier;
 
@@ -921,6 +1023,21 @@ def patch_exo_native_buffers(unpack_dir):
     invoke-static {p2, v0}, Lkotlin/jvm/internal/Intrinsics;->checkNotNullParameter(Ljava/lang/Object;Ljava/lang/String;)V
 
     invoke-virtual {p2}, Lcom/streamsync/app/settings/RamTier;->getSafetyLimitMb()I
+    move-result v0
+
+    # Dalvik maxMemory / 1MB * 0.70
+    invoke-static {}, Ljava/lang/Runtime;->getRuntime()Ljava/lang/Runtime;
+    move-result-object v1
+    invoke-virtual {v1}, Ljava/lang/Runtime;->maxMemory()J
+    move-result-wide v1
+    const-wide/32 v3, 0x100000
+    div-long/2addr v1, v3
+    long-to-int v1, v1
+    int-to-float v1, v1
+    const v2, 0x3f333333    # 0.7f
+    mul-float/2addr v1, v2
+    float-to-int v1, v1
+    invoke-static {v0, v1}, Ljava/lang/Math;->min(II)I
     move-result v0
 
     if-eqz p1, :cond_exit
@@ -958,6 +1075,12 @@ def patch_exo_native_buffers(unpack_dir):
 
     :catchall_0
     :cond_exit
+    # Hard ceiling: 220MB (0xdc)
+    const/16 v1, 0xdc
+    invoke-static {v0, v1}, Ljava/lang/Math;->min(II)I
+    move-result v0
+
+    # Floor: 48 MB (0x30)
     const/16 v1, 0x30
     invoke-static {v0, v1}, Lkotlin/ranges/RangesKt;->coerceAtLeast(II)I
     move-result v0
@@ -975,7 +1098,7 @@ def patch_exo_native_buffers(unpack_dir):
 
         with open(bc_targets[0], 'w', encoding='utf-8') as f:
             f.write(bc_content)
-        log("Patched BufferCeiling.compute and BufferCeiling.forDevice with RAM/4 safety limits.")
+        log("Patched BufferCeiling.compute and BufferCeiling.forDevice with safe Dalvik heap caps.")
 
     # 2. Patch RamTier.smali
     rt_targets = find_file_exact(unpack_dir, "RamTier.smali")
@@ -983,52 +1106,52 @@ def patch_exo_native_buffers(unpack_dir):
         with open(rt_targets[0], 'r', encoding='utf-8', errors='ignore') as f:
             rt_content = f.read()
 
-        # Update RAM_1: safetyLimit 256 (0x100), warning 320 (0x140)
+        # Update RAM_1: safetyLimit 64 (0x40), warning 80 (0x50)
         rt_content = re.sub(
-            r'(const/16\s+v9,\s*)0x60(\s*\n\s*const/16\s+v10,\s*)0x78(\s*\n\s*const-string\s+v1,\s*"RAM_1")',
-            r'\g<1>0x100\g<2>0x140\g<3>',
+            r'(const/16\s+v9,\s*)0x[0-9a-fA-F]+(\s*\n\s*const/16\s+v10,\s*)0x[0-9a-fA-F]+(\s*\n\s*const-string\s+v1,\s*"RAM_1")',
+            r'\g<1>0x40\g<2>0x50\g<3>',
             rt_content
         )
-        # Update RAM_15: safetyLimit 384 (0x180), warning 480 (0x1e0)
+        # Update RAM_15: safetyLimit 80 (0x50), warning 96 (0x60)
         rt_content = re.sub(
-            r'(const/16\s+v21,\s*)0x70(\s*\n\s*const/16\s+v22,\s*)0x8c(\s*\n\s*const-string\s+v13,\s*"RAM_15")',
-            r'\g<1>0x180\g<2>0x1e0\g<3>',
+            r'(const/16\s+v21,\s*)0x[0-9a-fA-F]+(\s*\n\s*const/16\s+v22,\s*)0x[0-9a-fA-F]+(\s*\n\s*const-string\s+v13,\s*"RAM_15")',
+            r'\g<1>0x50\g<2>0x60\g<3>',
             rt_content
         )
-        # Update RAM_2: safetyLimit 512 (0x200), warning 640 (0x280)
+        # Update RAM_2: safetyLimit 96 (0x60), warning 120 (0x78)
         rt_content = re.sub(
-            r'(const/16\s+v10,\s*)0x80(\s*\n\s*const/16\s+v11,\s*)0xa0(\s*\n\s*const-string\s+v2,\s*"RAM_2")',
-            r'\g<1>0x200\g<2>0x280\g<3>',
+            r'(const/16\s+v10,\s*)0x[0-9a-fA-F]+(\s*\n\s*const/16\s+v11,\s*)0x[0-9a-fA-F]+(\s*\n\s*const-string\s+v2,\s*"RAM_2")',
+            r'\g<1>0x60\g<2>0x78\g<3>',
             rt_content
         )
-        # Update RAM_3: safetyLimit 768 (0x300), warning 960 (0x3c0)
+        # Update RAM_3: safetyLimit 128 (0x80), warning 160 (0xa0)
         rt_content = re.sub(
-            r'(const/16\s+v21,\s*)0xa0(\s*\n\s*const/16\s+v22,\s*)0xc8(\s*\n\s*const-string\s+v13,\s*"RAM_3")',
-            r'\g<1>0x300\g<2>0x3c0\g<3>',
+            r'(const/16\s+v21,\s*)0x[0-9a-fA-F]+(\s*\n\s*const/16\s+v22,\s*)0x[0-9a-fA-F]+(\s*\n\s*const-string\s+v13,\s*"RAM_3")',
+            r'\g<1>0x80\g<2>0xa0\g<3>',
             rt_content
         )
-        # Update RAM_4: safetyLimit 1024 (0x400), warning 1280 (0x500)
+        # Update RAM_4: safetyLimit 160 (0xa0), warning 192 (0xc0)
         rt_content = re.sub(
-            r'(const/16\s+v10,\s*)0xc8(\s*\n\s*const/16\s+v11,\s*)0xfa(\s*\n\s*const-string\s+v2,\s*"RAM_4")',
-            r'\g<1>0x400\g<2>0x500\g<3>',
+            r'(const/16\s+v10,\s*)0x[0-9a-fA-F]+(\s*\n\s*const/16\s+v11,\s*)0x[0-9a-fA-F]+(\s*\n\s*const-string\s+v2,\s*"RAM_4")',
+            r'\g<1>0xa0\g<2>0xc0\g<3>',
             rt_content
         )
-        # Update RAM_6: safetyLimit 1536 (0x600), warning 1920 (0x780)
+        # Update RAM_6: safetyLimit 192 (0xc0), warning 220 (0xdc)
         rt_content = re.sub(
-            r'(const/16\s+v21,\s*)0x100(\s*\n\s*const/16\s+v22,\s*)0x140(\s*\n\s*const-string\s+v13,\s*"RAM_6")',
-            r'\g<1>0x600\g<2>0x780\g<3>',
+            r'(const/16\s+v21,\s*)0x[0-9a-fA-F]+(\s*\n\s*const/16\s+v22,\s*)0x[0-9a-fA-F]+(\s*\n\s*const-string\s+v13,\s*"RAM_6")',
+            r'\g<1>0xc0\g<2>0xdc\g<3>',
             rt_content
         )
-        # Update RAM_8: safetyLimit 2048 (0x800), warning 2560 (0xa00)
+        # Update RAM_8: safetyLimit 220 (0xdc), warning 256 (0x100)
         rt_content = re.sub(
-            r'(const/16\s+v10,\s*)0x140(\s*\n\s*const/16\s+v11,\s*)0x190(\s*\n\s*const-string\s+v2,\s*"RAM_8")',
-            r'\g<1>0x800\g<2>0xa00\g<3>',
+            r'(const/16\s+v10,\s*)0x[0-9a-fA-F]+(\s*\n\s*const/16\s+v11,\s*)0x[0-9a-fA-F]+(\s*\n\s*const-string\s+v2,\s*"RAM_8")',
+            r'\g<1>0xdc\g<2>0x100\g<3>',
             rt_content
         )
 
         with open(rt_targets[0], 'w', encoding='utf-8') as f:
             f.write(rt_content)
-        log("Patched RamTier constants to RAM / 4 limits (up to 2048MB).")
+        log("Patched RamTier constants to safe Dalvik heap limits (up to 220MB).")
 
     return True
 
@@ -1320,14 +1443,14 @@ def patch_manifest_and_resources(unpack_dir):
         log("Registered TrailerPlayerActivity in AndroidManifest.")
         changed = True
 
-    # 4. Bump versionCode to 200 and versionName to 2.0.0 for overwrite/update support
+    # 4. Bump versionCode to 201 and versionName to 2.0.1 for overwrite/update support
     if 'android:versionCode=' in manifest:
-        manifest = re.sub(r'android:versionCode="[^"]*"', 'android:versionCode="200"', manifest)
-        manifest = re.sub(r'android:versionName="[^"]*"', 'android:versionName="2.0.0"', manifest)
-        log("Updated AndroidManifest versionCode to 200 and versionName to 2.0.0.")
+        manifest = re.sub(r'android:versionCode="[^"]*"', 'android:versionCode="201"', manifest)
+        manifest = re.sub(r'android:versionName="[^"]*"', 'android:versionName="2.0.1"', manifest)
+        log("Updated AndroidManifest versionCode to 201 and versionName to 2.0.1.")
         changed = True
     else:
-        manifest = re.sub(r'<manifest\s+', '<manifest android:versionCode="200" android:versionName="2.0.0" ', manifest)
+        manifest = re.sub(r'<manifest\s+', '<manifest android:versionCode="201" android:versionName="2.0.1" ', manifest)
         log("Inserted android:versionCode and versionName into AndroidManifest.")
         changed = True
 
@@ -1380,8 +1503,8 @@ def patch_manifest_and_resources(unpack_dir):
         with open(apktool_yml_path, 'r', encoding='utf-8') as yf:
             yml_content = yf.read()
         
-        yml_content = re.sub(r"versionCode:\s*[^\r\n]+", lambda m: "versionCode: '199'", yml_content)
-        yml_content = re.sub(r"versionName:\s*[^\r\n]+", lambda m: "versionName: '1.9.9'", yml_content)
+        yml_content = re.sub(r"versionCode:\s*[^\r\n]+", lambda m: "versionCode: '201'", yml_content)
+        yml_content = re.sub(r"versionName:\s*[^\r\n]+", lambda m: "versionName: '2.0.1'", yml_content)
 
         if "doNotCompress:" in yml_content and "- so" not in yml_content:
             yml_content = yml_content.replace(

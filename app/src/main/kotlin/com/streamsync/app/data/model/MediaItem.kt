@@ -16,7 +16,8 @@ data class MediaItem(
     val streamName: String = "",
     val season: Int? = null,
     val episode: Int? = null,
-    val seriesVideos: List<SeriesVideo> = emptyList()
+    val seriesVideos: List<SeriesVideo> = emptyList(),
+    val sourceAddonId: String = ""
 ) {
     val backgroundUrl: String get() = backdropUrl
     val imdbRating: String get() = rating

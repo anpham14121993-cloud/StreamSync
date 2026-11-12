@@ -12,6 +12,8 @@
 
 .field private static final TAG:Ljava/lang/String; = "SeriesEpisodeHelper"
 
+.field private static volatile streamPickerActive:Z
+
 
 # direct methods
 .method static constructor <clinit>()V
@@ -1721,4 +1723,58 @@
 
     :catchall_trailer_err
     return-object v0
+.end method
+
+.method public static isStreamPickerActive()Z
+    .registers 1
+
+    sget-boolean v0, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->streamPickerActive:Z
+
+    return v0
+.end method
+
+.method public static setStreamPickerActive(Z)V
+    .registers 1
+
+    sput-boolean p0, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->streamPickerActive:Z
+
+    return-void
+.end method
+
+.method public static resetStreamPicker()V
+    .registers 1
+
+    const/4 v0, 0x0
+
+    sput-boolean v0, Lcom/streamsync/app/data/addon/SeriesEpisodeHelper;->streamPickerActive:Z
+
+    return-void
+.end method
+
+.method public static shouldScopeToOwner(Ljava/util/List;)Z
+    .registers 2
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "(",
+            "Ljava/util/List<",
+            "*>;)Z"
+        }
+    .end annotation
+
+    if-eqz p0, :cond_empty
+
+    invoke-interface {p0}, Ljava/util/List;->isEmpty()Z
+
+    move-result v0
+
+    if-nez v0, :cond_empty
+
+    const/4 v0, 0x1
+
+    return v0
+
+    :cond_empty
+    const/4 v0, 0x0
+
+    return v0
 .end method
